@@ -138,6 +138,8 @@ Reporte final obligatorio con:
 - Comandos para reproducir lo entregado.
 - Pendientes humanos enumerados.
 
+**Cierre operativo (commit + push + PR)**: tras la aprobación humana de la Fase 11, **no hagas `git push` ni `gh pr create` manual**. Indica al usuario que invoque `/ship` para abrir el PR. `/ship` reutilizará automáticamente el reporte del reviewer guardado en `reports/iter-<N>/reviewer.md` (Fase 6) si está fresco y con veredicto APROBAR, evitando una segunda auditoría. Si `/ship` decide relanzar al reviewer, su veredicto manda — significa que el reporte ya no era válido (commits posteriores, cambios sin commitear, etc.).
+
 ---
 
 ## Reglas duras

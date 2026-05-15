@@ -19,7 +19,21 @@ Encapsula el cierre seguro de una iteracion. Sigue las "Reglas duras antes de de
    - Si no hay cambios staged ni unstaged y la rama esta al dia con origin, aborta con mensaje claro: nada que enviar.
    - Si estamos en `main`, propon nombre de rama (`feat/<slug>` o `fix/<slug>` segun los cambios) y crea/cambia con `git checkout -b` solo tras confirmar con el usuario.
 
-2. **Auditoria pre-cierre (delegada al agente `reviewer`).**
+2. **Auditoria pre-cierre.**
+
+   **2a. Reutilizar reporte del orquestador si existe.**
+   - Busca el reporte mas reciente en `reports/iter-*/reviewer.md`:
+     ```
+     ls -t reports/iter-*/reviewer.md 2>/dev/null | head -1
+     ```
+   - Si existe, comprueba:
+     - **Veredicto APROBAR** explicito en el cuerpo (no CAMBIOS ni RECHAZAR).
+     - **Frescura**: mtime del archivo dentro de las ultimas 2 horas **y** sin commits posteriores que toquen `apps/**`, `infra/**` o `specs/**`. Compara con `git log -1 --format=%ct -- apps infra specs` vs `stat` del reporte.
+     - Que la rama actual no tenga cambios staged/unstaged respecto a cuando se genero el reporte (`git diff --stat` vacio o solo docs).
+   - Si las tres se cumplen → **reusa la tabla** `criterio | evidencia | estado` del reporte para el PR. Salta a paso 3. Anota en el PR: `_Auditoria reusada de reports/iter-N/reviewer.md (orquestador)._`
+   - Si alguna falla → invalida y pasa a 2b. Indica al usuario por que no se reuso (vencida, hay commits nuevos, hay cambios sin commitear, veredicto no era APROBAR).
+
+   **2b. Lanzar reviewer fresco.**
    - Invoca `Agent` con `subagent_type=reviewer`. Pasa contexto: ruta del workspace, lista de archivos cambiados, y la consigna de auditar criterio por criterio contra `specs/acceptance-criteria.md` siguiendo `CLAUDE.md`.
    - Pide reporte en formato tabla `criterio | evidencia | estado` + smoke test funcional si hay app ejecutable.
    - **Si el reviewer reporta gaps rojos, NO pushees.** Muestra los gaps al usuario y pregunta si quiere arreglarlos o forzar el ship con justificacion (raro y debe registrarse en el PR).
