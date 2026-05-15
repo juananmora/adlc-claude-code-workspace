@@ -17,7 +17,7 @@ Jobs:
   - `npm audit --audit-level=high` en api y web (falla en HIGH+).
   - `actions/dependency-review-action@v4` solo en PRs.
   - `gitleaks/gitleaks-action@v2` para detectar secretos.
-  - `aquasecurity/trivy-action@0.24.0` en modo `fs` con severidad `CRITICAL,HIGH` y `exit-code=1`.
+  - `aquasecurity/trivy-action@v0.36.0` en modo `fs` con severidad `CRITICAL,HIGH` y `exit-code=1`.
 - **iac-lint** — `terraform fmt -check -recursive` si y solo si hay archivos `.tf` bajo `infra/`. Mientras no exista Terraform real, se omite automáticamente.
 
 Cualquier fallo en estos jobs bloquea el merge (configura branch protection en `Settings → Branches` requiriendo estos checks).
