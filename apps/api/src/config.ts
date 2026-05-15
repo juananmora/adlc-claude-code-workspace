@@ -27,12 +27,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   return {
     port: parsePort(env.PORT, 4000),
     host: env.HOST ?? "0.0.0.0",
-    // Permitimos por defecto :3000 y :3001 en dev. Next salta a :3001 si :3000
-    // está ocupado, y el Playwright local apunta a :3001. En entornos pre/prod
-    // se debe pasar CORS_ORIGIN explícitamente.
+    // Permitimos por defecto :3000 y :3001 en dev, tanto localhost como
+    // 127.0.0.1 (el navegador los trata como origenes distintos para CORS).
+    // Next salta a :3001 si :3000 esta ocupado, y Playwright apunta a :3001.
+    // En entornos pre/prod se debe pasar CORS_ORIGIN explicitamente.
     corsOrigin: parseOrigins(
       env.CORS_ORIGIN,
-      "http://localhost:3000,http://localhost:3001",
+      "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001",
     ),
     nodeEnv: env.NODE_ENV ?? "development",
   };

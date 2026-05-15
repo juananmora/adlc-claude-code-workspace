@@ -31,6 +31,10 @@ jobs:
       NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:4000
       API_BASE_URL: http://127.0.0.1:4000
       PLAYWRIGHT_BASE_URL: http://127.0.0.1:3001
+      # CORS: el navegador trata 127.0.0.1 y localhost como origenes distintos.
+      # Playwright sirve la web en 127.0.0.1:3001, asi que la API debe aceptarlo
+      # explicitamente (el default solo cubre localhost:3000/3001 para dev).
+      CORS_ORIGIN: http://127.0.0.1:3001,http://localhost:3001
 
     steps:
       - name: Checkout
