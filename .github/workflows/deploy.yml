@@ -1,0 +1,175 @@
+# Deploy workflow — despliegues por entorno con gate humano en producción.
+#
+# REQUISITO MANUAL: en GitHub UI (Settings → Environments) deben crearse:
+#   - dev          → sin reviewers (deploy automático/manual rápido)
+#   - pre          → opcional reviewers
+#   - production   → "Required reviewers" OBLIGATORIO (este es el gate humano
+#                    exigido por CLAUDE.md y los criterios de aceptación ADLC).
+#
+# Los pasos de deploy son placeholders hasta que exista el Terraform real en
+# infra/landing-zone. No se exponen secretos: usar Settings → Secrets → Environments.
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Entorno objetivo'
+        required: true
+        type: choice
+        options:
+          - dev
+          - pre
+          - prod
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build-artifacts:
+    name: Build artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            apps/api/package-lock.json
+            apps/web/package-lock.json
+
+      - name: Build API
+        working-directory: apps/api
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build Web
+        working-directory: apps/web
+        env:
+          # Placeholder; el deploy real reemplaza este valor por el del entorno.
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:4000
+        run: |
+          npm ci
+          npm run build
+
+      - name: Upload API artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-dist
+          path: |
+            apps/api/dist
+            apps/api/package.json
+            apps/api/package-lock.json
+          retention-days: 7
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: |
+            apps/web/.next
+            apps/web/public
+            apps/web/package.json
+            apps/web/package-lock.json
+            apps/web/next.config.mjs
+          retention-days: 7
+
+  deploy-dev:
+    name: Deploy to dev
+    needs: build-artifacts
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'dev'
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      contents: read
+    steps:
+      - name: Download API artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: api-dist
+          path: api-dist
+
+      - name: Download Web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: web-dist
+
+      - name: Deploy (placeholder)
+        # Placeholder: el deploy real se implementará cuando exista infra Terraform.
+        run: echo "Deploying to dev..."
+
+      - name: Smoke test (placeholder)
+        run: echo "Running smoke tests against dev..."
+
+  deploy-pre:
+    name: Deploy to pre
+    needs: build-artifacts
+    # Se activa por workflow_dispatch=pre O automáticamente al pushear un tag vN.
+    if: |
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'pre') ||
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-latest
+    environment: pre
+    permissions:
+      contents: read
+    steps:
+      - name: Download API artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: api-dist
+          path: api-dist
+
+      - name: Download Web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: web-dist
+
+      - name: Deploy (placeholder)
+        run: echo "Deploying to pre..."
+
+      - name: Smoke test (placeholder)
+        run: echo "Running smoke tests against pre..."
+
+  deploy-prod:
+    name: Deploy to production
+    needs: build-artifacts
+    # Producción SIEMPRE es manual — nunca se dispara por tag ni push.
+    if: github.event_name == 'workflow_dispatch' && inputs.environment == 'prod'
+    runs-on: ubuntu-latest
+    # 'production' DEBE tener "Required reviewers" activado en Settings →
+    # Environments. Ese es el gate de aprobación humana exigido por ADLC.
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - name: Download API artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: api-dist
+          path: api-dist
+
+      - name: Download Web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: web-dist
+
+      - name: Deploy (placeholder)
+        # Placeholder: implementar despliegue real (Terraform apply + push de
+        # artifacts a la landing zone) una vez que infra esté lista.
+        run: echo "Deploying to PRODUCTION..."
+
+      - name: Smoke test (placeholder)
+        run: echo "Running smoke tests against production..."

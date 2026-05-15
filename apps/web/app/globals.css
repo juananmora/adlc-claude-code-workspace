@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * IRON DECK brand palette — metalera oscura.
+ * - Negro profundo #0a0a0a como fondo base.
+ * - Blanco hueso #f5e8d0 como texto/contraste cálido.
+ * - Rojo sangre #c00 / #8b0000 como acento.
+ * - Gris ceniza para texto secundario.
+ *
+ * El tema oscuro es el default del root: no hay subtema claro.
+ * La sección /albums mantiene su propio aspecto definido en su layout
+ * (compatible con estas mismas variables --iron-* y --metal-*).
+ */
+
+@layer base {
+  :root {
+    /* Brand tokens IRON DECK */
+    --iron-bg: #0a0a0a;
+    --iron-bg-soft: #141414;
+    --iron-bone: #f5e8d0;
+    --iron-ash: #7a7a7a;
+    --iron-red: #c00;
+    --iron-red-dark: #8b0000;
+
+    /* Alias compatibilidad con /albums (mismas tonalidades) */
+    --metal-bg: #0a0a0a;
+    --metal-bg-soft: #141414;
+    --metal-blood: #c00;
+    --metal-blood-dark: #8b0000;
+    --metal-bone: #f5e8d0;
+    --metal-ash: #7a7a7a;
+
+    /* shadcn tokens — mapeados a la paleta IRON DECK (HSL) */
+    --background: 0 0% 4%; /* #0a0a0a */
+    --foreground: 40 65% 89%; /* #f5e8d0 blanco hueso */
+    --card: 0 0% 4%;
+    --card-foreground: 40 65% 89%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 40 65% 89%;
+
+    /* primary = rojo sangre (CTAs sólidos) */
+    --primary: 0 100% 40%; /* #c00 */
+    --primary-foreground: 40 65% 89%;
+
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 40 65% 89%;
+
+    --muted: 0 0% 8%;
+    --muted-foreground: 0 0% 48%; /* gris ceniza */
+
+    --accent: 0 100% 27%; /* #8b0000 rojo sangre oscuro */
+    --accent-foreground: 40 65% 89%;
+
+    --destructive: 0 100% 40%; /* #c00 */
+    --destructive-foreground: 40 65% 89%;
+
+    --border: 0 0% 16%; /* stone-800-ish */
+    --input: 0 0% 16%;
+    --ring: 0 100% 40%; /* foco rojo sangre */
+    --radius: 0.25rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    color-scheme: dark;
+    background-color: var(--iron-bg);
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: 0;
+  }
+  h1 {
+    font-weight: 900;
+  }
+  h2 {
+    font-weight: 700;
+  }
+  /* Selección con rojo sangre */
+  ::selection {
+    background-color: var(--iron-red);
+    color: var(--iron-bone);
+  }
+}
+
+@layer utilities {
+  .text-iron-red {
+    color: var(--iron-red);
+  }
+  .bg-iron-red {
+    background-color: var(--iron-red);
+  }
+  .bg-iron-red-dark {
+    background-color: var(--iron-red-dark);
+  }
+  .border-iron-red {
+    border-color: var(--iron-red);
+  }
+  .text-iron-bone {
+    color: var(--iron-bone);
+  }
+  .bg-iron-bg {
+    background-color: var(--iron-bg);
+  }
+  .bg-iron-bg-soft {
+    background-color: var(--iron-bg-soft);
+  }
+}

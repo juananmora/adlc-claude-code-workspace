@@ -1,0 +1,2 @@
+- [Landing zone is Azure (azurerm ~> 4.0)](project_landing_zone_azure.md) — IaC ya no es agnóstica; recursos reales Container Apps + Azure SQL privado + Key Vault + Static Web App.
+- [Terraform CLI no instalado](feedback_terraform_not_installed.md) — verificar `terraform version` antes de prometer fmt/validate; no inventar resultados.

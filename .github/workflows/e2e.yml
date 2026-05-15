@@ -1,0 +1,124 @@
+# E2E workflow — levanta API + Web reales y corre Playwright contra ellos.
+# Aislado del CI principal porque es más lento y requiere dos servicios en background.
+name: E2E
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'apps/api/**'
+      - '.github/workflows/e2e.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'apps/api/**'
+      - '.github/workflows/e2e.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      # La web SSR-fetchea contra la API; debe apuntar al servicio local.
+      NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:4000
+      API_BASE_URL: http://127.0.0.1:4000
+      PLAYWRIGHT_BASE_URL: http://127.0.0.1:3001
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # --- API ---
+      - name: Install API deps
+        working-directory: apps/api
+        run: npm ci
+
+      - name: Build API
+        working-directory: apps/api
+        run: npm run build
+
+      - name: Start API (background)
+        working-directory: apps/api
+        run: |
+          nohup npm start > ../../api.log 2>&1 &
+          echo $! > ../../api.pid
+
+      - name: Wait for API /health
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:4000/health >/dev/null 2>&1; then
+              echo "API up"; exit 0
+            fi
+            sleep 1
+          done
+          echo "API failed to start"; tail -n 200 api.log; exit 1
+
+      # --- Web ---
+      - name: Install Web deps
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Build Web
+        working-directory: apps/web
+        run: npm run build
+
+      - name: Install Playwright browser
+        working-directory: apps/web
+        run: npx playwright install --with-deps chromium
+
+      - name: Start Web (background, port 3001)
+        working-directory: apps/web
+        run: |
+          nohup npx next start -p 3001 > ../../web.log 2>&1 &
+          echo $! > ../../web.pid
+
+      - name: Wait for Web
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3001/ >/dev/null 2>&1; then
+              echo "Web up"; exit 0
+            fi
+            sleep 1
+          done
+          echo "Web failed to start"; tail -n 200 web.log; exit 1
+
+      - name: Run Playwright
+        working-directory: apps/web
+        run: npm run test:e2e
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7
+
+      - name: Upload service logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-logs
+          path: |
+            api.log
+            web.log
+          retention-days: 7
+
+      - name: Stop services
+        if: always()
+        run: |
+          [ -f api.pid ] && kill "$(cat api.pid)" || true
+          [ -f web.pid ] && kill "$(cat web.pid)" || true

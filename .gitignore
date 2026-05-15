@@ -1,0 +1,36 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+*.tfvars
+!*.tfvars.example
+
+# Node
+node_modules/
+dist/
+build/
+.next/
+out/
+
+# Test / coverage
+.coverage
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Local debug scripts
+fetch-err.ps1
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,13 @@
+# Copia este fichero a terraform.tfvars y ajusta los valores.
+# IMPORTANTE: terraform.tfvars NO se sube al repositorio (debe estar en .gitignore).
+# No incluyas secretos aqui; las credenciales se generan con random_password y se almacenan en Key Vault.
+
+project_name             = "byteforge"
+environment              = "dev"
+location                 = "westeurope"
+subscription_id          = "00000000-0000-0000-0000-000000000000"
+azuread_admin_login      = "sql-admins-dev"
+azuread_admin_object_id  = "00000000-0000-0000-0000-000000000000"
+ops_group_object_id      = ""
+readonly_group_object_id = ""
+ci_principal_object_id   = ""
