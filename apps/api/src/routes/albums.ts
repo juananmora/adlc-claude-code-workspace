@@ -7,12 +7,14 @@ const listQuerySchema = {
   properties: {
     q: { type: "string", maxLength: 200 },
     band: { type: "string", maxLength: 100 },
+    genre: { type: "string", maxLength: 50 },
   },
 } as const;
 
 interface ListQuery {
   q?: string;
   band?: string;
+  genre?: string;
 }
 
 const idParamSchema = {
@@ -33,8 +35,8 @@ export const albumsRoutes: FastifyPluginAsync = async (app: FastifyInstance) => 
     "/albums",
     { schema: { querystring: listQuerySchema } },
     async (request) => {
-      const { q, band } = request.query;
-      const data = findAlbums({ q, band });
+      const { q, band, genre } = request.query;
+      const data = findAlbums({ q, band, genre });
       return data;
     },
   );

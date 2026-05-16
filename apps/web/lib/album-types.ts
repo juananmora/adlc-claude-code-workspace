@@ -80,3 +80,20 @@ export const BANDS: readonly string[] = [
 ] as const;
 
 export type Band = (typeof BANDS)[number];
+
+/**
+ * Lista canónica de géneros del catálogo. Mirror manual del conjunto único
+ * presente en `apps/api/src/data/albums.ts`. Mantén orden alfabético y
+ * coincidencia EXACTA con los valores que devuelve la API en `album.genre`
+ * (filtro exact-match server-side).
+ */
+export const GENRES = [
+  "Hard Rock",
+  "Heavy Metal",
+  "Power Metal",
+  "Progressive Metal",
+  "Symphonic Metal",
+  "Thrash Metal",
+] as const;
+
+export type Genre = (typeof GENRES)[number];

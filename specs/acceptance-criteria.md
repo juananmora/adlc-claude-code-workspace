@@ -129,3 +129,39 @@
 
 ### Reviewer
 - [x] Skill `review-pr` ejecutada. Veredicto: **APROBAR con observaciones no bloqueantes**. Reporte en `reports/iter-4/reviewer.md`.
+
+## Filtro por género (iteración 5)
+
+### API (backend)
+- [x] `GET /albums` acepta query param `genre`. Schema Fastify en `apps/api/src/routes/albums.ts:8-10` con `maxLength: 50`.
+- [x] `findAlbums({ genre })` filtra por coincidencia exacta y combinable con `q`/`band`. Verificado por tests vitest.
+- [x] Constante `GENRES` exportada desde `apps/api/src/data/albums.ts`. 6 géneros únicos ordenados.
+- [x] 4 tests vitest nuevos en `albums.test.ts`: solo género, género+banda, género+q, género desconocido.
+- [x] Suite vitest backend completa verde: **102/102** (10 albums + 83 albums-review + 9 products).
+
+### Frontend
+- [x] `apps/web/lib/album-types.ts` exporta `GENRES` (6 géneros) + tipo `Genre`.
+- [x] `apps/web/lib/albums-api.ts` propaga `genre` en la URL excluyendo `"all"` vía `buildUrl`.
+- [x] `apps/web/components/albums-grid.tsx`: estado `genre`, fila de chips con `role="group" aria-label="Filtrar por género"`, chips con `aria-pressed`, `data-testid="genre-chip-<slug>"`. Estilo metalero (`bg-[var(--metal-blood)]/15`, mayúsculas, tracking).
+- [x] Click en chip aplica filtro con debounce 250ms del buscador (mismo `useEffect`).
+- [x] Click en chip activo lo deselecciona (vuelve a "all").
+- [x] "Limpiar filtros" resetea `genre` (los dos botones de limpieza).
+- [x] Tracklist intacto, resto de página intacta. tsc verde sin output.
+
+### Tests E2E
+- [x] 4 nuevos casos en `apps/web/e2e/albums.spec.ts` describe "filtro por género": chip exclusivo, deselección, combinación con buscador, "Limpiar filtros".
+- [x] Tests E2E previos siguen verdes (incluidos los 6 de crítica de iter-4).
+- [x] Suite Playwright completa verde con `--workers=1`: **28/28 passed (1.4m)**.
+
+### Smoke real (Chrome DevTools MCP)
+- [x] API en puerto 4000 vivo (`Get-NetTCPConnection`).
+- [x] Web en puerto 3000 vivo.
+- [x] `/albums` cargado, click en chip "THRASH METAL" desde uid=1_26.
+- [x] Tras click: contador "4 RESULTADOS", `reqid=36 GET http://localhost:4000/albums?genre=Thrash+Metal [200]`.
+- [x] 0 errores 4xx/5xx en network (36 requests).
+- [x] 0 errores en consola.
+- [x] `smoke-genre-filter.png` guardada en raíz.
+
+### Cierre
+- [x] Spec con todos los criterios marcados.
+- [x] Commit estructurado y push a `origin/main`.

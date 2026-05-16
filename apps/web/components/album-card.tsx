@@ -16,6 +16,7 @@ interface AlbumCardProps {
  * Atributos E2E (NO TOCAR):
  * - data-testid="album-card"
  * - data-band="<band>" (filtro exact-match por banda).
+ * - data-genre="<genre>" (filtro exact-match por género, iter-5).
  * - El <Link> mantiene `aria-label="Ver detalle de <título>"`,
  *   selector que usan los tests para entrar a la ficha.
  */
@@ -25,6 +26,7 @@ export function AlbumCard({ album }: AlbumCardProps) {
       data-testid="album-card"
       data-album-id={album.id}
       data-band={album.band}
+      data-genre={album.genre}
       className="group relative flex h-full flex-col overflow-hidden border border-stone-800 bg-black transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[var(--metal-blood)] hover:shadow-[0_0_0_1px_rgba(192,0,0,0.4),0_25px_60px_-20px_rgba(192,0,0,0.5)]"
     >
       <Link

@@ -22,7 +22,10 @@
       "WebFetch(domain:www.allmusic.com)",
       "WebFetch(domain:www.rollingstone.com)",
       "mcp__chrome-devtools-mcp__list_network_requests",
-      "Bash(powershell *)"
+      "Bash(powershell *)",
+      "Bash(git commit -m ' *)",
+      "PowerShell(Get-NetTCPConnection *)",
+      "mcp__chrome-devtools-mcp__take_snapshot"
     ]
   }
 }

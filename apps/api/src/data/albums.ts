@@ -487,6 +487,7 @@ export const albums: AlbumWithoutReview[] = [
 export interface FindAlbumsOptions {
   q?: string;
   band?: string;
+  genre?: string;
 }
 
 /**
@@ -502,11 +503,16 @@ function withReview(album: AlbumWithoutReview): Album {
   return { ...album, review };
 }
 
-export function findAlbums({ q, band }: FindAlbumsOptions = {}): Album[] {
+export const GENRES: readonly string[] = Array.from(
+  new Set(albums.map((a) => a.genre)),
+).sort();
+
+export function findAlbums({ q, band, genre }: FindAlbumsOptions = {}): Album[] {
   const normalized = q?.trim().toLowerCase() ?? "";
   return albums
     .filter((album) => {
       if (band && album.band !== band) return false;
+      if (genre && genre !== "all" && album.genre !== genre) return false;
       if (!normalized) return true;
       const haystack = [album.title, album.description, ...album.tracks]
         .join(" ")

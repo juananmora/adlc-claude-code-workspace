@@ -11,13 +11,27 @@ import {
 } from "@/components/ui/select";
 import { AlbumCard } from "@/components/album-card";
 import { fetchAlbums } from "@/lib/albums-api";
-import { BANDS, type Album } from "@/lib/album-types";
+import { BANDS, GENRES, type Album } from "@/lib/album-types";
 
 interface AlbumsGridProps {
   initialAlbums: Album[];
 }
 
 type BandFilter = string | "all";
+type GenreFilter = string | "all";
+
+/**
+ * Estilos de los chips de género. Activo en rojo sangre, inactivo en negro
+ * con borde stone. Sin radius para mantener el patrón industrial del resto
+ * de controles.
+ */
+function chipClass(active: boolean): string {
+  const base =
+    "h-9 select-none border px-3 text-[0.7rem] font-bold uppercase tracking-[0.22em] transition-colors";
+  return active
+    ? `${base} border-[var(--metal-blood)] bg-[var(--metal-blood)]/15 text-[var(--metal-bone)]`
+    : `${base} border-stone-700 bg-black/40 text-stone-300 hover:border-stone-500 hover:text-stone-100`;
+}
 
 /**
  * Grid de discos con filtros (banda + búsqueda libre).
@@ -36,6 +50,7 @@ export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
   const [albums, setAlbums] = useState<Album[]>(initialAlbums);
   const [search, setSearch] = useState("");
   const [band, setBand] = useState<BandFilter>("all");
+  const [genre, setGenre] = useState<GenreFilter>("all");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +63,7 @@ export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
         const data = await fetchAlbums({
           q: search || undefined,
           band,
+          genre,
           signal: controller.signal,
         });
         setAlbums(data);
@@ -62,9 +78,10 @@ export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
       controller.abort();
       clearTimeout(handle);
     };
-  }, [search, band]);
+  }, [search, band, genre]);
 
-  const hasFilters = search.trim().length > 0 || band !== "all";
+  const hasFilters =
+    search.trim().length > 0 || band !== "all" || genre !== "all";
   const resultCount = useMemo(() => albums.length, [albums]);
 
   return (
@@ -97,7 +114,8 @@ export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
         </div>
       </div>
 
-      <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="mt-8 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-center">
           {/* Buscador industrial: input nativo, negro, borde fino, sin radius. */}
           <div className="relative w-full md:max-w-sm">
@@ -158,12 +176,45 @@ export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
             onClick={() => {
               setSearch("");
               setBand("all");
+              setGenre("all");
             }}
             className="self-start text-xs font-bold uppercase tracking-[0.28em] text-stone-300 underline-offset-4 transition-colors hover:text-[var(--metal-blood)] hover:underline md:self-auto"
           >
             Limpiar filtros
           </button>
         )}
+        </div>
+
+        {/* Fila de chips de género. Activo se conmuta clic a clic. */}
+        <div
+          role="group"
+          aria-label="Filtrar por género"
+          className="mt-4 flex flex-wrap items-center gap-2"
+        >
+          <span className="text-[0.65rem] uppercase tracking-[0.32em] text-stone-500">
+            Género
+          </span>
+          <button
+            type="button"
+            aria-pressed={genre === "all"}
+            onClick={() => setGenre("all")}
+            className={chipClass(genre === "all")}
+          >
+            Todos
+          </button>
+          {GENRES.map((g) => (
+            <button
+              key={g}
+              type="button"
+              aria-pressed={genre === g}
+              onClick={() => setGenre(genre === g ? "all" : g)}
+              data-testid={`genre-chip-${g.replace(/\s+/g, "-").toLowerCase()}`}
+              className={chipClass(genre === g)}
+            >
+              {g}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="mt-12">
@@ -193,6 +244,7 @@ export function AlbumsGrid({ initialAlbums }: AlbumsGridProps) {
                 onClick={() => {
                   setSearch("");
                   setBand("all");
+                  setGenre("all");
                 }}
                 className="mt-5 text-xs font-bold uppercase tracking-[0.28em] text-stone-200 underline-offset-4 transition-colors hover:text-[var(--metal-blood)] hover:underline"
               >

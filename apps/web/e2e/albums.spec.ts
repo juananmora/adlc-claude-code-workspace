@@ -283,3 +283,176 @@ test.describe("ficha de álbum — sección de crítica", () => {
     });
   }
 });
+
+/**
+ * Iteración 5 — Filtro por género en /albums.
+ *
+ * Cada chip de género se renderiza como:
+ *   <button type="button" aria-pressed={isActive}
+ *           data-testid="genre-chip-<slug-lowercase>">Thrash Metal</button>
+ *
+ * Dentro de un <div role="group" aria-label="Filtrar por género">.
+ *
+ * El chip especial "Todos" no tiene data-testid; lo localizamos por rol y
+ * nombre dentro del grupo. Cada card lleva `data-genre="<Género>"`.
+ *
+ * Reusamos el beforeEach del archivo que ya garantiza /albums cargado con
+ * al menos 1 card visible.
+ */
+test.describe("filtro por género", () => {
+  test("click en chip 'Thrash Metal' deja solo cards con data-genre='Thrash Metal'", async ({
+    page,
+  }) => {
+    const respPromise = page.waitForResponse(
+      (r) =>
+        r.url().includes("/albums?") &&
+        r.url().includes("genre=Thrash") &&
+        r.status() === 200,
+      { timeout: 8_000 },
+    );
+
+    const chip = page.getByTestId("genre-chip-thrash-metal");
+    await chip.click();
+    await respPromise;
+
+    const cards = page.getByTestId("album-card");
+    await expect
+      .poll(async () => cards.count(), { timeout: 5_000 })
+      .toBeGreaterThan(0);
+
+    const count = await cards.count();
+    expect(count).toBeGreaterThan(0);
+    for (let i = 0; i < count; i++) {
+      const genre = await cards.nth(i).getAttribute("data-genre");
+      expect(genre, `card[${i}] data-genre`).toBe("Thrash Metal");
+    }
+
+    await expect(chip).toHaveAttribute("aria-pressed", "true");
+  });
+
+  test("click otra vez en el mismo chip lo deselecciona y restablece el listado completo", async ({
+    page,
+  }) => {
+    const chip = page.getByTestId("genre-chip-thrash-metal");
+
+    // Primera activación.
+    const activatePromise = page.waitForResponse(
+      (r) =>
+        r.url().includes("/albums?") &&
+        r.url().includes("genre=Thrash") &&
+        r.status() === 200,
+      { timeout: 8_000 },
+    );
+    await chip.click();
+    await activatePromise;
+    await expect(chip).toHaveAttribute("aria-pressed", "true");
+
+    const filteredCount = await page.getByTestId("album-card").count();
+    expect(filteredCount).toBeGreaterThan(0);
+
+    // Segunda activación: desactiva, vuelve a "all". El componente excluye
+    // `genre=all` de la URL via buildUrl, así que la nueva request no lleva
+    // `genre=`. Esperamos por el cambio visible (aria-pressed) que sigue al
+    // re-fetch tras el debounce de 250ms, en lugar de filtrar por red — el
+    // race entre click y waitForResponse no es estable con debounce.
+    await chip.click();
+    await expect(chip).toHaveAttribute("aria-pressed", "false");
+
+    const genreGroup = page.getByRole("group", {
+      name: /Filtrar por género/i,
+    });
+    const todosBtn = genreGroup.getByRole("button", { name: /^Todos$/ });
+    await expect(todosBtn).toHaveAttribute("aria-pressed", "true");
+
+    // El dataset completo tiene 20+ discos según fixtures. Tras el debounce
+    // (250ms) y el re-fetch, el grid debe expandirse. Esperamos por la
+    // cota inferior para no acoplarnos al número exacto de seeds.
+    const cards = page.getByTestId("album-card");
+    await expect
+      .poll(async () => cards.count(), { timeout: 8_000 })
+      .toBeGreaterThanOrEqual(20);
+  });
+
+  test("combinar género Thrash Metal + buscador 'Master' devuelve solo Master of Puppets", async ({
+    page,
+  }) => {
+    const chip = page.getByTestId("genre-chip-thrash-metal");
+    const chipResp = page.waitForResponse(
+      (r) =>
+        r.url().includes("/albums?") &&
+        r.url().includes("genre=Thrash") &&
+        r.status() === 200,
+      { timeout: 8_000 },
+    );
+    await chip.click();
+    await chipResp;
+
+    const searchResp = page.waitForResponse(
+      (r) =>
+        r.url().includes("/albums?") &&
+        r.url().toLowerCase().includes("q=master") &&
+        r.url().includes("genre=Thrash") &&
+        r.status() === 200,
+      { timeout: 8_000 },
+    );
+    await page.getByLabel("Buscar discos").fill("Master");
+    await searchResp;
+
+    const cards = page.getByTestId("album-card");
+    await expect
+      .poll(async () => cards.count(), { timeout: 5_000 })
+      .toBe(1);
+
+    const onlyCard = cards.first();
+    const title = await onlyCard
+      .getByRole("link", { name: /Ver detalle de /i })
+      .getAttribute("aria-label");
+    expect(title ?? "").toMatch(/Master of Puppets/i);
+  });
+
+  test("'Limpiar filtros' resetea género además de banda y búsqueda", async ({
+    page,
+  }) => {
+    const chip = page.getByTestId("genre-chip-thrash-metal");
+    const chipResp = page.waitForResponse(
+      (r) =>
+        r.url().includes("/albums?") &&
+        r.url().includes("genre=Thrash") &&
+        r.status() === 200,
+      { timeout: 8_000 },
+    );
+    await chip.click();
+    await chipResp;
+
+    const searchInput = page.getByLabel("Buscar discos");
+    const searchResp = page.waitForResponse(
+      (r) =>
+        r.url().includes("/albums?") &&
+        r.url().toLowerCase().includes("q=fade") &&
+        r.status() === 200,
+      { timeout: 8_000 },
+    );
+    await searchInput.fill("fade");
+    await searchResp;
+
+    // Limpiar filtros: el botón aparece cuando hay filtros activos. El reset
+    // dispara una request agrupada tras el debounce; en lugar de filtrar por
+    // red (race condition con waitForResponse armado tras el click),
+    // verificamos el cambio visible: input vacío y chip "Todos" pressed.
+    await page.getByRole("button", { name: /Limpiar filtros/i }).click();
+
+    await expect(searchInput).toHaveValue("");
+
+    const genreGroup = page.getByRole("group", {
+      name: /Filtrar por género/i,
+    });
+    const todosBtn = genreGroup.getByRole("button", { name: /^Todos$/ });
+    await expect(todosBtn).toHaveAttribute("aria-pressed", "true");
+    await expect(chip).toHaveAttribute("aria-pressed", "false");
+
+    const cards = page.getByTestId("album-card");
+    await expect
+      .poll(async () => cards.count(), { timeout: 5_000 })
+      .toBeGreaterThanOrEqual(20);
+  });
+});

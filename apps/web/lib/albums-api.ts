@@ -24,11 +24,13 @@ function buildUrl(path: string, params?: Record<string, string | undefined>) {
 
 export async function fetchAlbums(options: {
   band?: string | "all";
+  genre?: string | "all";
   q?: string;
   signal?: AbortSignal;
 } = {}): Promise<Album[]> {
   const url = buildUrl("/albums", {
     band: options.band,
+    genre: options.genre,
     q: options.q,
   });
   const res = await fetch(url, {

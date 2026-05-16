@@ -74,6 +74,60 @@ describe("GET /albums", () => {
     const body = res.json() as Album[];
     expect(body).toEqual([]);
   });
+
+  it("filters by genre=Thrash Metal returning only thrash albums", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: "/albums?genre=Thrash%20Metal",
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json() as Album[];
+    expect(body.length).toBeGreaterThanOrEqual(3);
+    for (const album of body) {
+      expect(album.genre).toBe("Thrash Metal");
+    }
+    const titles = body.map((a) => a.title);
+    expect(titles).toContain("Master of Puppets");
+    expect(titles).toContain("Ride the Lightning");
+    expect(titles).toContain("Rust in Peace");
+    expect(titles).toContain("Reign in Blood");
+  });
+
+  it("combines genre=Heavy Metal + band=Iron Maiden returning only the 3 Iron Maiden albums", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: "/albums?genre=Heavy%20Metal&band=Iron%20Maiden",
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json() as Album[];
+    expect(body.length).toBe(3);
+    for (const album of body) {
+      expect(album.band).toBe("Iron Maiden");
+      expect(album.genre).toBe("Heavy Metal");
+    }
+  });
+
+  it("combines genre=Thrash Metal + q=Master returning only Master of Puppets", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: "/albums?genre=Thrash%20Metal&q=Master",
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json() as Album[];
+    expect(body.length).toBe(1);
+    expect(body[0]?.title).toBe("Master of Puppets");
+    expect(body[0]?.genre).toBe("Thrash Metal");
+  });
+
+  it("returns [] for an unknown genre", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: "/albums?genre=Generodesconocido",
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json() as Album[];
+    expect(body).toEqual([]);
+  });
 });
 
 describe("GET /albums/:id", () => {
