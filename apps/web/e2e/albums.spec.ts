@@ -116,3 +116,170 @@ test("ficha desde card muestra título h1 + tracklist con <ol> y >=5 <li>", asyn
     .poll(async () => items.count(), { timeout: 5_000 })
     .toBeGreaterThanOrEqual(5);
 });
+
+/**
+ * Iteración 4 — Sección de crítica en `/albums/[id]`.
+ *
+ * Validamos contra dos fichas distintas para confirmar que la estructura
+ * aplica a todo el dataset y no solo al primer álbum sembrado.
+ *
+ * Estructura esperada en la página:
+ *   <section aria-labelledby="review-title">
+ *     <h2 id="review-title">Crítica</h2>
+ *     ... badge "X.X / 10"
+ *     <h3>Contexto histórico</h3>
+ *     <h3>Sonido y producción</h3>
+ *     <h3>Legado y recepción</h3>
+ *     ... highlights con <strong>{track}</strong>
+ *     ... <figure><blockquote/><figcaption><cite/><a target="_blank" rel="noopener noreferrer">Fuente</a></figcaption></figure>
+ *   </section>
+ *
+ * El tracklist sigue intacto: <h2 id="tracklist-title">Tracklist</h2>.
+ */
+
+const REVIEW_ALBUM_IDS = [
+  "metallica-master-of-puppets",
+  "iron-maiden-number-of-the-beast",
+] as const;
+
+test.describe("ficha de álbum — sección de crítica", () => {
+  test("review section visible en /albums/metallica-master-of-puppets", async ({
+    page,
+  }) => {
+    await page.goto("/albums/metallica-master-of-puppets");
+
+    await expect(
+      page.getByRole("heading", { level: 2, name: /crítica/i }),
+    ).toBeVisible();
+  });
+
+  test("3 subsecciones h3: contexto histórico, sonido y producción, legado y recepción", async ({
+    page,
+  }) => {
+    await page.goto("/albums/metallica-master-of-puppets");
+
+    await expect(
+      page.getByRole("heading", { level: 3, name: /contexto histórico/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 3, name: /sonido y producción/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 3, name: /legado y recepción/i }),
+    ).toBeVisible();
+  });
+
+  test("badge de puntuación con formato X.X / 10", async ({ page }) => {
+    await page.goto("/albums/metallica-master-of-puppets");
+
+    const reviewSection = page.locator("section[aria-labelledby='review-title']");
+    await expect(reviewSection).toBeVisible();
+
+    // El badge se renderiza en dos spans (el score y el "/ 10"). Buscamos
+    // sobre el texto completo de la sección con un regex tolerante a
+    // espacios alrededor del slash.
+    const text = (await reviewSection.innerText()).replace(/\s+/g, " ");
+    expect(text).toMatch(/\d(?:\.\d)?\s*\/\s*10/);
+  });
+
+  test(">=2 quotes con cite y enlaces Fuente bien securizados", async ({
+    page,
+  }) => {
+    await page.goto("/albums/metallica-master-of-puppets");
+
+    const reviewSection = page.locator(
+      "section[aria-labelledby='review-title']",
+    );
+
+    const figures = reviewSection.locator("figure");
+    const blockquotes = figures.locator("blockquote");
+    const cites = figures.locator("figcaption cite");
+
+    await expect
+      .poll(async () => blockquotes.count(), { timeout: 5_000 })
+      .toBeGreaterThanOrEqual(2);
+    await expect
+      .poll(async () => cites.count(), { timeout: 5_000 })
+      .toBeGreaterThanOrEqual(2);
+
+    // Cada <a> en figcaption debe tener target="_blank" y rel con noopener.
+    const sourceLinks = figures.locator("figcaption a");
+    const linkCount = await sourceLinks.count();
+    expect(linkCount).toBeGreaterThanOrEqual(2);
+
+    for (let i = 0; i < linkCount; i++) {
+      const link = sourceLinks.nth(i);
+      const target = await link.getAttribute("target");
+      const rel = await link.getAttribute("rel");
+      const href = await link.getAttribute("href");
+
+      expect(target, `figure[${i}] target`).toBe("_blank");
+      expect(rel ?? "", `figure[${i}] rel`).toContain("noopener");
+      expect(href ?? "", `figure[${i}] href`).toMatch(/^https?:\/\//);
+    }
+  });
+
+  test("tracklist sigue intacto junto a la sección de crítica", async ({
+    page,
+  }) => {
+    await page.goto("/albums/metallica-master-of-puppets");
+
+    const tracklistHeading = page.locator("h2#tracklist-title");
+    await expect(tracklistHeading).toBeVisible();
+    await expect(tracklistHeading).toHaveText(/tracklist/i);
+  });
+
+  for (const albumId of REVIEW_ALBUM_IDS) {
+    test(`crítica completa también renderiza en /albums/${albumId}`, async ({
+      page,
+    }) => {
+      await page.goto(`/albums/${albumId}`);
+
+      // 1. Heading "Crítica" visible.
+      await expect(
+        page.getByRole("heading", { level: 2, name: /crítica/i }),
+      ).toBeVisible();
+
+      // 2. Las 3 subsecciones h3.
+      await expect(
+        page.getByRole("heading", { level: 3, name: /contexto histórico/i }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("heading", { level: 3, name: /sonido y producción/i }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("heading", { level: 3, name: /legado y recepción/i }),
+      ).toBeVisible();
+
+      // 3. Badge X.X / 10.
+      const reviewSection = page.locator(
+        "section[aria-labelledby='review-title']",
+      );
+      const text = (await reviewSection.innerText()).replace(/\s+/g, " ");
+      expect(text).toMatch(/\d(?:\.\d)?\s*\/\s*10/);
+
+      // 4. >=2 figures con blockquote + cite, y enlaces "Fuente" seguros.
+      const figures = reviewSection.locator("figure");
+      const blockquotes = figures.locator("blockquote");
+      const cites = figures.locator("figcaption cite");
+      await expect
+        .poll(async () => blockquotes.count(), { timeout: 5_000 })
+        .toBeGreaterThanOrEqual(2);
+      await expect
+        .poll(async () => cites.count(), { timeout: 5_000 })
+        .toBeGreaterThanOrEqual(2);
+
+      const sourceLinks = figures.locator("figcaption a");
+      const linkCount = await sourceLinks.count();
+      expect(linkCount).toBeGreaterThanOrEqual(2);
+      for (let i = 0; i < linkCount; i++) {
+        const link = sourceLinks.nth(i);
+        expect(await link.getAttribute("target")).toBe("_blank");
+        expect((await link.getAttribute("rel")) ?? "").toContain("noopener");
+      }
+
+      // 5. Tracklist sigue presente.
+      await expect(page.locator("h2#tracklist-title")).toBeVisible();
+    });
+  }
+});

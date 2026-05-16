@@ -3,7 +3,7 @@ name: security-engineer
 description: Revisa seguridad cloud, IaC, dependencias, secretos, IAM, exposición de red, contenedores y findings críticos.
 tools: Read, Glob, Grep, Bash, Edit, MultiEdit, Write
 model: inherit
-permissionMode: plan
+permissionMode: acceptEdits
 maxTurns: 20
 skills:
   - security-review

@@ -3,7 +3,7 @@ name: reviewer
 description: Revisa entregables, PRs, criterios de aceptación, riesgos, evidencias y cumplimiento de la spec antes de aprobación humana.
 tools: Read, Glob, Grep, Bash, Edit, Write
 model: inherit
-permissionMode: plan
+permissionMode: acceptEdits
 maxTurns: 18
 skills:
   - review-pr

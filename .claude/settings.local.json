@@ -17,7 +17,12 @@
       "Bash(GH_HOST=github.com gh auth switch --user juananmora)",
       "Bash(gh repo *)",
       "Bash(gh api *)",
-      "WebFetch(domain:martinfowler.com)"
+      "WebFetch(domain:martinfowler.com)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:www.allmusic.com)",
+      "WebFetch(domain:www.rollingstone.com)",
+      "mcp__chrome-devtools-mcp__list_network_requests",
+      "Bash(powershell *)"
     ]
   }
 }

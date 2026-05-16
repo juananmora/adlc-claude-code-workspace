@@ -1,9 +1,9 @@
 ---
 name: adlc-orchestrator
 description: Orquesta proyectos ADLC/SDD. Úsalo cuando una solicitud de desarrollo deba convertirse en especificación, plan, selección de agentes, tareas, validaciones y puntos de aprobación humana.
-tools: Read, Glob, Grep, Bash, Edit, MultiEdit, Write, TodoWrite
+tools: Read, Glob, Grep, Bash, Edit, MultiEdit, Write, TodoWrite, Task, WebFetch
 model: inherit
-permissionMode: plan
+permissionMode: acceptEdits
 maxTurns: 60
 skills:
   - create-prd

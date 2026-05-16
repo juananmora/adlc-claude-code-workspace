@@ -1,4 +1,13 @@
 import type { Album } from "../types/album.js";
+import { albumReviews } from "./album-reviews.js";
+
+/**
+ * Forma del álbum SIN la crítica curada: el array maestro vive con esta
+ * forma para no inflar las 20 entradas con el bloque `review`. El campo
+ * `review` se inyecta en `findAlbums()` y `findAlbumById()` desde el dataset
+ * `albumReviews`, así seguimos devolviendo un `Album` completo desde la API.
+ */
+type AlbumWithoutReview = Omit<Album, "review">;
 
 // Las portadas viven en el frontend bajo `apps/web/public/covers/<slug>.<ext>`.
 // El API devuelve la ruta relativa; el navegador la resuelve contra el dominio
@@ -29,7 +38,7 @@ const COVERS: Record<string, string> = {
 
 const cover = (slug: string) => COVERS[slug] ?? "/covers/placeholder.jpg";
 
-export const albums: Album[] = [
+export const albums: AlbumWithoutReview[] = [
   {
     id: "iron-maiden-number-of-the-beast",
     title: "The Number of the Beast",
@@ -480,18 +489,34 @@ export interface FindAlbumsOptions {
   band?: string;
 }
 
+/**
+ * Empareja un álbum base con su `review` curada. Si por error un id no tiene
+ * review en `album-reviews.ts`, el merge lanza para que el test/CI lo detecte
+ * en lugar de devolver un objeto incompleto al cliente.
+ */
+function withReview(album: AlbumWithoutReview): Album {
+  const review = albumReviews[album.id];
+  if (!review) {
+    throw new Error(`Missing AlbumReview for albumId=${album.id}`);
+  }
+  return { ...album, review };
+}
+
 export function findAlbums({ q, band }: FindAlbumsOptions = {}): Album[] {
   const normalized = q?.trim().toLowerCase() ?? "";
-  return albums.filter((album) => {
-    if (band && album.band !== band) return false;
-    if (!normalized) return true;
-    const haystack = [album.title, album.description, ...album.tracks]
-      .join(" ")
-      .toLowerCase();
-    return haystack.includes(normalized);
-  });
+  return albums
+    .filter((album) => {
+      if (band && album.band !== band) return false;
+      if (!normalized) return true;
+      const haystack = [album.title, album.description, ...album.tracks]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(normalized);
+    })
+    .map(withReview);
 }
 
 export function findAlbumById(id: string): Album | undefined {
-  return albums.find((album) => album.id === id);
+  const base = albums.find((album) => album.id === id);
+  return base ? withReview(base) : undefined;
 }
