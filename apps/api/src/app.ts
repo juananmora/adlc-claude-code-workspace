@@ -4,6 +4,7 @@ import sensible from "@fastify/sensible";
 import { loadConfig, type AppConfig } from "./config.js";
 import { productsRoutes } from "./routes/products.js";
 import { albumsRoutes } from "./routes/albums.js";
+import { gamesRoutes } from "./routes/games.js";
 
 export interface BuildAppOptions {
   config?: AppConfig;
@@ -29,6 +30,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
   await app.register(productsRoutes);
   await app.register(albumsRoutes);
+  await app.register(gamesRoutes);
 
   app.setErrorHandler((error: FastifyError, _request, reply) => {
     const statusCode = error.statusCode ?? 500;

@@ -25,7 +25,17 @@
       "Bash(powershell *)",
       "Bash(git commit -m ' *)",
       "PowerShell(Get-NetTCPConnection *)",
-      "mcp__chrome-devtools-mcp__take_snapshot"
+      "mcp__chrome-devtools-mcp__take_snapshot",
+      "PowerShell(New-Item *)",
+      "WebFetch(domain:es.wikipedia.org)",
+      "PowerShell(Get-Item *)",
+      "WebFetch(domain:w.wiki)",
+      "WebFetch(domain:www.mediawiki.org)",
+      "WebFetch(domain:www.cpc-power.com)",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "PowerShell(\\(Invoke-RestMethod http://localhost:4000/games\\).Count)",
+      "PowerShell(New-TimeSpan *)",
+      "PowerShell(gh auth *)"
     ]
   }
 }
