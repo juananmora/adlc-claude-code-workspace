@@ -12,7 +12,12 @@
       "Bash(node -p \"require\\('./node_modules/next/node_modules/postcss/package.json'\\).version\")",
       "Bash(mkdir -p \"C:\\\\02 - Accenture\\\\03 - Repositorios\\\\adlc-claude-code-workspace\\\\apps\\\\web\\\\public\\\\covers\")",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git -c user.email=juan.a.mora@accenture.com -c user.name=juananmora commit -m ' *)",
+      "Bash(GH_HOST=github.com gh auth switch --user juananmora)",
+      "Bash(gh repo *)",
+      "Bash(gh api *)",
+      "WebFetch(domain:martinfowler.com)"
     ]
   }
 }
