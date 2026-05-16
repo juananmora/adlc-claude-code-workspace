@@ -1,21 +1,17 @@
-import Link from "next/link";
+import { IronDeckHeader } from "@/components/iron-deck-header";
+import { IronDeckFooter } from "@/components/iron-deck-footer";
 
 /**
- * Layout exclusivo para `/albums/*` con estética metalera oscura.
+ * Layout para `/albums/*` con estética metalera oscura + header global.
  *
  * Decisiones:
- * - La fuente Cinzel se carga UNA sola vez en el RootLayout
- *   (`app/layout.tsx`) y se expone como `--font-metal` para todo el
- *   árbol. Aquí simplemente la consumimos vía `[font-family:var(--font-metal)]`
- *   — no se duplica el import.
- * - Este sub-layout sigue siendo independiente del header global IRON
- *   DECK: aquí mostramos un mini-header propio con "Volver al catálogo"
- *   porque `/albums` se concibe como una sección lateral con tono
- *   diferente al catálogo principal.
- * - Fondo negro profundo `#0a0a0a`, texto blanco hueso. Variables
- *   `--metal-*` ya están globalmente definidas en `globals.css`; las
- *   re-declaramos aquí inline para mantener compatibilidad si alguien
- *   carga el árbol fuera del root (no rompe nada).
+ * - Usa el `IronDeckHeader` global (Catálogo / Discos / Games / Contacto)
+ *   en lugar del mini-header "Volver al catálogo" que vivía aquí antes.
+ *   Esto da consistencia de navegación con la home y con `/games`. El
+ *   logo IRON DECK del header global enlaza a `/`, así que la función
+ *   de "volver" queda cubierta sin duplicar UI.
+ * - Variables `--metal-*` se re-declaran inline para mantener
+ *   compatibilidad si el árbol se carga fuera del root (no rompe nada).
  */
 export default function AlbumsLayout({
   children,
@@ -47,25 +43,11 @@ export default function AlbumsLayout({
         }}
       />
 
-      <header className="relative z-10 border-b border-stone-800/80 bg-black/50 backdrop-blur-sm">
-        <div className="container flex h-14 items-center">
-          <Link
-            href="/"
-            className="text-xs font-bold uppercase tracking-[0.28em] text-[var(--metal-bone)] transition-colors hover:text-[var(--metal-blood)]"
-            aria-label="Volver al catálogo principal"
-          >
-            &larr; Volver al catálogo
-          </Link>
-        </div>
-      </header>
-
-      <main className="relative z-10 flex-1">{children}</main>
-
-      <footer className="relative z-10 mt-16 border-t border-stone-800/80 bg-black/50 py-6">
-        <p className="text-center text-[0.65rem] uppercase tracking-[0.32em] text-stone-500">
-          Demo Metal &middot; 2026
-        </p>
-      </footer>
+      <div className="relative z-10 flex flex-1 flex-col">
+        <IronDeckHeader />
+        <main className="flex-1">{children}</main>
+        <IronDeckFooter />
+      </div>
     </div>
   );
 }
