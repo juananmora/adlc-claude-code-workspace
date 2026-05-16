@@ -9,15 +9,52 @@ Plantilla de workspace para Claude Code orientada a un **Agentic Development Lif
 ## Estructura
 
 ```text
+CLAUDE.md                                        # Reglas duras del proyecto (contrato, siempre en contexto)
+README.md                                        # Este documento
+
 .claude/
-  agents/                 # Subagents en Markdown con YAML frontmatter
-  skills/<skill>/SKILL.md # Skills con SKILL.md y YAML frontmatter
-  commands/<cmd>.md       # Slash commands del workspace
-specs/                    # PRD, criterios de aceptación, estrategia QA
-scripts/                  # Validaciones locales (frontmatter, estructura)
-reports/iter-<N>/         # Reportes persistidos por iteración (auditoría)
-docs/                     # Gobierno del workspace
-CLAUDE.md                 # Reglas duras del proyecto (fuente de verdad)
+  settings.local.json                            # Permisos locales de Claude Code
+  agents/                                        # Subagents (Markdown + YAML frontmatter)
+    adlc-orchestrator.md                         # Orquesta las 12 fases ADLC
+    cloud-architect.md                           # Topología cloud, IAM, red
+    terraform-engineer.md                        # Módulos IaC
+    backend-engineer.md                          # APIs y lógica de negocio
+    frontend-engineer.md                         # UI / catálogo
+    cicd-engineer.md                             # Pipelines y despliegues
+    qa-engineer.md                               # Estrategia y tests
+    security-engineer.md                         # GATE Fase 7
+    observability-engineer.md                    # Logs, métricas, trazas, SLOs
+    reviewer.md                                  # GATE Fase 10 (auditoría independiente)
+  skills/                                        # Skills (cada una con su SKILL.md)
+    create-prd/SKILL.md                          # PRD verificable
+    plan-agentic-work/SKILL.md                   # Plan multiagente
+    design-landing-zone/SKILL.md                 # Diseño de landing zone
+    generate-terraform-modules/SKILL.md          # Módulos Terraform
+    generate-product-api/SKILL.md                # API de catálogo
+    create-catalog-ui/SKILL.md                   # UI de catálogo
+    ci-cd-pipeline/SKILL.md                      # Pipelines CI/CD
+    generate-tests/SKILL.md                      # Tests unit/integ/E2E
+    security-review/SKILL.md                     # Revisión de seguridad
+    observability-design/SKILL.md                # Diseño de observabilidad
+    review-pr/SKILL.md                           # Checklist de auditoría final
+  commands/                                      # Slash commands
+    ship.md                                      # /ship: cierre + PR con evidencias
+
+specs/                                           # Especificaciones (fuente de verdad operativa)
+  computer-catalog-landing-zone-prd.md           # PRD del caso de uso
+  acceptance-criteria.md                         # Criterios verificables (checkboxes)
+  qa-strategy.md                                 # Estrategia de pruebas
+
+scripts/
+  validate_claude_workspace.py                   # Valida frontmatter y estructura del workspace
+
+docs/
+  harness-engineering.md                         # Notas internas sobre el harness
+
+reports/iter-<N>/                                # Reportes persistidos por iteración (auditoría retrospectiva)
+
+apps/                                            # Código de aplicación (fuera del alcance agéntico)
+infra/                                           # IaC (fuera del alcance agéntico)
 ```
 
 ---
