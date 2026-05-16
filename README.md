@@ -9,13 +9,13 @@ Plantilla de workspace para Claude Code orientada a un **Agentic Development Lif
 ## Estructura
 
 ```text
-CLAUDE.md                                        # Reglas duras del proyecto (contrato, siempre en contexto)
+CLAUDE.md                                        # Manual completo del flujo ADLC (siempre en contexto)
 README.md                                        # Este documento
 
 .claude/
   settings.local.json                            # Permisos locales de Claude Code
   agents/                                        # Subagents (Markdown + YAML frontmatter)
-    adlc-orchestrator.md                         # Orquesta las 12 fases ADLC
+    adlc-orchestrator.md                         # Stub que apunta a CLAUDE.md (modo aislado para iteraciones grandes)
     cloud-architect.md                           # Topología cloud, IAM, red
     terraform-engineer.md                        # Módulos IaC
     backend-engineer.md                          # APIs y lógica de negocio
@@ -42,8 +42,9 @@ README.md                                        # Este documento
 
 specs/                                           # Especificaciones (fuente de verdad operativa)
   computer-catalog-landing-zone-prd.md           # PRD del caso de uso
-  acceptance-criteria.md                         # Criterios verificables (checkboxes)
+  acceptance-criteria.md                         # Criterios verificables (checkboxes por iteración)
   qa-strategy.md                                 # Estrategia de pruebas
+  iter-5-backlog.md                              # Backlog vivo entre iteraciones
 
 scripts/
   validate_claude_workspace.py                   # Valida frontmatter y estructura del workspace
@@ -53,23 +54,33 @@ docs/
 
 reports/iter-<N>/                                # Reportes persistidos por iteración (auditoría retrospectiva)
 
-apps/                                            # Código de aplicación (fuera del alcance agéntico)
-infra/                                           # IaC (fuera del alcance agéntico)
+apps/                                            # Código de aplicación de demo (catálogo de discos heavy metal)
+  api/                                           # Fastify + TypeScript + Vitest
+  web/                                           # Next.js 15 + React 19 + Tailwind + Playwright
+infra/                                           # IaC (Terraform + azurerm)
 ```
+
+> **Nota sobre el manual.** A partir de iteración 5, el flujo ADLC completo (las 12 fases, reglas duras, anti-patrones, output esperado) vive **solo en `CLAUDE.md`** para que esté siempre en el contexto. El archivo del agente `adlc-orchestrator.md` quedó reducido a un stub que apunta al manual. Esto evita que se "olviden" fases obligatorias cuando Claude principal asume el rol sin invocar al agente.
 
 ---
 
 ## Cómo usarlo
 
 1. Descomprime/clona el repositorio.
-2. Abre Claude Code en esa carpeta.
+2. Abre Claude Code en esa carpeta. `CLAUDE.md` se carga automáticamente como manual.
 3. Ejecuta `/agents` para comprobar los subagents disponibles.
 4. Ejecuta `/skills` para comprobar las skills disponibles.
-5. Pide al orquestador algo como:
+5. Lanza una iniciativa. Dos formas, según el tamaño:
 
-```text
-Use the ADLC orchestrator to plan a landing zone for a computer-store product catalog.
-```
+   ```text
+   # Iniciativa nueva grande (PRD desde cero, varios componentes):
+   Use the ADLC orchestrator to plan a landing zone for a computer-store product catalog.
+
+   # Cambio acotado en algo que ya existe:
+   Añade un filtro por género al listado de discos, end-to-end con tests y smoke.
+   ```
+
+   En el primer caso se invoca el agente `adlc-orchestrator` (aislado). En el segundo, Claude principal asume el rol de orquestador y aplica las mismas 12 fases sin overhead de subagente. Ver tabla "Quién orquesta cada tarea" abajo.
 
 Validación local de la plantilla:
 
@@ -87,11 +98,25 @@ Antes de mirar el flujo, conviene separar tres actores que se confunden a menudo
 
 | Plano | Quién | Qué hace | Cuándo entra |
 |---|---|---|---|
-| **Contrato** | `CLAUDE.md` | Principios, flujo esperado y **reglas duras antes de cerrar**. No ejecuta nada. | Siempre en contexto — Claude Code lo carga automáticamente en cada conversación dentro del repo. |
-| **First responder** | Claude Code en el chat principal | Recibe tu mensaje, decide si responde directo, delega a un agente concreto o invoca al orquestador. | Cada vez que escribes algo. |
-| **Orquestador ADLC** | `adlc-orchestrator` (subagente) | Recorre las 12 fases: spec → plan → ejecución → gates → cierre. | **Solo cuando se le invoca explícitamente** (por ti o por el chat principal). No se auto-arranca. |
+| **Manual** | `CLAUDE.md` | Contiene **las 12 fases completas**, reglas duras, anti-patrones y output esperado. Es el manual operativo del flujo ADLC. No ejecuta nada. | Siempre en contexto — Claude Code lo carga automáticamente en cada conversación dentro del repo. |
+| **First responder** | Claude Code en el chat principal | Recibe tu mensaje, decide si responde directo, asume el rol de orquestador para tareas pequeñas, o invoca al agente `adlc-orchestrator` para iteraciones grandes. | Cada vez que escribes algo. |
+| **Orquestador aislado** | `adlc-orchestrator` (subagente) | Stub que apunta a `CLAUDE.md` y aplica el mismo manual en un contexto aislado con la herramienta `Task`. | **Solo cuando se le invoca explícitamente** y aplica una de las condiciones de la tabla de abajo. No se auto-arranca. |
 
-> **Punto clave:** `CLAUDE.md` **no inicia** la orquestación; **restringe** el comportamiento de quien la conduce. El orquestador no es un daemon — es un subagente que se llama cuando la petición lo justifica. Y `CLAUDE.md` aplica igual a quien cierre la iteración, sea el orquestador, un agente concreto o el chat principal.
+> **Punto clave:** desde iteración 5, el manual ADLC vive **únicamente en `CLAUDE.md`**. El archivo del agente es un stub corto que delega en él. Cuando Claude principal "asume el rol de orquestador" (caso por defecto en tareas pequeñas), aplica las mismas 12 fases — están en su contexto inyectado por el harness.
+
+### Quién orquesta cada tarea
+
+| Situación | Quién orquesta |
+|---|---|
+| PRD desde cero (no existe spec) | Agente `adlc-orchestrator` |
+| > 5 subagentes en paralelo | Agente `adlc-orchestrator` |
+| Bucles de corrección con varios reviewers/qa | Agente `adlc-orchestrator` |
+| Despliegues con gates humanos formales | Agente `adlc-orchestrator` |
+| Feature pequeña (< 5 archivos) con spec ya existente | Claude principal |
+| Bug fix o refactor local | Claude principal |
+| Cambio puntual de documentación | Claude principal |
+
+El flujo es el mismo en ambos casos. Lo único que cambia es el aislamiento del contexto. Si se invoca al agente, su contexto es independiente del chat principal (útil para iteraciones largas donde el contexto se contamina); si Claude principal lo asume, va directo sin overhead.
 
 ### Flujo desde tu petición hasta el PR
 
@@ -119,13 +144,14 @@ flowchart TD
 
 **Cómo se invoca cada actor:**
 
-- `CLAUDE.md` → automático. No haces nada.
+- `CLAUDE.md` → automático. No haces nada. Su contenido se inyecta como contrato del proyecto.
 - Chat principal → tu mensaje en el prompt.
-- Agente concreto o `adlc-orchestrator` → o lo pides tú (*"Use the ADLC orchestrator to…"*, *"Que el reviewer audite esta rama"*) o el chat principal lo delega usando la herramienta `Agent` con `subagent_type=<nombre>` cuando la petición lo justifica.
-- Skills → las invoca el agente activo con la herramienta `Skill`. El orquestador exige explícitamente qué skill ejecutar.
+- Agente concreto → o lo pides tú (*"Que el reviewer audite esta rama"*) o el chat principal lo delega usando la herramienta `Agent` con `subagent_type=<nombre>` cuando la petición lo justifica.
+- `adlc-orchestrator` → se invoca solo cuando aplica la tabla "Quién orquesta cada tarea". Para iteraciones acotadas, Claude principal lo hace directamente sin invocar al agente.
+- Skills → las invoca el agente activo con la herramienta `Skill`. Quien orquesta exige explícitamente qué skill ejecutar.
 - `/ship` → lo escribes tú al final, no se dispara solo.
 
-El workspace está construido alrededor del **orquestador** (`adlc-orchestrator`) porque es quien convierte una petición compleja en spec → criterios verificables → plan → delegación → auditoría → cierre. Pero no es el único camino: para cambios acotados, el chat principal puede ir directo al agente del dominio + gates obligatorios (`security-engineer` y `reviewer` nunca se saltan, lo diga `CLAUDE.md`).
+> El workspace fue diseñado alrededor del agente `adlc-orchestrator`, pero la práctica real demostró que para iteraciones pequeñas la doble planificación (Claude principal + orquestador aislado) añade fricción. Por eso desde iteración 5 el manual está consolidado en `CLAUDE.md` y aplica igual a quien conduzca el flujo. `security-engineer` y `reviewer` nunca se saltan en ningún caso — son obligatorios en TODA iteración salvo justificación explícita.
 
 ### Vista general del flujo
 
@@ -489,6 +515,28 @@ flowchart TB
 > Crear una landing zone cloud para alojar una aplicación de catálogo de productos de una tienda de ordenadores.
 
 Cubre orquestación ADLC, arquitectura cloud, Terraform/IaC, backend API, frontend catálogo, CI/CD, QA, seguridad, observabilidad y revisión final.
+
+### Demo construida sobre el harness
+
+Como banco de pruebas del flujo, el repo incluye una aplicación funcional que se ha ido construyendo iteración a iteración:
+
+| Iteración | Entregable | Evidencia |
+|---|---|---|
+| iter-1/2 | PRD + landing zone + IaC Azure (`infra/`) | `specs/computer-catalog-landing-zone-prd.md`, módulos Terraform |
+| iter-3 | Catálogo de **20 discos heavy metal** (Iron Maiden, Metallica, Black Sabbath, Slayer, Dream Theater…) con API Fastify + UI Next.js + carrito persistente | `apps/api/`, `apps/web/`, 17 tests E2E |
+| iter-4 | **Sección de crítica multi-sección** en cada ficha de disco: contexto histórico, sonido, legado, highlights, puntuación y citas de AllMusic / Wikipedia / Rolling Stone con `rel="noopener noreferrer"` | `apps/api/src/data/album-reviews.ts`, `reports/iter-4/` |
+| iter-5 | **Filtro por género** con chips interactivos (`role="group"`, `aria-pressed`, debounce 250ms) y deuda procedimental corregida retrospectivamente | `apps/web/components/albums-grid.tsx`, `reports/iter-5/` |
+
+Estado actual: **102/102 tests vitest** (backend) + **28/28 tests Playwright** (frontend, con `--workers=1`). 0 HIGH/CRITICAL en `npm audit`. Reviewer ha firmado APROBAR en iter-4 e iter-5.
+
+Para correrla en local:
+
+```bash
+cd apps/api && npm run dev        # API en :4000
+cd apps/web && npm run dev        # Next.js en :3000
+```
+
+Y visita `http://localhost:3000/albums`.
 
 ## Nota
 
