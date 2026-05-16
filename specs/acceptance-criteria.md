@@ -165,3 +165,29 @@
 ### Cierre
 - [x] Spec con todos los criterios marcados.
 - [x] Commit estructurado y push a `origin/main`.
+
+## Catálogo Mötley Crüe (iteración 6)
+
+### Dataset
+- [x] `apps/api/src/data/albums.ts:487-532` incluye `motley-crue-shout-at-the-devil` (1983) y `motley-crue-dr-feelgood` (1989). Género "Hard Rock". 11 tracks cada uno.
+- [x] `apps/api/src/data/album-reviews.ts:952-1042` con AlbumReview completa (3 sections >=200 chars, 3 highlights, rating con justificación, 2 quotes AllMusic+Wikipedia https canónicas).
+- [x] Dataset pasa de 20 a 22 álbumes. Validado por suite dinámica `albums-review.test.ts`.
+
+### Validación
+- [x] vitest backend: **110/110 verde** (102 previos + 8 nuevos por los 2 álbumes × 4 tests dinámicos).
+- [x] Playwright frontend: **28/28 verde** con `--workers=1` tras reinicio limpio de servers (flakiness inicial atribuida a degradación de Next.js dev, no a código).
+- [x] tsc del frontend: sin errores.
+
+### Smoke (Chrome DevTools MCP)
+- [x] Navegación a `/albums/motley-crue-dr-feelgood`: ficha completa con crítica.
+- [x] 13/13 network 200, incluida portada (reqid=3).
+- [x] 0 errores en consola.
+- [x] Captura `reports/iter-6/smoke-motley-crue.png` (movida desde raíz por hallazgo del security-engineer).
+
+### Gates obligatorios (CLAUDE.md)
+- [x] `security-engineer` con skill `security-review`. **APROBADO**. 12 chequeos OK. `reports/iter-6/security-engineer.md`.
+- [x] `reviewer` con skill `review-pr`. **APROBAR con observaciones no bloqueantes**. Identifica R1: `BANDS` hardcoded en frontend (deuda preexistente, no regresión). `reports/iter-6/reviewer.md`.
+
+### Cierre
+- [x] Auditoría criterio por criterio en este archivo.
+- [x] Commit estructurado y push a `origin/main`.

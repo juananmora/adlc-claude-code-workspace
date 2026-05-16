@@ -34,6 +34,8 @@ const COVERS: Record<string, string> = {
   "blind-guardian-nightfall-in-middle-earth": "/covers/blind-guardian-nightfall-in-middle-earth.jpg",
   "dream-theater-images-and-words": "/covers/dream-theater-images-and-words.jpg",
   "nightwish-once": "/covers/nightwish-once.jpg",
+  "motley-crue-shout-at-the-devil": "/covers/motley-crue-shout-at-the-devil.jpg",
+  "motley-crue-dr-feelgood": "/covers/motley-crue-dr-feelgood.jpg",
 };
 
 const cover = (slug: string) => COVERS[slug] ?? "/covers/placeholder.jpg";
@@ -480,6 +482,52 @@ export const albums: AlbumWithoutReview[] = [
       "Ghost Love Score",
       "Kuolema Tekee Taiteilijan",
       "Higher Than Hope",
+    ],
+  },
+  {
+    id: "motley-crue-shout-at-the-devil",
+    title: "Shout at the Devil",
+    band: "Mötley Crüe",
+    year: 1983,
+    genre: "Hard Rock",
+    description:
+      "Segundo álbum de Mötley Crüe, oscuro y agresivo, que catapultó a la banda al primer plano del glam/hard rock estadounidense.",
+    coverUrl: cover("motley-crue-shout-at-the-devil"),
+    tracks: [
+      "In the Beginning",
+      "Shout at the Devil",
+      "Looks That Kill",
+      "Bastard",
+      "God Bless the Children of the Beast",
+      "Helter Skelter",
+      "Red Hot",
+      "Too Young to Fall in Love",
+      "Knock 'Em Dead, Kid",
+      "Ten Seconds to Love",
+      "Danger",
+    ],
+  },
+  {
+    id: "motley-crue-dr-feelgood",
+    title: "Dr. Feelgood",
+    band: "Mötley Crüe",
+    year: 1989,
+    genre: "Hard Rock",
+    description:
+      "Quinto álbum de Mötley Crüe y su único #1 en EE.UU.; producido por Bob Rock, marca la cima comercial de la banda y del hard rock de los 80.",
+    coverUrl: cover("motley-crue-dr-feelgood"),
+    tracks: [
+      "T.n.T. (Terror 'n Tinseltown)",
+      "Dr. Feelgood",
+      "Slice of Your Pie",
+      "Rattlesnake Shake",
+      "Kickstart My Heart",
+      "Without You",
+      "Same Ol' Situation (S.O.S.)",
+      "Sticky Sweet",
+      "She Goes Down",
+      "Don't Go Away Mad (Just Go Away)",
+      "Time for Change",
     ],
   },
 ];

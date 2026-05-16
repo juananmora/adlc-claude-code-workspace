@@ -948,6 +948,98 @@ export const albumReviews: Record<string, AlbumReview> = {
       },
     ],
   },
+
+  "motley-crue-shout-at-the-devil": {
+    sections: {
+      historicalContext:
+        "Segundo álbum de Mötley Crüe, publicado en septiembre de 1983 por Elektra Records. Llega un año después del debut autoeditado 'Too Fast for Love' (luego reeditado por Elektra). Grabado en Cherokee Studios (Los Ángeles) con Tom Werman a la producción, marca el momento en que la banda — Vince Neil, Mick Mars, Nikki Sixx y Tommy Lee — adopta la estética visual oscura (pentagramas, cuero, maquillaje agresivo) que la diferenciaría del resto de la escena Sunset Strip.",
+      sound:
+        "Werman endurece la mezcla respecto al debut: guitarras de Mick Mars con más bajos y sustain, batería de Tommy Lee mucho más al frente, y Vince Neil con un tono más rasgado. El disco abre con una intro hablada inquietante ('In the Beginning') y cierra con 'Danger', dejando huella de un sonido más cercano al heavy metal británico que al glam de la época. La versión de 'Helter Skelter' (Beatles) funciona como declaración estética: Crüe agrede el material original con riffs duros y voz cruda.",
+      legacy:
+        "Cuádruple platino en EE.UU. (RIAA, 1997), Top 17 en el Billboard 200. Para la crítica y los fans suele aparecer entre los discos esenciales del hard rock / glam metal de los 80, especialmente por su atmósfera más oscura que la mayoría de sus contemporáneos. Es un punto de inflexión: tras él, Crüe pasó del club a los estadios y consolidó el modelo Sunset Strip que dominaría la década, junto con Ratt y, poco después, Guns N' Roses.",
+    },
+    trackHighlights: [
+      {
+        track: "Looks That Kill",
+        note: "Single de presentación con riff icónico de Mick Mars y videoclip de alta rotación en MTV. El tema que llevó a Crüe del underground a la radio nacional.",
+      },
+      {
+        track: "Shout at the Devil",
+        note: "Tema titular convertido en himno: estribillo coreable a gritos, percusión marcial y la imagen pentagramática que se llevó la controversia religiosa. Apertura de directos durante décadas.",
+      },
+      {
+        track: "Too Young to Fall in Love",
+        note: "Segundo single, más melódico y radiable; muestra el lado pop-rock de la banda y anticipa la dirección comercial que tomarían en 'Theatre of Pain' (1985).",
+      },
+    ],
+    rating: {
+      score: 8.5,
+      justification:
+        "Punto de inflexión de Mötley Crüe y referencia del hard rock oscuro de los 80; producción algo datada pero himnos atemporales y atmósfera única para la época.",
+    },
+    criticQuotes: [
+      {
+        outlet: "AllMusic",
+        year: 1983,
+        url: "https://www.allmusic.com/album/shout-at-the-devil-mw0000189938",
+        quote:
+          "Shout at the Devil establece la fórmula clásica de Mötley Crüe: riffs pegadizos, estribillos cantables y una imagen agresivamente teatral que les separó del resto de bandas glam de Los Ángeles.",
+      },
+      {
+        outlet: "Wikipedia",
+        year: 1983,
+        url: "https://en.wikipedia.org/wiki/Shout_at_the_Devil",
+        quote:
+          "Considerado el álbum que rompió a Mötley Crüe comercialmente; cuádruple platino en Estados Unidos y referencia fundacional del glam metal de los 80 por su combinación de imagen oscura y composiciones directas.",
+      },
+    ],
+  },
+
+  "motley-crue-dr-feelgood": {
+    sections: {
+      historicalContext:
+        "Quinto álbum de Mötley Crüe, publicado el 1 de septiembre de 1989 por Elektra Records. Es el primero grabado tras la rehabilitación de los cuatro miembros de la banda y el primero producido por Bob Rock, que venía de mezclar discos clave del hard rock canadiense y estadounidense. Sesiones en Little Mountain Sound Studios (Vancouver), donde Rock impuso disciplina de estudio, pre-producción exhaustiva y un nivel de detalle que la banda nunca había tenido antes. Marca el regreso de Crüe tras un periodo público de excesos y la transición hacia un sonido más profesional y radiable.",
+      sound:
+        "Bob Rock entrega la producción más nítida y potente de la carrera de Mötley Crüe: guitarras de Mick Mars con doble tracking metálico y brillante, batería de Tommy Lee con kick masivo, bajos contundentes de Nikki Sixx y Vince Neil mejor afinado y mezclado que en discos anteriores. Aparecen coros invitados (Bryan Adams, Steven Tyler, Robin Zander en 'Sticky Sweet') y la fórmula apunta a estadio: estribillos enormes, breakdowns marcados, dinámicas pop-rock con peso heavy. El esquema sonoro que Rock perfeccionaría poco después en el 'Black Album' de Metallica nace en parte aquí.",
+      legacy:
+        "Único álbum de Mötley Crüe en alcanzar el #1 en el Billboard 200 estadounidense. Seis veces platino por la RIAA. Cuatro singles Top 10 ('Dr. Feelgood', 'Kickstart My Heart', 'Without You', 'Don't Go Away Mad'). Suele citarse como el cénit comercial y artístico del hard rock americano de los 80, justo antes de que el grunge y Nirvana redefinieran la radio rock en 1991. Para muchos críticos es el último gran disco de la era pre-grunge, y para AllMusic es el mejor álbum de Crüe sin discusión.",
+    },
+    trackHighlights: [
+      {
+        track: "Dr. Feelgood",
+        note: "Tema titular y single de apertura: riff hipnótico de Mick Mars, letra sobre un narcotraficante y producción de Bob Rock al máximo. Top 6 en EE.UU. y firma sonora de la banda.",
+      },
+      {
+        track: "Kickstart My Heart",
+        note: "Adrenalina pura sobre el accidente real de Nikki Sixx con sobredosis de heroína: motor de moto, batería disparada y solo de Mars. Estándar absoluto de los directos.",
+      },
+      {
+        track: "Without You",
+        note: "Power-ballad masiva: progresión de acordes sencilla, voz limpia de Vince Neil y arreglo de teclados sutiles. Top 10 en EE.UU. y demostración de que Crüe podía competir con Bon Jovi en radio mainstream.",
+      },
+    ],
+    rating: {
+      score: 9.0,
+      justification:
+        "Producción de Bob Rock impecable, repertorio sin relleno y cima comercial del hard rock americano antes del grunge; punto de referencia obligado del género.",
+    },
+    criticQuotes: [
+      {
+        outlet: "AllMusic",
+        year: 1989,
+        url: "https://www.allmusic.com/album/dr-feelgood-mw0000203295",
+        quote:
+          "Dr. Feelgood es el mejor álbum de Mötley Crüe y uno de los grandes discos de hard rock americano: producción de Bob Rock impecable, repertorio sin relleno y un nivel de musicalidad que la banda no había alcanzado antes ni volvería a alcanzar después.",
+      },
+      {
+        outlet: "Wikipedia",
+        year: 1989,
+        url: "https://en.wikipedia.org/wiki/Dr._Feelgood_(Mötley_Crüe_album)",
+        quote:
+          "Único álbum de Mötley Crüe que alcanzó el número uno en el Billboard 200, certificado seis veces platino por la RIAA. Cuatro singles entraron en el Top 10 estadounidense y la crítica suele considerarlo el cénit artístico y comercial de la banda.",
+      },
+    ],
+  },
 };
 
 /**
