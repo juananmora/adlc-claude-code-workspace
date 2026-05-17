@@ -165,4 +165,4 @@ history:
         - history.decisions[]: log auditable con commit hash.
 
         Las reglas operativas viven SOLO en CLAUDE.md a partir de aquí.
-      commit: "TBD"
+      commit: "6a357eb"
