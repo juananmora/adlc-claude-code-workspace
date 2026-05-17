@@ -55,7 +55,7 @@ valida con gates automáticos y humanos.
 
 | Indicador | Valor |
 |---|---|
-| Iteraciones cerradas | 8 |
+| Iteraciones cerradas | 9 |
 | Tests backend (vitest) | 233/233 verde |
 | Tests E2E (Playwright) | 46/46 verde |
 | Vulnerabilidades HIGH/CRITICAL en producción | 0 |
@@ -652,6 +652,50 @@ de iter-7).
 - SEC-07-01 reducido MEDIUM → LOW (sigue abierto hasta visado legal
   previo a release público).
 
+### DEC-004 (2026-05-17, commit `6a357eb`) — Reducir `openspec/config.yaml` a `context + testing + history`
+
+**Por qué:** la sección `rules.*` de `config.yaml` duplicaba CLAUDE.md sin
+que nadie la consumiera automáticamente. Eliminada.
+
+**Cambios:** archivo pasa de 200 a 147 líneas. Las reglas del flujo ADLC
+viven solo en CLAUDE.md. `config.yaml` mantiene tres bloques con consumidor
+real: `context` (onboarding), `testing` (comandos exactos),
+`history.decisions[]` (log auditable).
+
+### DEC-005 (2026-05-17, commit `e37d0e7`) — iter-9: dockerización + lección server components con DNS interno
+
+**Objetivo:** empaquetar API y web en 2 contenedores producción con
+docker-compose para que `docker compose up -d` arranque la demo
+completa sin necesidad de Node.js en el host.
+
+**Resultados:**
+
+- Multi-stage Dockerfiles (`node:22-alpine`, USER node, healthchecks).
+- `docker-compose.yml` con red `ironheart`, `depends_on: service_healthy`.
+- Imágenes: API 398MB (excede objetivo <300MB; deuda iter-10), web 346MB.
+- Playwright 46/46 verde **contra Docker** (no solo host).
+
+**Bug crítico detectado por el usuario post-cierre inicial:**
+
+Las fichas `/products/[id]`, `/albums/[id]`, `/games/[id]` son server
+components y hacían fetch a `localhost:4000` desde dentro del contenedor
+web. Dentro del contenedor, `localhost` es el propio contenedor, no la
+API. ECONNREFUSED.
+
+**Fix:** nuevo helper `resolveApiBase()` en `apps/web/lib/api.ts` que
+detecta server-side vs client-side y elige entre
+`NEXT_PUBLIC_API_BASE_URL` (browser) y `API_BASE_URL_INTERNAL=http://api:4000`
+(SSR dentro del contenedor, DNS interno de compose). Refactor de
+`albums-api.ts` y `games-api.ts` para usar el helper consolidado.
+
+**Lecciones procedimentales codificadas en CLAUDE.md § Anti-patrones:**
+
+1. qa-engineer obligatorio **TAMBIÉN** en iters de infraestructura/devops.
+2. Smoke MCP debe cubrir TODAS las rutas con server components, no solo
+   listados.
+3. Cambios de infra requieren re-ejecutar Playwright contra el **nuevo
+   entorno** (Docker), no contra el host de dev.
+
 ---
 
 ## 10. Caso de uso real: iter-8 paso a paso
@@ -800,7 +844,7 @@ Push a `origin/main`. Commit fixup posterior para rellenar el hash en
 
 | Métrica | Valor |
 |---|---|
-| Iteraciones cerradas | 8 |
+| Iteraciones cerradas | 9 |
 | Líneas de código añadidas | ~12 000 (apps/ + tests + reports) |
 | Subagentes invocados | ~35 |
 | Reportes persistidos | ~30 archivos en `reports/iter-N/` |
@@ -822,6 +866,7 @@ Push a `origin/main`. Commit fixup posterior para rellenar el hash en
 | 6 | +2 álbumes Mötley Crüe | +8 dinámicos | ~25 min | 0 HIGH/CRITICAL |
 | 7 | Catálogo 10 juegos Amstrad CPC + crítica | 123 vitest + 10 E2E | ~3h (con orquestador) | 0 HIGH/CRITICAL, 1 MEDIUM legal escalado |
 | 8 | Página /about con 32 créditos + refactor openspec | +8 E2E | ~30 min | 0 HIGH/CRITICAL, MEDIUM heredado → LOW |
+| 9 | Dockerización (2 contenedores, compose) | — (sin tests nuevos; suite Playwright 46/46 ejecutada contra Docker) | ~90 min + fix bug post-cierre | 0 HIGH/CRITICAL, 2 MEDIUM (tamaño imagen API, falta hardening compose), 4 LOW |
 
 ### Evolución del wall-clock
 
@@ -833,16 +878,24 @@ flowchart TB
     D --> E[Iter 6:<br/>+2 álbumes<br/>~25 min · sin orquestador]
     E --> F[Iter 7:<br/>10 juegos CPC<br/>~3h · CON orquestador]
     F --> G[Iter 8:<br/>página /about<br/>~30 min · DEC-001 aplicada]
+    G --> H[Iter 9:<br/>dockerización<br/>~90 min + fix bug post-cierre]
 
     style F fill:#fde2e2,stroke:#c0392b,color:#000
     style D fill:#e0f7e9,stroke:#2e7d32,color:#000
     style E fill:#e0f7e9,stroke:#2e7d32,color:#000
     style G fill:#e0f7e9,stroke:#2e7d32,color:#000
+    style H fill:#fff4c2,stroke:#b7950b,color:#000
 ```
 
 **Observación clave:** iter-7 con el agente orquestador costó ~6× más
 que iter-5/6 sin él, con calidad similar. Esto motivó DEC-001
 (eliminación del orquestador).
+
+**Observación adicional de iter-9:** el usuario detectó un bug crítico
+**post-cierre** (las fichas de detalle fallaban en producción Docker).
+Causa: me salté al `qa-engineer` pensando "es solo infra, no hay
+cambios funcionales". Tres anti-patrones nuevos codificados en
+CLAUDE.md como resultado (ver sección 12).
 
 ---
 
@@ -864,6 +917,9 @@ auditoría completa, no defender el cierre.
 | "El usuario me dirá si hay vulnerabilidades" | Tú lanzas al security-engineer. El usuario aprueba, no descubre. |
 | "El subagente sabrá qué skill usar" | Indica explícitamente la skill esperada en el prompt. |
 | "Esta feature es pequeña, me salto las Fases 7 y 10" | El default es ejecutarlas. Si decides omitirlas, el usuario debe firmar explícitamente y el reporte debe registrarlo. |
+| "Esto es solo infra/devops/Docker, no necesita qa-engineer" *(añadido iter-9)* | qa-engineer obligatorio **TAMBIÉN** en iters de infraestructura. El bug crítico de fichas SSR en Docker se escapó precisamente porque me salté al qa pensando "no hay cambios funcionales". |
+| "Smoke en / y /listado es suficiente" *(añadido iter-9)* | Smoke debe cubrir **una ruta de cada tipo**: listado, ficha (server component), 404. Las fichas hacen fetch desde el servidor; cambios de infra pueden romper SSR sin romper CSR. |
+| "Playwright pasó contra mi host, está validado" *(añadido iter-9)* | Cuando cambias el entorno de ejecución (Docker, deploy, runtime), re-ejecuta Playwright contra el **nuevo entorno**, no contra el host de dev. Suite verde contra host + bug en Docker = puerta abierta a producción rota. |
 
 ---
 

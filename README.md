@@ -11,52 +11,57 @@ Plantilla de workspace para Claude Code orientada a un **Agentic Development Lif
 ```text
 CLAUDE.md                                        # Manual completo del flujo ADLC (siempre en contexto)
 README.md                                        # Este documento
+docker-compose.yml                               # Orquesta API + web en 2 contenedores (iter-9)
 
 .claude/
-  settings.local.json                            # Permisos locales de Claude Code
-  agents/                                        # Subagents (Markdown + YAML frontmatter)
-    cloud-architect.md                           # Topología cloud, IAM, red
-    terraform-engineer.md                        # Módulos IaC
-    backend-engineer.md                          # APIs y lógica de negocio
-    frontend-engineer.md                         # UI / catálogo
-    cicd-engineer.md                             # Pipelines y despliegues
-    qa-engineer.md                               # Estrategia y tests
-    security-engineer.md                         # GATE Fase 7
-    observability-engineer.md                    # Logs, métricas, trazas, SLOs
-    reviewer.md                                  # GATE Fase 10 (auditoría independiente)
-  skills/                                        # Skills (cada una con su SKILL.md)
-    create-prd/SKILL.md                          # PRD verificable
-    plan-agentic-work/SKILL.md                   # Plan multiagente
-    design-landing-zone/SKILL.md                 # Diseño de landing zone
-    generate-terraform-modules/SKILL.md          # Módulos Terraform
-    generate-product-api/SKILL.md                # API de catálogo
-    create-catalog-ui/SKILL.md                   # UI de catálogo
-    ci-cd-pipeline/SKILL.md                      # Pipelines CI/CD
-    generate-tests/SKILL.md                      # Tests unit/integ/E2E
-    security-review/SKILL.md                     # Revisión de seguridad
-    observability-design/SKILL.md                # Diseño de observabilidad
-    review-pr/SKILL.md                           # Checklist de auditoría final
-  commands/                                      # Slash commands
+  agents/                                        # 9 subagentes especializados (Markdown + YAML frontmatter)
+    cloud-architect.md, terraform-engineer.md, backend-engineer.md,
+    frontend-engineer.md, cicd-engineer.md, qa-engineer.md,
+    security-engineer.md, observability-engineer.md, reviewer.md
+  skills/                                        # 11 skills (cada una con su SKILL.md)
+    create-prd, plan-agentic-work, design-landing-zone,
+    generate-terraform-modules, generate-product-api, create-catalog-ui,
+    ci-cd-pipeline, generate-tests, security-review,
+    observability-design, review-pr
+  commands/
     ship.md                                      # /ship: cierre + PR con evidencias
+  settings.local.json                            # Permisos locales
 
-specs/                                           # Especificaciones (fuente de verdad operativa)
-  computer-catalog-landing-zone-prd.md           # PRD del caso de uso
-  acceptance-criteria.md                         # Criterios verificables (checkboxes por iteración)
-  qa-strategy.md                                 # Estrategia de pruebas
-  iter-5-backlog.md                              # Backlog vivo entre iteraciones
+openspec/                                        # Contrato estructurado + propuestas de cambio (iter-8)
+  config.yaml                                    # Datos operativos (tech stack + testing + history.decisions)
+  README.md
+  changes/                                       # Propuestas de cambio activas
+    README.md                                    # Ciclo de vida proposal→design→tasks→delta→verify
+    <slug>/                                      # 1 directorio por propuesta (about-credits, dockerize…)
+      proposal.md, design.md, tasks.md,
+      specs/<area>.md, verify-report.md
 
-scripts/
-  validate_claude_workspace.py                   # Valida frontmatter y estructura del workspace
+specs/                                           # Specs vivos del producto
+  areas/                                         # 1 directorio por dominio, G/W/T + RFC 2119 (iter-8)
+    platform/, infra-azure/, catalog-products/,
+    albums/, games/, credits/, deployment-docker/
+  acceptance-criteria-archive.md                 # Histórico inmutable iter-1..iter-7
+  computer-catalog-landing-zone-prd.md           # PRD original
+  games-amstrad-cpc-prd.md                       # PRD iter-7
+  qa-strategy.md
+  iter-5-backlog.md
+
+apps/                                            # Código de aplicación de demo
+  api/                                           # Fastify 5 + TypeScript + Vitest 4 (port 4000)
+    Dockerfile + .dockerignore                   # Imagen producción multi-stage (iter-9)
+  web/                                           # Next.js 15 + React 19 + Tailwind + Playwright 1.60 (port 3000)
+    Dockerfile + .dockerignore                   # Imagen producción con Next standalone (iter-9)
+
+infra/                                           # IaC (Terraform + azurerm ~> 4.0)
+
+reports/iter-<N>/                                # Reportes persistidos por iteración (9 cerradas)
 
 docs/
+  adlc-workflow.md                               # Manual ejecutivo+técnico del flujo ADLC
   harness-engineering.md                         # Notas internas sobre el harness
 
-reports/iter-<N>/                                # Reportes persistidos por iteración (auditoría retrospectiva)
-
-apps/                                            # Código de aplicación de demo (catálogo de discos heavy metal)
-  api/                                           # Fastify + TypeScript + Vitest
-  web/                                           # Next.js 15 + React 19 + Tailwind + Playwright
-infra/                                           # IaC (Terraform + azurerm)
+scripts/
+  validate_claude_workspace.py                   # Valida frontmatter de agentes/skills
 ```
 
 > **Nota sobre el manual.** El flujo ADLC completo (las 12 fases, reglas duras, anti-patrones, output esperado) vive en `CLAUDE.md` y se inyecta siempre en el contexto. **Claude principal orquesta directamente**; no existe un agente "orquestador" dedicado. La práctica entre iter-4 e iter-7 demostró que delegar la orquestación a un subagente aislado añade overhead (sandbox sin Bash, sin tool `Agent` para sub-sub-agentes, doble redacción de prompts) sin valor proporcional. Los subagentes ejecutores especializados (`backend-engineer`, `frontend-engineer`, `qa-engineer`, `security-engineer`, `reviewer`) sí aportan valor y se invocan caso a caso.
@@ -521,21 +526,29 @@ Como banco de pruebas del flujo, el repo incluye una aplicación funcional que s
 
 | Iteración | Entregable | Evidencia |
 |---|---|---|
-| iter-1/2 | PRD + landing zone + IaC Azure (`infra/`) | `specs/computer-catalog-landing-zone-prd.md`, módulos Terraform |
-| iter-3 | Catálogo de **20 discos heavy metal** (Iron Maiden, Metallica, Black Sabbath, Slayer, Dream Theater…) con API Fastify + UI Next.js + carrito persistente | `apps/api/`, `apps/web/`, 17 tests E2E |
-| iter-4 | **Sección de crítica multi-sección** en cada ficha de disco: contexto histórico, sonido, legado, highlights, puntuación y citas de AllMusic / Wikipedia / Rolling Stone con `rel="noopener noreferrer"` | `apps/api/src/data/album-reviews.ts`, `reports/iter-4/` |
-| iter-5 | **Filtro por género** con chips interactivos (`role="group"`, `aria-pressed`, debounce 250ms) y deuda procedimental corregida retrospectivamente | `apps/web/components/albums-grid.tsx`, `reports/iter-5/` |
+| iter-1/2 | PRD + landing zone + IaC Azure (`infra/`) + catálogo productos + carrito persistente | `specs/computer-catalog-landing-zone-prd.md`, módulos Terraform, 17 E2E iniciales |
+| iter-3 | Catálogo de discos heavy metal con API Fastify + UI Next.js | `apps/api/src/data/albums.ts`, `apps/web/app/albums/` |
+| iter-4 | **Crítica multi-sección por disco**: contexto histórico, sonido, legado, highlights, score, quotes con `rel="noopener noreferrer"` | `apps/api/src/data/album-reviews.ts`, `reports/iter-4/` |
+| iter-5 | **Filtro por género** con chips (`role="group"`, `aria-pressed`, debounce 250ms) | `apps/web/components/albums-grid.tsx`, `reports/iter-5/` |
+| iter-6 | +2 álbumes Mötley Crüe (catálogo a **22 discos**) | `reports/iter-6/` |
+| iter-7 | Catálogo de **10 juegos Amstrad CPC** con ficha detallada, prensa de la época y filtro por género | `apps/api/src/data/games.ts`, `apps/web/app/games/`, `reports/iter-7/` |
+| iter-8 | **Refactor estructural** (modelo gentle-ai: `specs/areas/` + `openspec/changes/`) + página `/about` con 32 créditos de portadas | `openspec/changes/about-credits/`, `specs/areas/`, `reports/iter-8/` |
+| iter-9 | **Dockerización** (2 contenedores + compose) + fix bug fichas SSR (DNS interno) | `apps/{api,web}/Dockerfile`, `docker-compose.yml`, `reports/iter-9/` |
 
-Estado actual: **102/102 tests vitest** (backend) + **28/28 tests Playwright** (frontend, con `--workers=1`). 0 HIGH/CRITICAL en `npm audit`. Reviewer ha firmado APROBAR en iter-4 e iter-5.
+Estado actual: **233/233 tests vitest** (backend) + **46/46 tests Playwright** (frontend, contra Docker o contra host indistintamente). 0 HIGH/CRITICAL en `npm audit`. Reviewer ha firmado APROBAR en iter-4 a iter-9. Las 9 iteraciones cerradas tienen reporte persistido en `reports/iter-N/`.
 
-Para correrla en local:
+Para correrla en local — **dos opciones**:
 
 ```bash
+# A) Con Docker (recomendado, sin Node en host)
+docker compose up -d --wait
+
+# B) Sin Docker (npm en host, dos terminales)
 cd apps/api && npm run dev        # API en :4000
 cd apps/web && npm run dev        # Next.js en :3000
 ```
 
-Y visita `http://localhost:3000/albums`.
+Y visita `http://localhost:3000/`. El catálogo principal está en `/`, los discos en `/albums`, los juegos en `/games`, los créditos en `/about`.
 
 ## Nota
 

@@ -100,8 +100,8 @@ testing:
 # Cualquier decisión que cambie cómo se trabaja con este repo entra aquí
 # con rationale y commit hash.
 history:
-  iterations_closed: 8
-  last_close: "2026-05-17"  # iter-8 commit ea88a5d
+  iterations_closed: 9
+  last_close: "2026-05-17"  # iter-9 commit e37d0e7
 
   decisions:
     - id: "DEC-001"
@@ -196,7 +196,7 @@ history:
 
         Reportes en reports/iter-9/. Verify-report en
         openspec/changes/dockerize/verify-report.md.
-      commit: "TBD"
+      commit: "e37d0e7"
 
     - id: "DEC-004"
       date: "2026-05-17"
