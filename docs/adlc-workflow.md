@@ -1,6 +1,6 @@
 # ADLC Workflow — Cómo construimos software guiado por especificaciones con agentes
 
-> **Audiencia:** equipos de Accenture y clientes que evalúan el enfoque
+> **Audiencia:** equipos y clientes que evalúan el enfoque
 > Agentic Development Lifecycle (ADLC) / Spec-Driven Development (SDD)
 > sobre Claude Code.
 >
@@ -123,9 +123,9 @@ reanuda explícitamente. Nada se aprueba por inercia.
 flowchart TB
     subgraph FF[Feedforward · previene errores antes de generar código]
         FF1[CLAUDE.md<br/>reglas duras]
-        FF2[specs/areas/&lt;area&gt;/spec.md<br/>G/W/T + RFC 2119]
+        FF2[specs/areas/<area>/spec.md<br/>G/W/T + RFC 2119]
         FF3[openspec/config.yaml<br/>contrato estructurado]
-        FF4[openspec/changes/&lt;slug&gt;/<br/>propuestas activas]
+        FF4[openspec/changes/<slug>/<br/>propuestas activas]
     end
     subgraph COMP[Gates computacionales · rápidos · determinísticos]
         G1[tsc --noEmit]
@@ -188,12 +188,12 @@ openspec/
   README.md
   changes/
     README.md                    # Ciclo de vida de un change
-    &lt;slug&gt;/                      # Cada propuesta activa
+    <slug>/                      # Cada propuesta activa
       proposal.md
       design.md
       tasks.md
       verify-report.md
-      specs/&lt;area&gt;.md            # Delta ADDED/MODIFIED/REMOVED
+      specs/<area>.md            # Delta ADDED/MODIFIED/REMOVED
 
 specs/
   areas/                         # Specs vivos por dominio (G/W/T + RFC 2119)
@@ -203,10 +203,10 @@ specs/
     albums/spec.md
     games/spec.md
   acceptance-criteria-archive.md # Histórico inmutable iter-1..iter-7
-  &lt;slug&gt;-prd.md                  # PRDs originales
+  <slug>-prd.md                  # PRDs originales
 
 reports/
-  iter-&lt;N&gt;/                      # Reportes por iteración + capturas smoke
+  iter-<N>/                      # Reportes por iteración + capturas smoke
     backend-engineer.md
     frontend-engineer.md
     qa-engineer.md
@@ -267,11 +267,11 @@ flowchart LR
 | # | Fase | Responsable | Entregable |
 |---|---|---|---|
 | 1 | Entender | Claude principal | Resumen 1-3 frases + supuestos explícitos. Preguntas en una sola tanda si hay ambigüedad. |
-| 2 | Spec/PRD | Claude principal | `specs/&lt;slug&gt;-prd.md` u `openspec/changes/&lt;slug&gt;/proposal.md`. |
-| 3 | Criterios verificables | Claude principal | Criterios G/W/T + RFC 2119 en `specs/areas/&lt;area&gt;/spec.md` o delta en `openspec/changes/&lt;slug&gt;/specs/&lt;area&gt;.md`. |
+| 2 | Spec/PRD | Claude principal | `specs/<slug>-prd.md` u `openspec/changes/<slug>/proposal.md`. |
+| 3 | Criterios verificables | Claude principal | Criterios G/W/T + RFC 2119 en `specs/areas/<area>/spec.md` o delta en `openspec/changes/<slug>/specs/<area>.md`. |
 | 4 | Selección de agentes y skills | Claude principal | Mapa criterio → agente → skill. Agentes obligatorios: qa-engineer, security-engineer, reviewer. |
 | 5 | Plan | Claude principal | TaskList con dependencias. Una tarea por subagente por área. |
-| 6 | Ejecución delegada | Subagentes ejecutores | Prompts autocontenidos. Skill enforcement. Reportes persistidos en `reports/iter-N/&lt;agente&gt;.md`. |
+| 6 | Ejecución delegada | Subagentes ejecutores | Prompts autocontenidos. Skill enforcement. Reportes persistidos en `reports/iter-N/<agente>.md`. |
 | 7 | **Security gate** ⛔ | `security-engineer` + `security-review` | Findings con severidad. CRITICAL/HIGH bloquean. |
 | 8 | Auditoría criterio por criterio | Claude principal | Tabla `criterio \| evidencia \| estado`. Solo marcar lo verificado. |
 | 9 | Smoke funcional | Claude principal con Chrome DevTools MCP | Capturas + consola + network. Errores son bugs reales. |
@@ -283,7 +283,7 @@ flowchart LR
 
 ## 5. Subagentes especializados
 
-Cada subagente vive en `.claude/agents/&lt;nombre&gt;.md` con un frontmatter
+Cada subagente vive en `.claude/agents/<nombre>.md` con un frontmatter
 YAML que declara:
 
 ```yaml
@@ -360,7 +360,7 @@ sequenceDiagram
 ## 6. Skills: bloques reutilizables
 
 Una **skill** es un módulo de conocimiento procedimental que cualquier
-agente puede invocar. Viven en `.claude/skills/&lt;nombre&gt;/SKILL.md` con
+agente puede invocar. Viven en `.claude/skills/<nombre>/SKILL.md` con
 un manifest que define cuándo aplica.
 
 ### Catálogo de skills
@@ -386,7 +386,7 @@ skill ejecutar. El reporte del subagente **debe abrir con**:
 
 ```markdown
 ## Skills ejecutadas
-- Skill(skill: "&lt;nombre&gt;") → aplicada
+- Skill(skill: "<nombre>") → aplicada
 ```
 
 Sin esa sección, el orquestador rechaza el reporte y reanuda al
@@ -407,11 +407,11 @@ adoptado en iter-8 (DEC-002).
 flowchart TB
     subgraph OS[openspec/]
         CFG[config.yaml<br/>contrato estructurado YAML]
-        CHG[changes/&lt;slug&gt;/<br/>propuestas activas]
-        ARC[changes/archive/&lt;slug&gt;/<br/>propuestas cerradas]
+        CHG[changes/<slug>/<br/>propuestas activas]
+        ARC[changes/archive/<slug>/<br/>propuestas cerradas]
     end
     subgraph SP[specs/]
-        AR[areas/&lt;area&gt;/spec.md<br/>estado vivo declarativo]
+        AR[areas/<area>/spec.md<br/>estado vivo declarativo]
         HIST[acceptance-criteria-archive.md<br/>log histórico iter-1..iter-7]
     end
 
@@ -446,13 +446,13 @@ Contrato estructurado parseable con:
 flowchart LR
     A[1. proposal.md<br/>objetivo + alcance + rollback] --> B[2. design.md<br/>decisiones arquitectónicas]
     B --> C[3. tasks.md<br/>checklist en fases]
-    C --> D[4. specs/&lt;area&gt;.md<br/>delta ADDED/MODIFIED/REMOVED]
+    C --> D[4. specs/<area>.md<br/>delta ADDED/MODIFIED/REMOVED]
     D --> E[5. Implementación<br/>recorre 12 fases ADLC]
     E --> F[6. verify-report.md<br/>tabla criterio×evidencia]
     F --> G{Aprobado?}
-    G -->|Sí| H[/ship → commit + push]
-    H --> I[Archive<br/>changes/archive/&lt;slug&gt;/]
-    H --> J[Merge delta a<br/>specs/areas/&lt;area&gt;/spec.md]
+    G -->|Sí| H["/ship → commit + push"]
+    H --> I[Archive<br/>changes/archive/<slug>/]
+    H --> J[Merge delta a<br/>specs/areas/<area>/spec.md]
     G -->|No| C
 ```
 
@@ -461,17 +461,17 @@ flowchart LR
 Desde iter-8, todos los criterios nuevos usan este formato:
 
 ```markdown
-### REQ-&lt;AREA&gt;-&lt;N&gt;: Título corto
+### REQ-<AREA>-<N>: Título corto
 
-Given &lt;contexto inicial&gt;,
-when &lt;acción/evento&gt;,
-then &lt;resultado verificable&gt;.
+Given <contexto inicial>,
+when <acción/evento>,
+then <resultado verificable>.
 
 - **MUST** / **SHALL** → obligatorio, bloquea cierre.
 - **SHOULD** → recomendado, deuda si falla.
 - **MAY** → opcional.
 
-**Validación:** &lt;comando | test | inspección&gt;.
+**Validación:** <comando | test | inspección>.
 ```
 
 Esto sustituye los checkboxes vagos del estilo "Buscador funciona" por
@@ -605,8 +605,8 @@ iter-7.
 **Cambios:**
 
 - `specs/acceptance-criteria.md` → renombrado a `acceptance-criteria-archive.md` con cabecera explicativa (inmutable).
-- `specs/areas/&lt;area&gt;/spec.md` por dominio: 5 áreas iniciales (`platform`, `infra-azure`, `catalog-products`, `albums`, `games`) en formato G/W/T + RFC 2119.
-- `openspec/changes/&lt;slug&gt;/`: propuestas activas con `proposal.md` + `design.md` + `tasks.md` + delta `specs/&lt;area&gt;.md`.
+- `specs/areas/<area>/spec.md` por dominio: 5 áreas iniciales (`platform`, `infra-azure`, `catalog-products`, `albums`, `games`) en formato G/W/T + RFC 2119.
+- `openspec/changes/<slug>/`: propuestas activas con `proposal.md` + `design.md` + `tasks.md` + delta `specs/<area>.md`.
 - `openspec/config.yaml`: contrato estructurado parseable.
 - Convención G/W/T + RFC 2119 obligatoria desde iter-8.
 
@@ -858,9 +858,9 @@ auditoría completa, no defender el cierre.
 
 ```mermaid
 flowchart LR
-    A[1. Crear<br/>openspec/changes/&lt;slug&gt;/<br/>proposal.md] --> B[2. design.md +<br/>tasks.md +<br/>specs/&lt;area&gt;.md]
+    A[1. Crear<br/>openspec/changes/<slug>/<br/>proposal.md] --> B[2. design.md +<br/>tasks.md +<br/>specs/<area>.md]
     B --> C[3. Recorrer<br/>las 12 fases<br/>de CLAUDE.md]
-    C --> D[4. /ship<br/>+ archive]
+    C --> D["4. /ship<br/>+ archive"]
 ```
 
 ### Comandos diarios
