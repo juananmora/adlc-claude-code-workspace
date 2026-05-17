@@ -1,0 +1,159 @@
+# OpenSpec config — adaptado del modelo de gentle-ai (Gentleman-Programming)
+# https://github.com/Gentleman-Programming/gentle-ai/tree/main/openspec
+#
+# Este archivo declara, de forma estructurada y parseable, el contrato
+# operativo del workspace: tech stack, reglas de proceso ADLC por fase, y
+# estrategia de testing. Convive con CLAUDE.md (el manual completo en
+# prosa) sin duplicar contenido — aquí va lo que una máquina o un humano
+# pueden auditar de un vistazo.
+#
+# Fuente de verdad de las 12 fases ADLC: CLAUDE.md (raíz del repo).
+# Fuente de verdad del estado de la iteración en curso: specs/acceptance-criteria.md.
+
+schema: spec-driven
+
+context: |
+  Monorepo ADLC / SDD / Harness Engineering.
+  Apps:
+    - apps/api  → Fastify 5 + TypeScript 5.6 + Vitest 4 (ESM, port 4000)
+    - apps/web  → Next.js 15 + React 19 + Tailwind 3.4 + Playwright 1.60
+                  (port 3000, --workers=1 por API single-threaded en dev)
+  Infra: Terraform + azurerm ~> 4.0 en infra/ (no se despliega desde el agente).
+  Catálogo demo: 22 discos heavy metal + 10 juegos Amstrad CPC.
+  Agentes ejecutores: backend-engineer, frontend-engineer, qa-engineer,
+                      security-engineer, reviewer, cloud-architect,
+                      terraform-engineer, cicd-engineer, observability-engineer.
+  Skills: ver `.claude/skills/` y CLAUDE.md § Fase 4.
+  Orquestación: Claude principal aplica CLAUDE.md directamente
+                (no hay agente orquestador dedicado — eliminado en c03bcfc).
+
+strict_tdd: false  # honesto: hoy permitimos tests-después. Si se endurece, cambiar a true.
+
+# Reglas por fase del flujo ADLC de 12 pasos (manual completo: CLAUDE.md).
+# Cada bloque enumera invariantes que deben cumplirse al pasar por esa fase.
+rules:
+  understand:
+    - "Resumen en 1-3 frases, supuestos explícitos."
+    - "Una sola tanda de preguntas si hay ambigüedad bloqueante. Nada de goteo."
+
+  spec:
+    - "Si no hay PRD, crear `specs/<slug>-prd.md`."
+    - "Criterios en `specs/acceptance-criteria.md` deben ser verificables (comando, test o inspección reproducible)."
+    - "Convención para criterios nuevos: Given/When/Then + RFC 2119 (MUST/SHALL/SHOULD/MAY). Ver CLAUDE.md § Convención de criterios."
+
+  agents:
+    - "Mapear cada área de criterios a un subagente disponible (CLAUDE.md § Fase 4)."
+    - "Agentes obligatorios en TODA iteración: qa-engineer, security-engineer, reviewer."
+    - "Si una capacidad no existe, documentar como gap y pedir aprobación humana. NO inventar."
+
+  plan:
+    - "Usar TaskCreate. Una tarea por subagente por área. Dependencias marcadas."
+    - "Cada tarea con archivo/test/comando que la valida."
+
+  delegate:
+    - "Prompts autocontenidos: contexto, entregable, calidad, validación final obligatoria."
+    - "Skill enforcement: indicar explícitamente la skill esperada en el prompt."
+    - "Reportes en `reports/iter-<N>/<agente>.md` con `## Skills ejecutadas` como primer encabezado."
+    - "Verificar al subagente: si dice 'tests pasan', exigir output literal con conteos."
+
+  security:
+    - "Fase 7 obligatoria: security-engineer + skill security-review."
+    - "CRITICAL y HIGH bloquean cierre. MEDIUM/LOW documentar como deuda."
+    - "Tras fix de finding, re-lanzar security-engineer (no creer al implementador)."
+
+  audit:
+    - "Auditoría criterio por criterio sobre `specs/acceptance-criteria.md`."
+    - "Tabla `criterio | evidencia | estado` obligatoria en cierre."
+    - "Marcar solo verificados. Rojos honestos > verdes falsos."
+
+  smoke:
+    - "Si hay app ejecutable: arrancar (verificar listener con Get-NetTCPConnection)."
+    - "Chrome DevTools MCP: leer consola y network."
+    - "Errores 4xx/5xx o de consola son bugs reales. Investigar uno a uno."
+    - "Capturas en `reports/iter-<N>/smoke-*.png` (NO en raíz)."
+
+  review:
+    - "Fase 10 obligatoria: reviewer + skill review-pr en instancia independiente."
+    - "Veredicto APROBAR / CAMBIOS REQUERIDOS / RECHAZAR debe ser explícito."
+    - "Si pide cambios: crear tareas, delegar, relanzar reviewer hasta APROBAR."
+
+  human:
+    - "Aprobación humana obligatoria para decisiones de blast radius alto (cloud target, deploy prod, datos sensibles)."
+    - "No actuar en nombre del humano. Pedir confirmación explícita."
+
+  ship:
+    - "Tras aprobación humana: usar `/ship` (no git push manual)."
+    - "/ship reutiliza `reports/iter-<N>/reviewer.md` si está fresco con veredicto APROBAR."
+    - "Override manual: registrar como decisión humana consciente en el commit."
+
+# Estrategia de testing — refleja el estado actual del repo, no aspiraciones.
+testing:
+  layers:
+    unit:
+      available: true
+      tool: "vitest"
+      command: "npm test"
+      cwd: "apps/api"
+      note: "233/233 verdes a fecha 2026-05-16 (10 albums + 91 albums-review + 9 products + 123 games)."
+
+    integration:
+      available: true
+      tool: "fastify app.inject() + vitest"
+      cwd: "apps/api"
+      note: "Tests con buildApp + inject para rutas reales."
+
+    e2e:
+      available: true
+      tool: "Playwright"
+      command: "npx playwright test --workers=1"
+      cwd: "apps/web"
+      note: "38/38 verdes. workers=1 obligatorio: API single-threaded en dev provoca timeouts con paralelización default. Deuda iter-4."
+
+    smoke:
+      available: true
+      tool: "Chrome DevTools MCP"
+      note: "Manual desde el chat. Capturas en reports/iter-<N>/. Lee consola y network."
+
+  coverage:
+    available: true
+    command: "npx vitest run --coverage"
+    cwd: "apps/api"
+
+  quality:
+    type_checker:
+      available: true
+      commands:
+        - "npx tsc --noEmit  # cwd: apps/api"
+        - "npx tsc --noEmit -p tsconfig.json  # cwd: apps/web"
+
+    linter:
+      available: true
+      command: "next lint"
+      cwd: "apps/web"
+      note: "ESLint via next/core-web-vitals. No hay linter equivalente en apps/api."
+
+    formatter:
+      available: false
+      note: "No hay prettier ni gofmt-equivalente configurado. Estilo manual."
+
+    security_audit:
+      available: true
+      commands:
+        - "npm audit --audit-level=high  # cwd: apps/api"
+        - "npm audit --audit-level=high  # cwd: apps/web"
+      note: "Gate Fase 7. Baseline iter-7: 0 vulnerabilities en ambos paquetes."
+
+# Histórico operativo (datos verificables, no opiniones).
+history:
+  iterations_closed: 7
+  last_close: "2026-05-16"  # iter-7 commit c03bcfc + ba30c83 docs
+  decisions:
+    - id: "DEC-001"
+      date: "2026-05-16"
+      title: "Eliminar agente adlc-orchestrator"
+      rationale: |
+        Iter-4 a iter-7 demostraron que delegar la orquestación a un subagente
+        aislado añade overhead (sandbox sin Bash, sin tool Agent para sub-sub-agentes,
+        doble redacción de prompts) sin valor proporcional. CLAUDE.md ya contiene
+        el manual completo y se inyecta siempre. Claude principal orquesta directamente.
+      commit: "c03bcfc"

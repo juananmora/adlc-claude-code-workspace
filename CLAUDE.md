@@ -4,6 +4,8 @@ Este repositorio define un workspace Claude Code para un ciclo de vida ADLC (Age
 
 La fuente de verdad del estado real de la iteración en curso es `specs/acceptance-criteria.md`, **no** resúmenes en chat.
 
+> **Contrato estructurado complementario:** [`openspec/config.yaml`](openspec/config.yaml) expone el tech stack, las reglas de cada fase y la estrategia de testing en formato YAML parseable. Inspirado en [openspec de gentle-ai](https://github.com/Gentleman-Programming/gentle-ai/tree/main/openspec). Si una regla cambia, editar **ambos archivos** y registrarlo en `openspec/config.yaml § history.decisions[]`.
+
 ## Principios
 
 - Trabaja siempre contra una especificación explícita.
@@ -47,6 +49,43 @@ Recorre **todas** estas fases. No saltes ninguna. Si una no aplica, justifícalo
 ### Fase 3 — Criterios de aceptación
 - Asegúrate de que existe `specs/acceptance-criteria.md` con checkboxes por área (plataforma, IaC, backend, frontend, CI/CD, observabilidad, QA, seguridad…).
 - **Cada criterio debe ser verificable mediante un comando concreto, un test automático o una inspección reproducible.** Si no lo es, reescríbelo hasta que lo sea.
+
+#### Convención para criterios nuevos (a partir de iter-8)
+
+Para criterios añadidos a partir de iter-8, usar el formato **Given/When/Then + RFC 2119** (inspirado en [openspec de gentle-ai](https://github.com/Gentleman-Programming/gentle-ai/tree/main/openspec)). Los criterios pre-existentes en `specs/acceptance-criteria.md` se mantienen tal cual (archivo histórico).
+
+**Formato:**
+
+```
+- [ ] Given <contexto inicial>, when <acción/evento>, then <resultado verificable>.
+  - **MUST** / **SHALL** → obligatorio, bloquea cierre si falla.
+  - **SHOULD** → recomendado, deuda documentada si falla.
+  - **MAY** → opcional, nice-to-have.
+  - Validación: <comando | test | inspección reproducible>.
+```
+
+**Ejemplos:**
+
+```
+- [ ] Given el catálogo /games con 10 entradas, when el usuario hace
+      click en el chip "Aventura isométrica", then el listado MUST
+      mostrar exactamente las 3 cards con data-genre="Aventura isométrica".
+      Validación: e2e/games.spec.ts:89.
+
+- [ ] Given una request GET /games/<id>, when el id no existe en el
+      dataset, then la API SHALL responder 404 con shape
+      {statusCode, error, message}.
+      Validación: tests/games.test.ts:99.
+
+- [ ] Given un quote con campo `url` declarado, when el frontend renderiza
+      el enlace "Fuente", then el `<a>` MUST tener `target="_blank"` y
+      `rel="noopener noreferrer"`.
+      Validación: e2e/games.spec.ts:293.
+```
+
+**Por qué:** RFC 2119 normaliza la severidad (MUST/SHOULD/MAY) y G/W/T fuerza pensar en el flujo verificable, no en una afirmación vaga. El criterio "Filtros funcionan" (estilo iter-3) es inverificable; "Given X when Y then Z verificado por test" sí lo es.
+
+**No es retroactivo.** Los criterios cerrados de iter-1 a iter-7 quedan en su formato actual.
 
 ### Fase 4 — Selección de agentes y skills
 
