@@ -196,4 +196,4 @@ history:
 
         Reportes en reports/iter-8/. Verify-report en
         openspec/changes/about-credits/verify-report.md.
-      commit: "TBD"  # se rellena tras el commit de Fase B
+      commit: "ea88a5d"
