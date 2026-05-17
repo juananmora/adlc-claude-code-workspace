@@ -1,9 +1,28 @@
 import type { Product, ProductCategory } from "./types";
 
-// Base URL del backend de productos. Debe apuntar a la raíz del servicio
-// (p. ej. http://localhost:4000), NO incluir /api: el backend Fastify expone
-// los endpoints directamente bajo /products.
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "";
+/**
+ * Base URL del backend.
+ *
+ * - **Client-side (browser):** usa `NEXT_PUBLIC_API_BASE_URL` (default
+ *   `http://localhost:4000`). El navegador del host accede a la API por el
+ *   puerto publicado.
+ * - **Server-side (SSR en contenedor):** usa `API_BASE_URL_INTERNAL` si está
+ *   definido (en Docker: `http://api:4000`, DNS interno de compose). Si no,
+ *   cae al valor público.
+ *
+ * Decisión arquitectónica iter-9: las fichas /products/[id], /albums/[id] y
+ * /games/[id] son server components y hacen fetch desde el contenedor web,
+ * donde `localhost:4000` apunta al propio contenedor (no a `api`). Por eso
+ * el server-side requiere el hostname interno de la red Docker.
+ */
+export function resolveApiBase(): string {
+  // typeof window === "undefined" en server components y route handlers.
+  if (typeof window === "undefined") {
+    const internal = process.env.API_BASE_URL_INTERNAL;
+    if (internal) return internal.replace(/\/$/, "");
+  }
+  return (process.env.NEXT_PUBLIC_API_BASE_URL ?? "").replace(/\/$/, "");
+}
 
 function buildUrl(path: string, params?: Record<string, string | undefined>) {
   const search = new URLSearchParams();
@@ -13,7 +32,7 @@ function buildUrl(path: string, params?: Record<string, string | undefined>) {
     }
   }
   const qs = search.toString();
-  return `${API_BASE}${path}${qs ? `?${qs}` : ""}`;
+  return `${resolveApiBase()}${path}${qs ? `?${qs}` : ""}`;
 }
 
 export async function fetchProducts(options: {

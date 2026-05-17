@@ -277,6 +277,9 @@ Si por descuido se cierra una iteración sin haber cumplido estas reglas y el us
 | "El usuario me dirá si hay vulnerabilidades" | Tú lanzas al security-engineer. El usuario aprueba, no descubre. |
 | "El subagente sabrá qué skill usar" | Indica explícitamente en el prompt qué Skill invocar y pide que la liste en su reporte. Sin esa sección, recházalo. |
 | "Esta feature es pequeña, me salto las Fases 7 y 10" | El default es ejecutarlas. Si decides omitirlas, el usuario debe firmar explícitamente y el reporte de cierre debe registrarlo. |
+| "Esto es solo infra/devops/Docker, no necesita qa-engineer" | **qa-engineer es obligatorio TAMBIÉN en iters de infraestructura, devops, refactor, dockerización y deploy.** El bug de iter-9 (server components rotos en Docker por DNS interno) se escapó precisamente porque me salté al qa-engineer pensando "no hay cambios funcionales". El qa-engineer habría exigido smoke MCP en TODAS las rutas con server components + ejecución de Playwright contra el nuevo entorno. |
+| "Smoke en `/` y `/listado` es suficiente" | Smoke debe cubrir **una ruta de cada tipo en cada cambio**: listado, ficha (server component), 404, y cualquier ruta con SSR dinámico. Las fichas `/products/[id]`, `/albums/[id]`, `/games/[id]` se comportan distinto al listado: hacen fetch desde el servidor, no desde el cliente. Cambios de infra que afectan al fetch (CORS, URLs, contenedores, deploy a CDN) pueden romper SSR sin romper CSR. |
+| "Playwright pasó contra mi host, está validado" | **Cuando cambias el entorno de ejecución** (Docker, deploy a staging, cambio de runtime), re-ejecuta Playwright E2E completo **contra el nuevo entorno** (no contra el host de dev). Si la suite pasa contra `npm run dev` pero falla contra `docker compose up`, hay un bug real en producción que no detectarás hasta que un humano lo señale. |
 
 ---
 

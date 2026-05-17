@@ -1,0 +1,52 @@
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: ironheart-api
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      CORS_ORIGIN: "http://localhost:3000,http://web:3000"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:4000/products"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    networks:
+      - ironheart
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: "http://localhost:4000"
+    container_name: ironheart-web
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+      # SSR dentro del contenedor: usa DNS interno de compose, no localhost.
+      # El bundle client-side ya tiene NEXT_PUBLIC_API_BASE_URL baked en build.
+      API_BASE_URL_INTERNAL: "http://api:4000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 45s
+    networks:
+      - ironheart
+
+networks:
+  ironheart:
+    driver: bridge

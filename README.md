@@ -63,6 +63,40 @@ infra/                                           # IaC (Terraform + azurerm)
 
 ---
 
+## Arrancar la demo con Docker
+
+A partir de iter-9 la demo se empaqueta en 2 contenedores orquestados por `docker-compose`. Si tienes Docker Desktop o Docker Engine instalado, no necesitas Node.js ni npm en el host.
+
+```bash
+# Desde la raíz del repo
+docker compose up -d --wait
+docker compose ps
+# → ironheart-api    Up (healthy)
+# → ironheart-web    Up (healthy)
+```
+
+- `http://localhost:3000` → frontend Next.js 15 (catálogo, álbumes, juegos, /about).
+- `http://localhost:4000/products` → API Fastify 5 con 13 productos.
+
+Ciclo pausa/reanudación:
+
+```bash
+docker compose stop      # apaga sin destruir
+docker compose start     # reanuda en <60s
+docker compose down      # destruye contenedores y red
+```
+
+**Detalle arquitectónico:** el frontend se comunica con la API por dos caminos según el contexto:
+
+- Browser del cliente → `http://localhost:4000` (puerto publicado).
+- SSR dentro del contenedor `web` → `http://api:4000` (DNS interno de compose, vía `API_BASE_URL_INTERNAL`).
+
+Esto es transparente para el código gracias al helper `resolveApiBase()` en `apps/web/lib/api.ts`. Ver decisión `DEC-005` en `openspec/config.yaml` para el contexto completo.
+
+Tamaños actuales: API ~400MB, web ~346MB. Backlog iter-10 incluye una reducción del API a <250MB con stage `deps-prod` separado.
+
+---
+
 ## Cómo usarlo
 
 1. Descomprime/clona el repositorio.

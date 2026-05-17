@@ -1,16 +1,15 @@
 import type { Album } from "./album-types";
+import { resolveApiBase } from "./api";
 
 /**
  * Cliente HTTP para el recurso /albums.
  *
- * Reutiliza la convención de `lib/api.ts`:
- * - `NEXT_PUBLIC_API_BASE_URL` apunta a la raíz del backend (ej.
- *   http://localhost:4000), SIN /api.
+ * Reutiliza `resolveApiBase()` de `lib/api.ts` (iter-9):
+ * - En navegador → `NEXT_PUBLIC_API_BASE_URL` (default http://localhost:4000).
+ * - En SSR dentro de contenedor → `API_BASE_URL_INTERNAL` (Docker: http://api:4000).
  * - `cache: "no-store"` para que SSR no congele el listado.
  * - `404` en detalle → `null` (la página se encarga de `notFound()`).
  */
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "";
-
 function buildUrl(path: string, params?: Record<string, string | undefined>) {
   const search = new URLSearchParams();
   if (params) {
@@ -19,7 +18,7 @@ function buildUrl(path: string, params?: Record<string, string | undefined>) {
     }
   }
   const qs = search.toString();
-  return `${API_BASE}${path}${qs ? `?${qs}` : ""}`;
+  return `${resolveApiBase()}${path}${qs ? `?${qs}` : ""}`;
 }
 
 export async function fetchAlbums(options: {

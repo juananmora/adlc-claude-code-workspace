@@ -148,6 +148,56 @@ history:
         openspec/changes/about-credits/verify-report.md.
       commit: "ea88a5d"
 
+    - id: "DEC-005"
+      date: "2026-05-17"
+      title: "iter-9: dockerización + lección server components con DNS interno"
+      rationale: |
+        Empaqueta apps/api y apps/web en imágenes multi-stage (node:22-alpine,
+        USER node, healthchecks) orquestadas por docker-compose. Ambas
+        imágenes healthy con un único `docker compose up -d`.
+
+        Bug crítico detectado POR EL USUARIO post-cierre (no por el reviewer):
+        las fichas /products/[id], /albums/[id], /games/[id] son server
+        components y hacían fetch a `localhost:4000` desde dentro del
+        contenedor web. Dentro del contenedor, localhost es el propio
+        contenedor, no la API. ECONNREFUSED.
+
+        Fix:
+        - Nueva función `resolveApiBase()` en `apps/web/lib/api.ts` que
+          detecta server-side (typeof window === "undefined") y usa
+          API_BASE_URL_INTERNAL (DNS interno de compose, http://api:4000).
+        - Refactor de albums-api.ts y games-api.ts para usar el helper
+          consolidado (resuelve REC-7 del backlog iter-7 de paso).
+        - compose declara API_BASE_URL_INTERNAL=http://api:4000 en el
+          service web.
+
+        Lecciones procedimentales registradas en CLAUDE.md § Anti-patrones:
+        1. qa-engineer obligatorio TAMBIÉN en iters de infraestructura.
+           Me lo salté pensando "no hay cambios funcionales". El bug
+           pudo haberse pillado con tests E2E contra el nuevo entorno.
+        2. Smoke MCP debe cubrir TODAS las rutas con server components,
+           no solo el listado.
+        3. Cambios de infra (Docker, deploy) requieren re-ejecutar
+           Playwright contra el nuevo entorno, no contra el host de dev.
+
+        Verificación final tras fix:
+        - Playwright 46/46 verde CONTRA DOCKER (no solo host).
+        - Smoke MCP en /products/mbp-16-m4-pro, /albums/metallica-master-of-puppets,
+          /games/knight-lore: 0 errores consola en las 3.
+        - Healthchecks vuelven a healthy tras docker compose stop && start.
+
+        Gates:
+        - security-engineer: APROBADO CON OBSERVACIONES (0 CRITICAL/HIGH,
+          2 MEDIUM no bloqueantes, 4 LOW). Findings: API image 398MB
+          excede objetivo (devDeps en runtime), falta hardening compose.
+        - reviewer: APROBAR con observaciones no bloqueantes (antes del
+          descubrimiento del bug; tras el fix, suite Playwright contra
+          Docker 46/46 verde).
+
+        Reportes en reports/iter-9/. Verify-report en
+        openspec/changes/dockerize/verify-report.md.
+      commit: "TBD"
+
     - id: "DEC-004"
       date: "2026-05-17"
       title: "Reducir openspec/config.yaml: eliminar sección rules (duplicaba CLAUDE.md)"

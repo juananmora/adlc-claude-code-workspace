@@ -1,22 +1,19 @@
 import type { Game } from "./game-types";
+import { resolveApiBase } from "./api";
 
 /**
  * Cliente HTTP para el recurso /games.
  *
- * Reutiliza la convención de `lib/api.ts` y `lib/albums-api.ts`:
- * - `NEXT_PUBLIC_API_BASE_URL` apunta a la raíz del backend (ej.
- *   http://localhost:4000), SIN /api.
+ * Reutiliza `resolveApiBase()` de `lib/api.ts` (iter-9):
+ * - En navegador → `NEXT_PUBLIC_API_BASE_URL` (default http://localhost:4000).
+ * - En SSR dentro de contenedor → `API_BASE_URL_INTERNAL` (Docker: http://api:4000).
  * - `cache: "no-store"` para que SSR no congele el listado.
  * - `404` en detalle → `null` (la página se encarga de `notFound()`).
  *
- * El helper `buildUrl` se duplica localmente a propósito: levantarlo a
- * `lib/api.ts` ahora obligaría a refactorizar también `albums-api.ts` y
- * `api.ts`, lo cual queda fuera del alcance de T4 y arriesga regresiones en
- * `/albums` y `/products`. Se deja como deuda menor para que el reviewer
- * decida si consolidar en una iteración futura.
+ * En iter-9 se consolida la lógica de resolución de base URL en `lib/api.ts`
+ * porque la dockerización exigía distinguir entre fetch client-side y SSR
+ * (REC-7 del backlog iter-7 resuelto).
  */
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "";
-
 function buildUrl(path: string, params?: Record<string, string | undefined>) {
   const search = new URLSearchParams();
   if (params) {
@@ -25,7 +22,7 @@ function buildUrl(path: string, params?: Record<string, string | undefined>) {
     }
   }
   const qs = search.toString();
-  return `${API_BASE}${path}${qs ? `?${qs}` : ""}`;
+  return `${resolveApiBase()}${path}${qs ? `?${qs}` : ""}`;
 }
 
 export async function fetchGames(

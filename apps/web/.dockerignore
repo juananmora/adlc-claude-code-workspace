@@ -1,0 +1,12 @@
+node_modules
+.next
+dist
+.git
+.vscode
+.idea
+*.log
+.env*.local
+test-results
+playwright-report
+coverage
+.DS_Store
