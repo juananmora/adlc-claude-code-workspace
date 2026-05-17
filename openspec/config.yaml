@@ -100,8 +100,8 @@ testing:
 # Cualquier decisión que cambie cómo se trabaja con este repo entra aquí
 # con rationale y commit hash.
 history:
-  iterations_closed: 9
-  last_close: "2026-05-17"  # iter-9 commit e37d0e7
+  iterations_closed: 10
+  last_close: "2026-05-17"  # iter-10 commit TBD
 
   decisions:
     - id: "DEC-001"
@@ -216,3 +216,54 @@ history:
 
         Las reglas operativas viven SOLO en CLAUDE.md a partir de aquí.
       commit: "6a357eb"
+
+    - id: "DEC-006"
+      date: "2026-05-17"
+      title: "iter-10: nueva área `consoles` con 10 videoconsolas icónicas"
+      rationale: |
+        Añade sección `/consoles` al portal IRON DECK: 10 consolas históricas
+        (NES 1983 → Wii 2006), con catálogo + ficha de detalle. Es el primer
+        change ejecutado end-to-end con todas las lecciones acumuladas desde
+        iter-7 aplicadas de entrada:
+        - G/W/T + RFC 2119 desde el primer minuto (DEC-002).
+        - resolveApiBase() en el cliente HTTP desde el primer minuto
+          (DEC-005: SSR en Docker funciona sin parches post-cierre).
+        - qa-engineer obligatorio (post-DEC-005 anti-pattern).
+        - Smoke MCP en listado + 2 fichas distintas + 404 (post-DEC-005).
+        - Playwright ejecutado contra Docker, no contra host (post-DEC-005).
+        - encodeURIComponent(id) en path params desde el inicio (cierre
+          preventivo del patrón SEC-10-L1 detectado por security-engineer).
+
+        Entregables:
+        - apps/api: types/console.ts, data/consoles.ts (10 entradas),
+          routes/consoles.ts (GET /consoles?q&manufacturer&generation,
+          GET /consoles/:id), tests/consoles.test.ts (127 tests).
+        - apps/web: lib/console-types.ts, lib/consoles-api.ts (con
+          resolveApiBase + encodeURIComponent), app/consoles/{layout,
+          page, [id]/page, [id]/not-found}.tsx, components/{console-card,
+          consoles-grid}.tsx, components/iron-deck-header.tsx (link
+          "Consolas" entre "Games" y "About").
+        - apps/web/e2e/consoles.spec.ts (8 tests).
+        - apps/web/public/covers/consoles/*.jpg (10 portadas Wikipedia,
+          7-53 KB cada una, fair use editorial).
+
+        Gates:
+        - vitest backend: 360/360 verdes (127 nuevos + 233 previos).
+        - tsc frontend: exit 0 sin output.
+        - Playwright contra Docker: 54/54 verdes (8 nuevos + 46 previos).
+        - Smoke MCP: 0 errores consola en /consoles, /consoles/nintendo-64,
+          /consoles/playstation-2, /consoles/unknown-xxx.
+        - security-engineer: APROBADO CON OBSERVACIONES. 0 CRITICAL,
+          0 HIGH, 0 MEDIUM, 1 LOW (SEC-10-L1) cerrado en el mismo iter.
+        - reviewer: APROBAR.
+
+        Hallazgos vivos al cierre:
+        - SEC-9-M1 (MEDIUM heredado): imagen API 398MB > 300MB.
+          Diferido a iter-11 (deps-prod stage con npm ci --omit=dev).
+
+        Specs movidas tras cierre:
+        - openspec/changes/consoles/specs/consoles.md → specs/areas/consoles/spec.md.
+
+        Reportes en reports/iter-10/. Verify-report en
+        openspec/changes/consoles/verify-report.md.
+      commit: "TBD"
