@@ -6,11 +6,11 @@ Este repositorio define un workspace Claude Code para un ciclo de vida ADLC (Age
 
 - **Estado vivo del producto por dominio:** `specs/areas/<area>/spec.md` (Given/When/Then + RFC 2119). Áreas actuales: `platform`, `infra-azure`, `catalog-products`, `albums`, `games`.
 - **Propuestas de cambio activas:** `openspec/changes/<slug>/` (proposal + design + tasks + delta de specs).
-- **Contrato estructurado:** `openspec/config.yaml` (tech stack, reglas por fase, estrategia de testing, historial de decisiones).
+- **Datos operativos del repo:** `openspec/config.yaml` (tech stack, comandos exactos por capa de testing, historial de decisiones arquitectónicas). NO contiene reglas del flujo ADLC — esas viven solo aquí, en `CLAUDE.md`.
 - **Histórico iter-1 a iter-7:** `specs/acceptance-criteria-archive.md` (log inmutable, NO se edita).
 - **Reportes por iteración:** `reports/iter-<N>/<agente>.md`.
 
-> **Sincronización:** si una regla cambia, editar **CLAUDE.md (prosa) + `openspec/config.yaml` (estructura)** y registrarlo en `openspec/config.yaml § history.decisions[]`.
+> **Sincronización:** las reglas del flujo ADLC viven SOLO en este archivo (DEC-004). Si una decisión arquitectónica cambia algo, se registra en `openspec/config.yaml § history.decisions[]` con commit hash.
 
 ## Principios
 

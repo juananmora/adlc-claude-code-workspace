@@ -184,7 +184,7 @@ docs/
     ship.md                      # /ship: cierre + PR con evidencias
 
 openspec/
-  config.yaml                    # Contrato estructurado (tech stack + rules + testing)
+  config.yaml                    # Datos operativos (tech stack + testing + history.decisions)
   README.md
   changes/
     README.md                    # Ciclo de vida de un change
@@ -429,16 +429,43 @@ flowchart TB
 
 ### `openspec/config.yaml`
 
-Contrato estructurado parseable con:
+Datos operativos con tres bloques que sí tienen consumidor real
+(DEC-004 acotó el alcance):
 
-- `context`: tech stack real del repo.
+- `context`: tech stack real del repo. Útil para onboarding rápido
+  (~20 líneas leen humano nuevo o sesión fresca del LLM).
 - `strict_tdd`: bool honesto (hoy `false`).
-- `rules`: invariantes por fase ADLC (`spec`, `agents`, `delegate`,
-  `security`, `audit`, `smoke`, `review`, `human`, `ship`).
 - `testing`: capas disponibles (unit, integration, e2e, smoke) con
-  comandos exactos.
+  comandos exactos y `cwd`. Referencia canónica cuando hace falta
+  recordar p.ej. `npx playwright test --workers=1`.
 - `history.decisions[]`: registro de decisiones arquitectónicas con
-  rationale y commit hash.
+  rationale y commit hash (DEC-001/002/003/004 a fecha de hoy).
+  Auditoría retrospectiva.
+
+**Lo que NO contiene** (DEC-004): reglas por fase del flujo ADLC. Esas
+viven solo en `CLAUDE.md` para evitar drift. Tuvimos una sección
+`rules.*` entre iter-7 e iter-8 que duplicaba CLAUDE.md sin que nadie
+la consumiera automáticamente — eliminada en DEC-004.
+
+#### Quién lo lee, cuándo y para qué
+
+Honestamente, hoy es un archivo de **lectura humana o por petición
+explícita al LLM**, no procesado automáticamente por ninguna herramienta.
+
+| Consumidor | Cuándo | Para qué |
+|---|---|---|
+| Humano nuevo en el repo | Al hacer onboarding | Entender tech stack + comandos en 20 líneas, sin leer toda la documentación. |
+| Humano con el repo en marcha | Cuando duda de un comando | "¿Era `--workers=1` o `--workers=4`?" → mirar `testing.layers.e2e.command`. |
+| Humano auditor / nuevo PM | Cuando necesita contexto histórico | Leer `history.decisions[]` para entender por qué se tomó cada decisión arquitectónica con su commit. |
+| Claude principal | Solo si le pides explícitamente "lee openspec/config.yaml" | Refresco rápido del tech stack o de las decisiones pasadas. |
+| `scripts/validate_claude_workspace.py` | Nunca (a fecha de iter-8) | Valida agentes y skills, no este archivo. |
+| Pipelines CI | Nunca (a fecha de iter-8) | No hay workflow que lo parsee. |
+
+**Conclusión práctica:** úsalo como **referencia rápida** (tech stack,
+comandos exactos) y como **log auditable** (decisiones). No esperes
+que automatice nada por sí solo. Si en el futuro alguien escribe un
+CLI que valide o genere artefactos a partir de él (como hace gentle-ai
+con su Go CLI), la estructura YAML ya está preparada para eso.
 
 ### Ciclo de vida de un `change`
 
@@ -607,7 +634,7 @@ iter-7.
 - `specs/acceptance-criteria.md` → renombrado a `acceptance-criteria-archive.md` con cabecera explicativa (inmutable).
 - `specs/areas/<area>/spec.md` por dominio: 5 áreas iniciales (`platform`, `infra-azure`, `catalog-products`, `albums`, `games`) en formato G/W/T + RFC 2119.
 - `openspec/changes/<slug>/`: propuestas activas con `proposal.md` + `design.md` + `tasks.md` + delta `specs/<area>.md`.
-- `openspec/config.yaml`: contrato estructurado parseable.
+- `openspec/config.yaml`: datos operativos parseables (tech stack + testing + historial de decisiones). NO contiene reglas del flujo ADLC desde DEC-004.
 - Convención G/W/T + RFC 2119 obligatoria desde iter-8.
 
 ### DEC-003 (2026-05-17, commit `ea88a5d`) — iter-8: página `/about` con créditos
@@ -915,7 +942,7 @@ Basado en este workspace:
 
 - `CLAUDE.md` — manual operativo (siempre cargado en contexto del agente)
 - `README.md` — documentación pública del workspace
-- `openspec/config.yaml` — contrato estructurado parseable
+- `openspec/config.yaml` — datos operativos (tech stack + testing + history.decisions)
 - `openspec/changes/README.md` — ciclo de vida de un change
 - `specs/areas/README.md` — convención de specs vivos
 - `docs/harness-engineering.md` — notas internas sobre el harness

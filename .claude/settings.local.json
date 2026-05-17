@@ -37,7 +37,9 @@
       "PowerShell(New-TimeSpan *)",
       "PowerShell(gh auth *)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(Set-Location \"C:\\\\02 - Accenture\\\\03 - Repositorios\\\\adlc-claude-code-workspace\"; py.exe scripts/validate_claude_workspace.py 2>&1 | Select-Object -Last 3; Write-Output \"---\"; \\(Get-Content openspec/config.yaml | Measure-Object -Line\\).Lines; Write-Output \"---\"; git status --short; Write-Output \"---\"; git diff --stat openspec/config.yaml)"
     ]
   }
 }

@@ -1,32 +1,39 @@
-# `openspec/` — contrato estructurado del workspace
+# `openspec/` — datos operativos y propuestas de cambio
 
-Inspirado en el modelo [openspec de gentle-ai](https://github.com/Gentleman-Programming/gentle-ai/tree/main/openspec), adaptado a este repo.
+Inspirado en el modelo [openspec de gentle-ai](https://github.com/Gentleman-Programming/gentle-ai/tree/main/openspec), adaptado a las necesidades reales de este repo.
 
 ## Qué hay aquí
 
-- **`config.yaml`** — Contrato declarativo y parseable: tech stack, reglas por fase del flujo ADLC, estrategia de testing, decisiones históricas. Convive con `CLAUDE.md` (manual en prosa) sin duplicar contenido.
+| Archivo / directorio | Qué contiene | Quién lo lee |
+|---|---|---|
+| **`config.yaml`** | Tech stack del repo + comandos exactos por capa de testing + log auditable de decisiones arquitectónicas (`history.decisions[]`). | Humanos al hacer onboarding; Claude principal si se lo pides explícitamente. |
+| **`changes/<slug>/`** | Propuestas de cambio activas (`proposal.md` + `design.md` + `tasks.md` + delta de spec en `specs/<area>.md` + `verify-report.md` tras cerrar). | Claude principal al planificar e iterar una feature; humanos al revisar. |
+| **`changes/archive/<slug>/`** | Propuestas ya cerradas y mergeadas al spec vivo. | Auditoría retrospectiva. |
+| **`changes/README.md`** | Ciclo de vida de un change con el formato exacto de los archivos. | Cualquiera que vaya a crear un change nuevo. |
 
-## Qué NO hay aquí (y por qué)
+## Qué NO hay aquí (deliberadamente)
 
-A diferencia de gentle-ai, no usamos:
-
-- **`openspec/specs/<area>/spec.md`** — Nuestros specs por área viven en `specs/` (raíz del repo): `acceptance-criteria.md` como log vivo, `<slug>-prd.md` por iniciativa. Migrar a la convención por área es un refactor mayor que no se ha hecho.
-- **`openspec/changes/<slug>/`** — Lo equivalente nuestro es `specs/<slug>-prd.md` + `reports/iter-<N>/`. La granularidad por iteración (con reportes co-localizados por subagente) es superior para auditoría agéntica; la mantenemos.
+- **Reglas por fase del flujo ADLC.** Viven solo en `CLAUDE.md` (DEC-004). Tener una sección `rules.*` duplicaba CLAUDE.md sin que nadie la consumiera automáticamente.
+- **Specs vivos del producto.** Esos están en `specs/areas/<area>/spec.md` en la raíz del repo (DEC-002).
+- **Reportes de subagentes.** Esos están en `reports/iter-<N>/<agente>.md`.
 
 ## Cuándo leer `config.yaml`
 
-- Al planificar una iteración nueva (Fase 1-5 de CLAUDE.md): para confirmar qué tests, qué linters y qué gates están disponibles.
-- Al auditar trabajo de un subagente: para validar que las "reglas duras" de su fase están en el config.
-- Cuando una decisión arquitectónica se tome: añadirla a `history.decisions[]` con commit hash.
+Tres casos reales:
+
+1. **Onboarding rápido**: un humano nuevo (o yo en una sesión fresca) lee `context` para entender el tech stack en 20 líneas.
+2. **Necesito recordar un comando exacto**: `testing.layers.*.command` tiene los comandos canónicos (`npx playwright test --workers=1`, `npm audit --audit-level=high`, etc.) con su `cwd` correcto.
+3. **Auditoría retrospectiva**: `history.decisions[]` registra cada decisión arquitectónica (DEC-001/002/003/004) con rationale y commit hash. Útil cuando alguien pregunta "¿por qué eliminamos el orquestador?".
 
 ## Cuándo NO modificarlo
 
-- Para descripciones de proceso narrativas largas → `CLAUDE.md`.
-- Para estado de la iteración en curso → `specs/acceptance-criteria.md`.
+- Para reglas del proceso ADLC → `CLAUDE.md`.
+- Para estado vivo del producto → `specs/areas/<area>/spec.md`.
+- Para una propuesta de cambio nueva → `openspec/changes/<slug>/`.
 - Para reportes de subagente → `reports/iter-<N>/`.
 
-## Sincronización con CLAUDE.md
+## Sincronización con `CLAUDE.md`
 
-Si una regla cambia, **se edita en ambos sitios** y se anota en `history.decisions[]` con commit hash. La regla de oro:
+Mínima por diseño. El único punto de contacto es que ambos referencian las 12 fases ADLC, pero solo `CLAUDE.md` las describe en detalle. `config.yaml` deja al lector que vaya a `CLAUDE.md` cuando necesite las reglas.
 
-> `CLAUDE.md` es lo que Claude principal aplica turno a turno (prosa rica con anti-patrones y output esperado). `config.yaml` es lo que una máquina o un humano nuevo puede auditar de un vistazo (estructura mínima).
+Si una decisión arquitectónica cambia algo que afecta a ambos archivos, se edita lo necesario y se registra en `config.yaml § history.decisions[]` con commit hash.
