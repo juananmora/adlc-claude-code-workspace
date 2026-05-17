@@ -174,4 +174,26 @@ history:
         histórico specs/acceptance-criteria-archive.md mantiene iter-1..iter-7
         inmutable. Las áreas creadas: platform, infra-azure, catalog-products,
         albums, games. Convención G/W/T + RFC 2119 obligatoria a partir de iter-8.
-      commit: "TBD"  # se rellena tras el commit de este cambio
+      commit: "e4d5787"
+
+    - id: "DEC-003"
+      date: "2026-05-17"
+      title: "iter-8: página /about con créditos públicos — mitiga SEC-07-01"
+      rationale: |
+        Primer change ejecutado con el nuevo modelo (openspec/changes/<slug>/).
+        Implementa /about con 32 créditos de portadas (22 albums + 10 games),
+        autor + publisher + año + URL Wikipedia. Reduce SEC-07-01 heredado de
+        iter-7 (fair use editorial) de MEDIUM a LOW: la atribución pública es
+        parte del cumplimiento del fair use. NO cierra el finding: release
+        público sigue requiriendo visado legal.
+
+        Gates:
+        - security-engineer: APROBADO (0/0/0/0).
+        - reviewer: APROBAR con 1 bloqueante resuelta (grep verbos no-RFC 2119
+          en specs/areas/{platform,infra-azure,games}: 0 matches).
+        - Tests: vitest 233/233, Playwright 46/46, npm audit 0 vulns.
+        - Smoke MCP: 0 errores consola, 11/11 network 200.
+
+        Reportes en reports/iter-8/. Verify-report en
+        openspec/changes/about-credits/verify-report.md.
+      commit: "TBD"  # se rellena tras el commit de Fase B
