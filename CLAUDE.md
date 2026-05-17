@@ -50,7 +50,22 @@ Recorre **todas** estas fases. No saltes ninguna. Si una no aplica, justifícalo
 
 ### Fase 4 — Selección de agentes y skills
 
-Mapea cada área de criterios a un subagente disponible: `backend-engineer`, `frontend-engineer`, `cicd-engineer`, `terraform-engineer`, `qa-engineer`, `observability-engineer`, `security-engineer`, `reviewer`, `cloud-architect`.
+Mapea cada área de criterios a un subagente disponible. Catálogo completo del workspace:
+
+| Agente | Cuándo se activa | Skill declarada |
+|---|---|---|
+| `cloud-architect` | Decisiones de arquitectura cloud antes de IaC. | `design-landing-zone` |
+| `terraform-engineer` | Crear/validar módulos IaC. | `generate-terraform-modules` |
+| `backend-engineer` | APIs, modelos, lógica de negocio, conexión a BD. | `generate-product-api` |
+| `frontend-engineer` | UI catálogo, landing, filtros, buscador, responsive. | `create-catalog-ui` |
+| `cicd-engineer` | Pipelines, gates, despliegues por entorno. | `ci-cd-pipeline` |
+| `qa-engineer` | Estrategia y tests (unit, integración, API, E2E). | `generate-tests` |
+| `security-engineer` | Gate Fase 7: deps, IAM, IaC, secretos, contenedores. | `security-review` |
+| `observability-engineer` | Logs, métricas, trazas, dashboards, SLOs, alertas. | `observability-design` |
+| `reviewer` | Auditoría final independiente antes de aprobación humana. | `review-pr` |
+
+Skills disponibles en `.claude/skills/` (también invocables directamente con la tool `Skill`):
+`create-prd`, `plan-agentic-work`, `design-landing-zone`, `generate-terraform-modules`, `generate-product-api`, `create-catalog-ui`, `ci-cd-pipeline`, `generate-tests`, `security-review`, `observability-design`, `review-pr`.
 
 Si una capacidad no existe, **documéntala como gap y pide aprobación humana**. No la inventes.
 

@@ -266,21 +266,7 @@ Los agentes se invocan vía la herramienta `Agent` con `subagent_type=<nombre>`.
 
 ### Catálogo
 
-**Agentes** (`.claude/agents/`)
-
-| Agente | Cuándo se activa | Skills declaradas |
-|---|---|---|
-| `cloud-architect` | Decisiones de arquitectura cloud antes de IaC. | `design-landing-zone` |
-| `terraform-engineer` | Crear/validar módulos IaC. | `generate-terraform-modules` |
-| `backend-engineer` | APIs, modelos, lógica de negocio, conexión a BD. | `generate-product-api` |
-| `frontend-engineer` | UI catálogo, landing, filtros, buscador, responsive. | `create-catalog-ui` |
-| `cicd-engineer` | Pipelines, gates, despliegues por entorno. | `ci-cd-pipeline` |
-| `qa-engineer` | Estrategia y tests (unit, integración, API, E2E). | `generate-tests` |
-| `security-engineer` | Gate Fase 7: deps, IaM, IaC, secretos, contenedores. | `security-review` |
-| `observability-engineer` | Logs, métricas, trazas, dashboards, SLOs, alertas. | `observability-design` |
-| `reviewer` | Auditoría final independiente antes de aprobación humana. | `review-pr` |
-
-**Skills** (`.claude/skills/`): `create-prd`, `plan-agentic-work`, `design-landing-zone`, `generate-terraform-modules`, `generate-product-api`, `create-catalog-ui`, `ci-cd-pipeline`, `generate-tests`, `security-review`, `observability-design`, `review-pr`.
+El catálogo completo de agentes (cuándo se activa cada uno + skill declarada) y la lista de skills viven en **[`CLAUDE.md` § Fase 4](CLAUDE.md#fase-4--selección-de-agentes-y-skills)**. Está allí en lugar de aquí porque es información operativa que Claude principal usa al planificar cada iteración, y `CLAUDE.md` se inyecta siempre en su contexto.
 
 ### Mapa visual: criterio → agente → skill
 
