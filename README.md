@@ -170,7 +170,7 @@ flowchart TD
 - Skills → las invoca el subagente activo con la tool `Skill`. El prompt del subagente debe pedir la skill explícitamente y exigir que el reporte abra con `## Skills ejecutadas`.
 - `/ship` → lo escribes tú al final, no se dispara solo.
 
-> `security-engineer` (Fase 7) y `reviewer` (Fase 10) son **obligatorios en TODA iteración**. El reviewer aporta el valor de "ojos frescos" que detecta bugs semánticos que se le escapan al ejecutor.
+> **Tres subagentes son obligatorios en TODA iteración** (incluido refactor, dockerización, devops, docs): `qa-engineer` (Fase 6, tests automáticos), `security-engineer` (Fase 7, gate de seguridad) y `reviewer` (Fase 10, auditoría independiente con "ojos frescos"). El bug de fichas SSR detectado en iter-9 se escapó precisamente porque salté al `qa-engineer` pensando "es solo Docker, no hay cambios funcionales" — anti-patrón ya codificado en `CLAUDE.md`.
 
 ### Vista general del flujo
 

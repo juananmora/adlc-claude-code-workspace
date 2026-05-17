@@ -45,8 +45,10 @@ valida con gates automáticos y humanos.
 - **Criterios de aceptación verificables** mediante comando, test o
   inspección reproducible (Given/When/Then + RFC 2119 desde iter-8).
 - **Subagentes con contextos aislados** y skills declaradas.
-- **Gates inferenciales independientes** (security + reviewer) que
-  no se saltan nunca, ni en demos.
+- **Tres subagentes obligatorios en TODA iteración** (incluido refactor,
+  devops, dockerización): `qa-engineer` (Fase 6), `security-engineer`
+  (Fase 7) y `reviewer` (Fase 10). No se saltan nunca, ni en demos, ni
+  en iters de pura infraestructura.
 - **Aprobación humana obligatoria** para acciones de blast radius alto.
 - **Trazabilidad versionada en Git**: specs, reportes, decisiones y
   capturas viven como artefactos auditables.
@@ -134,6 +136,7 @@ flowchart TB
         G4[IaC scanners]
     end
     subgraph INF[Gates inferenciales · semánticos · independientes]
+        I0[qa-engineer<br/>Fase 6]
         I1[security-engineer<br/>Fase 7]
         I2[reviewer<br/>Fase 10]
     end
@@ -155,7 +158,7 @@ flowchart TB
     classDef fb fill:#fff4c2,stroke:#b7950b,color:#000
     class FF1,FF2,FF3,FF4 ff
     class G1,G2,G3,G4 comp
-    class I1,I2 inf
+    class I0,I1,I2 inf
     class FB1,FB2,FB3,FB4 fb
 ```
 
@@ -269,9 +272,9 @@ flowchart LR
 | 1 | Entender | Claude principal | Resumen 1-3 frases + supuestos explícitos. Preguntas en una sola tanda si hay ambigüedad. |
 | 2 | Spec/PRD | Claude principal | `specs/<slug>-prd.md` u `openspec/changes/<slug>/proposal.md`. |
 | 3 | Criterios verificables | Claude principal | Criterios G/W/T + RFC 2119 en `specs/areas/<area>/spec.md` o delta en `openspec/changes/<slug>/specs/<area>.md`. |
-| 4 | Selección de agentes y skills | Claude principal | Mapa criterio → agente → skill. Agentes obligatorios: qa-engineer, security-engineer, reviewer. |
+| 4 | Selección de agentes y skills | Claude principal | Mapa criterio → agente → skill. **Tres obligatorios en TODA iteración** (incluido refactor, devops, dockerización, docs): `qa-engineer`, `security-engineer`, `reviewer`. |
 | 5 | Plan | Claude principal | TaskList con dependencias. Una tarea por subagente por área. |
-| 6 | Ejecución delegada | Subagentes ejecutores | Prompts autocontenidos. Skill enforcement. Reportes persistidos en `reports/iter-N/<agente>.md`. |
+| 6 | Ejecución delegada (incluye **qa gate** ⛔) | Subagentes ejecutores, **qa-engineer obligatorio** | Prompts autocontenidos. Skill enforcement. Reportes persistidos en `reports/iter-N/<agente>.md`. El `qa-engineer` debe ejecutarse incluso si no hay cambios de lógica de negocio (lección iter-9). |
 | 7 | **Security gate** ⛔ | `security-engineer` + `security-review` | Findings con severidad. CRITICAL/HIGH bloquean. |
 | 8 | Auditoría criterio por criterio | Claude principal | Tabla `criterio \| evidencia \| estado`. Solo marcar lo verificado. |
 | 9 | Smoke funcional | Claude principal con Chrome DevTools MCP | Capturas + consola + network. Errores son bugs reales. |
@@ -309,7 +312,7 @@ memory: project
 | `backend-engineer` | APIs, modelos, lógica de negocio | `generate-product-api` |
 | `frontend-engineer` | UI catálogo, landing, filtros, ficha | `create-catalog-ui` |
 | `cicd-engineer` | Pipelines, gates, despliegues | `ci-cd-pipeline` |
-| `qa-engineer` | Estrategia y tests (unit, integ, E2E) | `generate-tests` |
+| `qa-engineer` ⛔ | **Gate Fase 6**: estrategia y tests (unit, integ, E2E). Obligatorio incluso en iters de infra/devops. | `generate-tests` |
 | `security-engineer` ⛔ | **Gate Fase 7**: deps, IAM, IaC, secretos | `security-review` |
 | `observability-engineer` | Logs, métricas, trazas, dashboards | `observability-design` |
 | `reviewer` ⛔ | **Gate Fase 10**: auditoría final independiente | `review-pr` |
@@ -521,6 +524,7 @@ flowchart LR
     end
     subgraph INF[Gates inferenciales]
         direction TB
+        I0[qa-engineer<br/>tests automáticos contra criterios]
         I1[security-engineer<br/>findings semánticos]
         I2[reviewer<br/>juicio de calidad]
     end
@@ -536,7 +540,7 @@ flowchart LR
     classDef inf fill:#fde2e2,stroke:#c0392b,color:#000
     classDef hum fill:#fff4c2,stroke:#b7950b,color:#000
     class C1,C2,C3,C4 comp
-    class I1,I2 inf
+    class I0,I1,I2 inf
     class H1 hum
 ```
 
@@ -547,6 +551,25 @@ flowchart LR
 | Detecta | Errores formales | Bugs semánticos, riesgos | Decisiones de negocio |
 | Frecuencia | Cada cambio | Antes de cierre | Antes de blast radius alto |
 | Bloquea cierre si falla | Sí | Sí (HIGH/CRITICAL) | Siempre |
+
+### Fase 6 — qa-engineer gate (obligatorio incluso en infra)
+
+`qa-engineer` recorre con la skill `generate-tests`:
+
+- Derivar tests automáticos de los criterios G/W/T + RFC 2119 del spec.
+- Implementar tests unitarios (vitest), integración (`fastify
+  app.inject`) y E2E (Playwright `--workers=1`) según lo que aplique al
+  delta.
+- Ejecutar la suite completa y reportar `X passed / Y failed` literal.
+- En iters de infraestructura, devops, dockerización o deploy: validar
+  que la suite previa **sigue verde contra el nuevo entorno**, no solo
+  contra el host de desarrollo (lección DEC-005).
+
+**Lección aprendida iter-9:** este gate era el más fácil de saltarse
+porque "no había cambios de lógica". El bug de fichas SSR en Docker
+(server components fallaban con ECONNREFUSED) se escapó precisamente
+por eso. Desde DEC-005, `qa-engineer` es obligatorio incluso cuando
+una iteración no cambia código de negocio.
 
 ### Fase 7 — Security gate
 
@@ -913,7 +936,7 @@ auditoría completa, no defender el cierre.
 | "Los warnings de consola son ruido de Next/devtools" | Investigar uno a uno. |
 | "El usuario lo probará" | Tú lo pruebas primero con Chrome DevTools MCP. |
 | "Lo cierro y si hay algo lo arreglamos luego" | Antes de cerrar, una pasada más de auditoría. |
-| "Es solo una demo, me salto security/reviewer" | Security y reviewer son **siempre** obligatorios. |
+| "Es solo una demo, me salto qa/security/reviewer" | qa-engineer, security-engineer y reviewer son **los tres siempre obligatorios** (DEC-005), incluido refactor, devops, dockerización y docs. |
 | "El usuario me dirá si hay vulnerabilidades" | Tú lanzas al security-engineer. El usuario aprueba, no descubre. |
 | "El subagente sabrá qué skill usar" | Indica explícitamente la skill esperada en el prompt. |
 | "Esta feature es pequeña, me salto las Fases 7 y 10" | El default es ejecutarlas. Si decides omitirlas, el usuario debe firmar explícitamente y el reporte debe registrarlo. |
