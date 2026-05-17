@@ -101,7 +101,7 @@ testing:
 # con rationale y commit hash.
 history:
   iterations_closed: 10
-  last_close: "2026-05-17"  # iter-10 commit TBD
+  last_close: "2026-05-17"  # iter-10 commit 6339801
 
   decisions:
     - id: "DEC-001"
@@ -266,4 +266,4 @@ history:
 
         Reportes en reports/iter-10/. Verify-report en
         openspec/changes/consoles/verify-report.md.
-      commit: "TBD"
+      commit: "6339801"
