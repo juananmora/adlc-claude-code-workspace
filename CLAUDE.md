@@ -2,9 +2,15 @@
 
 Este repositorio define un workspace Claude Code para un ciclo de vida ADLC (Agentic Development Lifecycle / SDD).
 
-La fuente de verdad del estado real de la iteración en curso es `specs/acceptance-criteria.md`, **no** resúmenes en chat.
+## Fuentes de verdad
 
-> **Contrato estructurado complementario:** [`openspec/config.yaml`](openspec/config.yaml) expone el tech stack, las reglas de cada fase y la estrategia de testing en formato YAML parseable. Inspirado en [openspec de gentle-ai](https://github.com/Gentleman-Programming/gentle-ai/tree/main/openspec). Si una regla cambia, editar **ambos archivos** y registrarlo en `openspec/config.yaml § history.decisions[]`.
+- **Estado vivo del producto por dominio:** `specs/areas/<area>/spec.md` (Given/When/Then + RFC 2119). Áreas actuales: `platform`, `infra-azure`, `catalog-products`, `albums`, `games`.
+- **Propuestas de cambio activas:** `openspec/changes/<slug>/` (proposal + design + tasks + delta de specs).
+- **Contrato estructurado:** `openspec/config.yaml` (tech stack, reglas por fase, estrategia de testing, historial de decisiones).
+- **Histórico iter-1 a iter-7:** `specs/acceptance-criteria-archive.md` (log inmutable, NO se edita).
+- **Reportes por iteración:** `reports/iter-<N>/<agente>.md`.
+
+> **Sincronización:** si una regla cambia, editar **CLAUDE.md (prosa) + `openspec/config.yaml` (estructura)** y registrarlo en `openspec/config.yaml § history.decisions[]`.
 
 ## Principios
 

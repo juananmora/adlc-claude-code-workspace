@@ -1,4 +1,19 @@
-# Criterios de aceptación
+# Criterios de aceptación — ARCHIVO HISTÓRICO (iter-1 a iter-7)
+
+> **Este archivo es inmutable.** Contiene el log cronológico de criterios de
+> aceptación cerrados entre iter-1 e iter-7, en su formato original (checkboxes
+> con prosa libre). A partir de iter-8 los criterios vivos se mantienen en
+> `specs/areas/<area>/spec.md` en formato Given/When/Then + RFC 2119, y las
+> propuestas nuevas en `openspec/changes/<slug>/`. NO editar este archivo —
+> migrar es una decisión arquitectónica deliberada (ver `openspec/config.yaml §
+> history.decisions[]`).
+>
+> **Áreas vivas equivalentes:**
+> - "Plataforma" → `specs/areas/platform/spec.md`
+> - "IaC Azure" → `specs/areas/infra-azure/spec.md`
+> - "Backend"/"Frontend"/"Carrito"/"CI/CD"/"Observabilidad" → `specs/areas/catalog-products/spec.md`
+> - "Discos heavy metal"/"Crítica de discos"/"Filtro por género"/"Catálogo Mötley Crüe" → `specs/areas/albums/spec.md`
+> - "Catálogo Games — Amstrad CPC" → `specs/areas/games/spec.md`
 
 ## Plataforma
 

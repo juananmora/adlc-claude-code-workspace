@@ -7,8 +7,11 @@
 # prosa) sin duplicar contenido — aquí va lo que una máquina o un humano
 # pueden auditar de un vistazo.
 #
-# Fuente de verdad de las 12 fases ADLC: CLAUDE.md (raíz del repo).
-# Fuente de verdad del estado de la iteración en curso: specs/acceptance-criteria.md.
+# Fuentes de verdad:
+#   - 12 fases ADLC y reglas duras: CLAUDE.md (raíz del repo).
+#   - Estado vivo por dominio: specs/areas/<area>/spec.md (G/W/T + RFC 2119).
+#   - Propuestas de cambio activas: openspec/changes/<slug>/.
+#   - Histórico iter-1..iter-7: specs/acceptance-criteria-archive.md (inmutable).
 
 schema: spec-driven
 
@@ -37,9 +40,11 @@ rules:
     - "Una sola tanda de preguntas si hay ambigüedad bloqueante. Nada de goteo."
 
   spec:
-    - "Si no hay PRD, crear `specs/<slug>-prd.md`."
-    - "Criterios en `specs/acceptance-criteria.md` deben ser verificables (comando, test o inspección reproducible)."
-    - "Convención para criterios nuevos: Given/When/Then + RFC 2119 (MUST/SHALL/SHOULD/MAY). Ver CLAUDE.md § Convención de criterios."
+    - "Estado vivo del dominio en `specs/areas/<area>/spec.md` (G/W/T + RFC 2119)."
+    - "Propuesta nueva en `openspec/changes/<slug>/{proposal,design,tasks}.md`."
+    - "Delta de spec por área en `openspec/changes/<slug>/specs/<area>.md` con secciones ADDED/MODIFIED/REMOVED."
+    - "Cada criterio MUST ser verificable: comando, test o inspección reproducible."
+    - "Histórico iter-1..iter-7 en `specs/acceptance-criteria-archive.md` (NO editar)."
 
   agents:
     - "Mapear cada área de criterios a un subagente disponible (CLAUDE.md § Fase 4)."
@@ -62,9 +67,10 @@ rules:
     - "Tras fix de finding, re-lanzar security-engineer (no creer al implementador)."
 
   audit:
-    - "Auditoría criterio por criterio sobre `specs/acceptance-criteria.md`."
+    - "Auditoría criterio por criterio sobre `specs/areas/<area>/spec.md` (área tocada) + delta en `openspec/changes/<slug>/`."
     - "Tabla `criterio | evidencia | estado` obligatoria en cierre."
     - "Marcar solo verificados. Rojos honestos > verdes falsos."
+    - "Tras `/ship`, mergear delta a `specs/areas/<area>/spec.md` y mover change a `openspec/changes/archive/<slug>/`."
 
   smoke:
     - "Si hay app ejecutable: arrancar (verificar listener con Get-NetTCPConnection)."
@@ -157,3 +163,15 @@ history:
         doble redacción de prompts) sin valor proporcional. CLAUDE.md ya contiene
         el manual completo y se inyecta siempre. Claude principal orquesta directamente.
       commit: "c03bcfc"
+
+    - id: "DEC-002"
+      date: "2026-05-17"
+      title: "Adoptar specs/areas/ + openspec/changes/ con G/W/T + RFC 2119"
+      rationale: |
+        Inspirado en el modelo openspec de gentle-ai. Separa estado vivo del
+        producto (specs/areas/<area>/spec.md, declarativo) de propuestas de
+        cambio activas (openspec/changes/<slug>/, mutaciones). El archivo
+        histórico specs/acceptance-criteria-archive.md mantiene iter-1..iter-7
+        inmutable. Las áreas creadas: platform, infra-azure, catalog-products,
+        albums, games. Convención G/W/T + RFC 2119 obligatoria a partir de iter-8.
+      commit: "TBD"  # se rellena tras el commit de este cambio
