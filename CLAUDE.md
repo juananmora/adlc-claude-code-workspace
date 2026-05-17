@@ -15,23 +15,19 @@ La fuente de verdad del estado real de la iteración en curso es `specs/acceptan
 
 ---
 
-## Quién orquesta cada tarea
+## Quién orquesta
 
-Hay dos formas válidas de ejecutar este flujo. **El flujo es el mismo en ambos casos.** Lo único que cambia es quién lo conduce.
+**Claude principal orquesta siempre**, aplicando el flujo ADLC de 12 fases definido abajo.
 
-| Situación | Quién orquesta |
-|---|---|
-| PRD desde cero (no existe spec) | Agente `adlc-orchestrator` |
-| > 5 subagentes en paralelo | Agente `adlc-orchestrator` |
-| Bucles de corrección con varios reviewers/qa | Agente `adlc-orchestrator` |
-| Despliegues con gates humanos formales | Agente `adlc-orchestrator` |
-| Feature pequeña (< 5 archivos) con spec ya existente | Claude principal |
-| Bug fix o refactor local | Claude principal |
-| Cambio puntual de documentación | Claude principal |
+No existe un agente "orquestador" dedicado. La práctica demostró (iter-4 a iter-7) que delegar la orquestación a un subagente aislado añade overhead (sandbox sin Bash, sin tool `Agent` para sub-sub-agentes, doble redacción de prompts) sin valor proporcional, porque el manual operativo ya vive en este archivo y se aplica con disciplina desde el chat principal.
 
-Cuando Claude principal asume el rol de orquestador, aplica **íntegramente** el flujo de 12 fases definido abajo. No es un atajo, es la misma exigencia con menos overhead de aislamiento.
+Lo que sí se delega son los **subagentes ejecutores especializados** (`backend-engineer`, `frontend-engineer`, `qa-engineer`, `security-engineer`, `reviewer`, etc.), que sí aportan valor real:
 
-El agente `adlc-orchestrator` existe en `.claude/agents/adlc-orchestrator.md` y se invoca con `Agent({ subagent_type: "adlc-orchestrator", ... })` cuando aplica una de las situaciones de la columna izquierda.
+- **Subagentes ejecutores**: tienen contexto aislado, skills declaradas y trabajan sobre archivos concretos. Claude principal redacta prompts autocontenidos y audita sus reportes.
+- **`reviewer` como Fase 10**: instancia independiente con ojos frescos. Es el gate inferencial que detecta bugs semánticos (ej. portada de juego equivocado).
+- **`security-engineer` como Fase 7**: gate de seguridad obligatorio antes del reviewer.
+
+Skills del antiguo orquestador (`create-prd`, `plan-agentic-work`, `review-pr`) se invocan directamente con la tool `Skill` cuando aplica, o las hereda el subagente correspondiente (p.ej. `reviewer` ya declara `review-pr` en su frontmatter).
 
 ---
 
@@ -179,7 +175,7 @@ Si el usuario pide explícitamente `commit + push` sin pasar por `/ship`, hazlo 
 
 ## Reglas duras antes de declarar trabajo terminado
 
-Estas reglas son **obligatorias** y aplican a cualquier agente que cierre una iteración (orquestador, reviewer o ejecutor final). Repiten las salvaguardas de las 12 fases en formato condensado para tenerlas siempre a mano.
+Estas reglas son **obligatorias** y aplican a Claude principal y a cualquier subagente que cierre una iteración (reviewer, ejecutor final). Repiten las salvaguardas de las 12 fases en formato condensado para tenerlas siempre a mano.
 
 1. **Auditoría criterio por criterio.** Antes de decir "completo", recorre `specs/acceptance-criteria.md` checkbox por checkbox. Para cada uno: anota qué archivo/test/comando lo valida y si lo has ejecutado. Si no, déjalo rojo con motivo. Reporte final debe incluir una tabla `criterio | evidencia | estado`.
 

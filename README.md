@@ -15,7 +15,6 @@ README.md                                        # Este documento
 .claude/
   settings.local.json                            # Permisos locales de Claude Code
   agents/                                        # Subagents (Markdown + YAML frontmatter)
-    adlc-orchestrator.md                         # Stub que apunta a CLAUDE.md (modo aislado para iteraciones grandes)
     cloud-architect.md                           # Topología cloud, IAM, red
     terraform-engineer.md                        # Módulos IaC
     backend-engineer.md                          # APIs y lógica de negocio
@@ -60,7 +59,7 @@ apps/                                            # Código de aplicación de dem
 infra/                                           # IaC (Terraform + azurerm)
 ```
 
-> **Nota sobre el manual.** A partir de iteración 5, el flujo ADLC completo (las 12 fases, reglas duras, anti-patrones, output esperado) vive **solo en `CLAUDE.md`** para que esté siempre en el contexto. El archivo del agente `adlc-orchestrator.md` quedó reducido a un stub que apunta al manual. Esto evita que se "olviden" fases obligatorias cuando Claude principal asume el rol sin invocar al agente.
+> **Nota sobre el manual.** El flujo ADLC completo (las 12 fases, reglas duras, anti-patrones, output esperado) vive en `CLAUDE.md` y se inyecta siempre en el contexto. **Claude principal orquesta directamente**; no existe un agente "orquestador" dedicado. La práctica entre iter-4 e iter-7 demostró que delegar la orquestación a un subagente aislado añade overhead (sandbox sin Bash, sin tool `Agent` para sub-sub-agentes, doble redacción de prompts) sin valor proporcional. Los subagentes ejecutores especializados (`backend-engineer`, `frontend-engineer`, `qa-engineer`, `security-engineer`, `reviewer`) sí aportan valor y se invocan caso a caso.
 
 ---
 
@@ -70,17 +69,18 @@ infra/                                           # IaC (Terraform + azurerm)
 2. Abre Claude Code en esa carpeta. `CLAUDE.md` se carga automáticamente como manual.
 3. Ejecuta `/agents` para comprobar los subagents disponibles.
 4. Ejecuta `/skills` para comprobar las skills disponibles.
-5. Lanza una iniciativa. Dos formas, según el tamaño:
+5. Lanza una iniciativa. Ejemplos:
 
    ```text
    # Iniciativa nueva grande (PRD desde cero, varios componentes):
-   Use the ADLC orchestrator to plan a landing zone for a computer-store product catalog.
+   Quiero una landing zone cloud para un catálogo de productos. Plan completo: PRD,
+   criterios verificables, IaC, backend, frontend, CI/CD, observabilidad, seguridad.
 
    # Cambio acotado en algo que ya existe:
    Añade un filtro por género al listado de discos, end-to-end con tests y smoke.
    ```
 
-   En el primer caso se invoca el agente `adlc-orchestrator` (aislado). En el segundo, Claude principal asume el rol de orquestador y aplica las mismas 12 fases sin overhead de subagente. Ver tabla "Quién orquesta cada tarea" abajo.
+   En cualquier caso Claude principal aplica las 12 fases del manual `CLAUDE.md` y delega en subagentes ejecutores especializados (`backend-engineer`, `frontend-engineer`, `qa-engineer`, `security-engineer`, `reviewer`) según el área.
 
 Validación local de la plantilla:
 
@@ -92,31 +92,16 @@ python scripts/validate_claude_workspace.py
 
 ## Sistema de orquestación: cómo funciona
 
-### Quién hace qué (los tres planos)
+### Quién hace qué (dos planos)
 
-Antes de mirar el flujo, conviene separar tres actores que se confunden a menudo:
+Solo hay dos actores en el flujo:
 
 | Plano | Quién | Qué hace | Cuándo entra |
 |---|---|---|---|
 | **Manual** | `CLAUDE.md` | Contiene **las 12 fases completas**, reglas duras, anti-patrones y output esperado. Es el manual operativo del flujo ADLC. No ejecuta nada. | Siempre en contexto — Claude Code lo carga automáticamente en cada conversación dentro del repo. |
-| **First responder** | Claude Code en el chat principal | Recibe tu mensaje, decide si responde directo, asume el rol de orquestador para tareas pequeñas, o invoca al agente `adlc-orchestrator` para iteraciones grandes. | Cada vez que escribes algo. |
-| **Orquestador aislado** | `adlc-orchestrator` (subagente) | Stub que apunta a `CLAUDE.md` y aplica el mismo manual en un contexto aislado con la herramienta `Task`. | **Solo cuando se le invoca explícitamente** y aplica una de las condiciones de la tabla de abajo. No se auto-arranca. |
+| **Orquestador** | Claude Code en el chat principal | Aplica el manual íntegramente: planifica, delega en subagentes ejecutores especializados, audita reportes, lanza gates obligatorios, cierra con `/ship`. | Cada vez que escribes algo. |
 
-> **Punto clave:** desde iteración 5, el manual ADLC vive **únicamente en `CLAUDE.md`**. El archivo del agente es un stub corto que delega en él. Cuando Claude principal "asume el rol de orquestador" (caso por defecto en tareas pequeñas), aplica las mismas 12 fases — están en su contexto inyectado por el harness.
-
-### Quién orquesta cada tarea
-
-| Situación | Quién orquesta |
-|---|---|
-| PRD desde cero (no existe spec) | Agente `adlc-orchestrator` |
-| > 5 subagentes en paralelo | Agente `adlc-orchestrator` |
-| Bucles de corrección con varios reviewers/qa | Agente `adlc-orchestrator` |
-| Despliegues con gates humanos formales | Agente `adlc-orchestrator` |
-| Feature pequeña (< 5 archivos) con spec ya existente | Claude principal |
-| Bug fix o refactor local | Claude principal |
-| Cambio puntual de documentación | Claude principal |
-
-El flujo es el mismo en ambos casos. Lo único que cambia es el aislamiento del contexto. Si se invoca al agente, su contexto es independiente del chat principal (útil para iteraciones largas donde el contexto se contamina); si Claude principal lo asume, va directo sin overhead.
+> **Punto clave:** **no existe un agente "orquestador" dedicado**. La práctica entre iter-4 e iter-7 demostró que delegar la orquestación a un subagente aislado (sandbox sin Bash, sin tool `Agent` para sub-sub-agentes) añade overhead sin valor proporcional. Claude principal orquesta directamente porque el manual ya vive en su contexto.
 
 ### Flujo desde tu petición hasta el PR
 
@@ -125,16 +110,12 @@ flowchart TD
     U([Tú: petición en chat]) --> CC[Claude Code chat principal<br/>CLAUDE.md cargado en contexto]
     CC --> D{Tipo de petición}
     D -->|Pregunta / exploración<br/>/ edición simple| RESP([Respuesta directa])
-    D -->|Una pieza concreta| AG1[Agente del dominio<br/>p.ej. reviewer, frontend-engineer]
-    D -->|Iniciativa multi-componente| ORQ[adlc-orchestrator]
-    AG1 --> CIERRE[Auditoría + /ship]
-    ORQ --> ORQF[Recorre 12 fases:<br/>spec → plan → ejecución<br/>→ gates → cierre]
-    ORQF --> CIERRE
+    D -->|Iniciativa con código| FLOW[Recorre 12 fases:<br/>spec → plan → ejecución delegada<br/>en subagentes → gates → cierre]
+    FLOW --> CIERRE[Auditoría + /ship]
     CIERRE --> PR([PR para humano])
 
-    RULE[CLAUDE.md<br/>reglas duras<br/>aplican a quien cierre] -.->|rige| CC
-    RULE -.->|rige| AG1
-    RULE -.->|rige| ORQ
+    RULE[CLAUDE.md<br/>reglas duras] -.->|rige| CC
+    RULE -.->|rige| FLOW
 
     classDef contract fill:#f3e5f5,stroke:#6a1b9a,color:#000
     classDef human fill:#fff4c2,stroke:#b7950b,color:#000
@@ -146,18 +127,17 @@ flowchart TD
 
 - `CLAUDE.md` → automático. No haces nada. Su contenido se inyecta como contrato del proyecto.
 - Chat principal → tu mensaje en el prompt.
-- Agente concreto → o lo pides tú (*"Que el reviewer audite esta rama"*) o el chat principal lo delega usando la herramienta `Agent` con `subagent_type=<nombre>` cuando la petición lo justifica.
-- `adlc-orchestrator` → se invoca solo cuando aplica la tabla "Quién orquesta cada tarea". Para iteraciones acotadas, Claude principal lo hace directamente sin invocar al agente.
-- Skills → las invoca el agente activo con la herramienta `Skill`. Quien orquesta exige explícitamente qué skill ejecutar.
+- Subagentes ejecutores (`backend-engineer`, `frontend-engineer`, `qa-engineer`, `security-engineer`, `reviewer`, etc.) → el chat principal los delega con `Agent({ subagent_type: ..., prompt: ... })` cuando hay trabajo en un dominio concreto. Cada subagente trabaja en contexto aislado con skills declaradas en su frontmatter.
+- Skills → las invoca el subagente activo con la tool `Skill`. El prompt del subagente debe pedir la skill explícitamente y exigir que el reporte abra con `## Skills ejecutadas`.
 - `/ship` → lo escribes tú al final, no se dispara solo.
 
-> El workspace fue diseñado alrededor del agente `adlc-orchestrator`, pero la práctica real demostró que para iteraciones pequeñas la doble planificación (Claude principal + orquestador aislado) añade fricción. Por eso desde iteración 5 el manual está consolidado en `CLAUDE.md` y aplica igual a quien conduzca el flujo. `security-engineer` y `reviewer` nunca se saltan en ningún caso — son obligatorios en TODA iteración salvo justificación explícita.
+> `security-engineer` (Fase 7) y `reviewer` (Fase 10) son **obligatorios en TODA iteración**. El reviewer aporta el valor de "ojos frescos" que detecta bugs semánticos que se le escapan al ejecutor.
 
 ### Vista general del flujo
 
 ```mermaid
 flowchart TD
-    U([Usuario]) -->|Solicitud| O[adlc-orchestrator]
+    U([Usuario]) -->|Solicitud| O[Claude Code chat principal<br/>aplica CLAUDE.md]
     O --> S[Spec + Acceptance Criteria<br/>verificables]
     S --> P[Plan multiagente<br/>criterio → agente → skill]
     P --> EX{{Ejecución delegada<br/>subagentes aislados}}
@@ -192,7 +172,7 @@ flowchart TD
 | Capa | Qué hace | Dónde vive |
 |---|---|---|
 | **Spec (feedforward)** | Define objetivo, alcance y criterios *verificables* antes de generar código. | `specs/<slug>-prd.md`, `specs/acceptance-criteria.md` |
-| **Plan (feedforward)** | Mapea criterios → agentes → skills → tareas → dependencias. | TodoList del orquestador + skill `plan-agentic-work` |
+| **Plan (feedforward)** | Mapea criterios → agentes → skills → tareas → dependencias. | TodoList de Claude principal + skill `plan-agentic-work` |
 | **Ejecución (delegada)** | Subagentes aislados con prompts autocontenidos. Cada uno declara qué Skill ejecuta. | Agentes en `.claude/agents/`, skills en `.claude/skills/` |
 | **Gates computacionales** | `npm audit`, linters, type-check, tests, escáneres IaC. Determinísticos y baratos. | Workflows CI + scripts |
 | **Gates inferenciales** | `security-engineer` (Fase 7) + `reviewer` independiente (Fase 10). | Subagentes obligatorios |
@@ -224,7 +204,7 @@ flowchart LR
     class F11 human
 ```
 
-### Fases obligatorias del orquestador
+### Las 12 fases del flujo ADLC
 
 1. Entender la solicitud (resumen + supuestos, una tanda de preguntas).
 2. Spec / PRD verificable.
@@ -259,15 +239,15 @@ El workspace responde mejor a peticiones que dejan claros tres elementos: **obje
 [Alcance] Incluye <A, B>. No incluye <C>.
 [Restricciones] <stack, cloud, políticas, datos>.
 [Evidencia] Cuando termines, quiero ver <test que pasa | endpoint vivo | captura | tabla de criterios>.
-[Cierre] Usa el ADLC orchestrator (o el agente <nombre> si solo necesito esta pieza).
+[Cierre] Aplica el flujo ADLC de CLAUDE.md (o invoca solo el agente <nombre> si únicamente necesito esta pieza).
 ```
 
 ### Niveles de petición
 
-| Nivel | Cuándo usarlo | Quién entra primero |
+| Nivel | Cuándo usarlo | Cómo se ejecuta |
 |---|---|---|
-| **Full ADLC** | Iniciativa nueva, varios componentes, requiere gobernanza. | `adlc-orchestrator` (recorre las 12 fases). |
-| **Skill puntual** | Un entregable concreto en un dominio bien acotado. | El agente del dominio + su skill. |
+| **Full ADLC** | Iniciativa nueva, varios componentes, requiere gobernanza. | Claude principal recorre las 12 fases delegando en subagentes ejecutores. |
+| **Skill puntual** | Un entregable concreto en un dominio bien acotado. | El agente del dominio + su skill, invocado por Claude principal. |
 | **Revisión / cierre** | Trabajo hecho que hay que auditar y enviar. | `reviewer` → `/ship`. |
 | **Pregunta / exploración** | Entender el repo, comparar opciones, no producir artefacto. | Conversación directa o agente `Explore`. |
 
@@ -275,14 +255,14 @@ El workspace responde mejor a peticiones que dejan claros tres elementos: **obje
 
 - "Hazlo rápido y luego pulimos." → Spec ambigua = trabajo que falla en la auditoría.
 - "Saltémonos el reviewer, es solo una demo." → Security y reviewer son **siempre** obligatorios.
-- "Marca todos los criterios como hechos." → El orquestador rechazará el cierre.
-- "Que el agente decida qué skill usar." → Indica explícitamente la skill esperada; el orquestador lo exige en el prompt del subagente.
+- "Marca todos los criterios como hechos." → Claude principal rechazará el cierre y dejará rojos los no verificados.
+- "Que el agente decida qué skill usar." → Indica explícitamente la skill esperada en el prompt del subagente.
 
 ---
 
 ## Cómo se activan agentes y skills en el ciclo completo
 
-Los agentes se invocan vía la herramienta `Agent` con `subagent_type=<nombre>`. Las skills se invocan vía la herramienta `Skill` con `skill: <nombre>`. Cada agente declara en su frontmatter qué skills puede ejecutar; el orquestador **pide explícitamente** la skill esperada en el prompt y exige que el reporte del subagente abra con una sección `## Skills ejecutadas`.
+Los agentes se invocan vía la herramienta `Agent` con `subagent_type=<nombre>`. Las skills se invocan vía la herramienta `Skill` con `skill: <nombre>`. Cada agente declara en su frontmatter qué skills puede ejecutar; Claude principal **pide explícitamente** la skill esperada en el prompt y exige que el reporte del subagente abra con una sección `## Skills ejecutadas`.
 
 ### Catálogo
 
@@ -290,7 +270,6 @@ Los agentes se invocan vía la herramienta `Agent` con `subagent_type=<nombre>`.
 
 | Agente | Cuándo se activa | Skills declaradas |
 |---|---|---|
-| `adlc-orchestrator` | Solicitud de desarrollo que necesita spec → plan → ejecución → cierre. | `create-prd`, `plan-agentic-work`, `review-pr` |
 | `cloud-architect` | Decisiones de arquitectura cloud antes de IaC. | `design-landing-zone` |
 | `terraform-engineer` | Crear/validar módulos IaC. | `generate-terraform-modules` |
 | `backend-engineer` | APIs, modelos, lógica de negocio, conexión a BD. | `generate-product-api` |
@@ -369,7 +348,7 @@ flowchart LR
 
 ### Modo aislado (decisión arquitectónica)
 
-Los subagentes se lanzan **sin team**: no se ven entre sí, no se mandan mensajes. El orquestador es el único punto de coordinación. Para trabajo en paralelo sobre archivos compartidos, el orquestador declara contratos (slots, comentarios `{/* aquí va X */}`) o serializa. Esto es **intencional**: garantiza que `security-engineer` y `reviewer` opinen con ojos frescos.
+Los subagentes se lanzan **sin team**: no se ven entre sí, no se mandan mensajes. Claude principal es el único punto de coordinación. Para trabajo en paralelo sobre archivos compartidos, declara contratos (slots, comentarios `{/* aquí va X */}`) o serializa. Esto es **intencional**: garantiza que `security-engineer` y `reviewer` opinen con ojos frescos.
 
 ---
 
@@ -381,7 +360,7 @@ Los subagentes se lanzan **sin team**: no se ven entre sí, no se mandan mensaje
 
 Activaciones:
 
-1. `adlc-orchestrator` recorre fases 1-12.
+1. Claude principal recorre las fases 1-12 del manual `CLAUDE.md`.
 2. Fase 2-3 → skill `create-prd` produce `specs/<slug>-prd.md` y `specs/acceptance-criteria.md`.
 3. Fase 4-5 → skill `plan-agentic-work` produce el plan multiagente.
 4. Fase 6 (paralelizable donde no haya conflicto de archivos):
@@ -412,7 +391,7 @@ Activaciones:
 4. `reviewer` + `review-pr` (siempre).
 5. `/ship` para abrir PR.
 
-Por qué: aunque sea pequeño, las reglas duras de `CLAUDE.md` no admiten saltarse security ni reviewer. El orquestador puede no necesitar recorrer 12 fases, pero los gates inferenciales se mantienen.
+Por qué: aunque sea pequeño, las reglas duras de `CLAUDE.md` no admiten saltarse security ni reviewer. Claude principal puede no necesitar recorrer las 12 fases con la misma intensidad, pero los gates inferenciales se mantienen.
 
 ### Ejemplo 3 — Revisar trabajo ya hecho
 
@@ -446,7 +425,7 @@ Por qué: IaC es alto riesgo. El gate de seguridad sobre IaC es específicamente
 
 Activaciones: ninguna del catálogo ADLC. Conversación directa o, si la búsqueda es amplia, agente `Explore` (read-only).
 
-Por qué: no hay artefacto que producir, no hay criterio que cumplir. Activar el orquestador sería sobrecarga.
+Por qué: no hay artefacto que producir, no hay criterio que cumplir. Aplicar las 12 fases sería sobrecarga.
 
 ---
 
@@ -461,7 +440,7 @@ Este workspace adopta las prácticas descritas en [Harness Engineering](https://
 | **Gates inferenciales (caros, semánticos)** | `security-engineer` (Fase 7) y `reviewer` (Fase 10) como subagentes obligatorios e independientes. |
 | **Controles "a la izquierda" del ciclo** | Spec antes de planificar, plan antes de ejecutar, plan-mode en agentes críticos (`permissionMode: plan`), skill enforcement en el prompt del subagente. |
 | **Review agents como retroalimentación semántica** | `reviewer` con skill `review-pr` produce veredicto APROBAR / CAMBIOS / RECHAZAR + lista accionable. Bucle de corrección hasta APROBAR. |
-| **Feedback loops con instrucciones de autocorrección** | Reglas duras de `CLAUDE.md` indican qué hacer cuando un subagente reporta sin evidencia: *"recházalo y reanúdalo"*. El orquestador no se conforma con "lo hice". |
+| **Feedback loops con instrucciones de autocorrección** | Reglas duras de `CLAUDE.md` indican qué hacer cuando un subagente reporta sin evidencia: *"recházalo y reanúdalo"*. Claude principal no se conforma con "lo hice". |
 | **Monitoreo de drift / observabilidad de agentes** | `reports/iter-<N>/<agente>.md` persiste cada reporte. Skill enforcement obliga a la sección `## Skills ejecutadas`. Auditoría retrospectiva posible. |
 | **Harness templates por topología** | Bundles agente+skill por dominio (catálogo, IaC, pipelines, observabilidad) reutilizables entre iteraciones. |
 | **Steering humano iterativo** | Aprobación humana en Fase 11. `/ship` no mergea ni hace deploy. Decisiones de blast radius alto no se actúan en nombre del humano. |
