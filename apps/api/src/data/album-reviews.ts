@@ -1040,6 +1040,105 @@ export const albumReviews: Record<string, AlbumReview> = {
       },
     ],
   },
+
+  "pantera-cowboys-from-hell": {
+    sections: {
+      historicalContext:
+        "Quinto álbum de estudio de Pantera y primero con Atco/Atlantic, publicado el 24 de julio de 1990. Es el disco con el que la banda de Arlington (Texas) entierra definitivamente su pasado glam de los 80 (Metal Magic, Projects in the Jungle, I Am the Night, Power Metal) y reinventa su sonido alrededor del nuevo cantante Phil Anselmo, incorporado en 1987 para 'Power Metal'. Grabado con el productor Terry Date en Pantego Sound (Texas), propiedad del padre de los Abbott, recoge material que la banda llevaba dos años puliendo en directo en clubs de Texas.",
+      sound:
+        "Terry Date captura un sonido seco y agresivo: guitarra de Dimebag Darrell afinada a estándar pero con riffs cuadrados y armónicos pinch como sello propio, batería de Vinnie Paul cabeza-pies cortantes, bajo de Rex Brown apretado contra el bombo y la voz de Anselmo aún muy melódica con incursiones al grito controlado. El disco mezcla cortes thrash veloces ('Domination'), medios tiempos pesados ('Cowboys from Hell', 'Psycho Holiday') y la única power ballad del catálogo Pantera, 'Cemetery Gates', que muestra el registro lírico de Anselmo en su versión más limpia.",
+      legacy:
+        "Disco platino en EE.UU. en 1997 y fundacional del groove metal: la prensa especializada lo cita habitualmente como uno de los discos que define la transición del thrash de los 80 a la pesadez de los 90, abriendo el camino para Sepultura ('Arise', 'Chaos A.D.'), Machine Head y todo el sello Roadrunner de la era. La gira de 1990-1991 los llevó a girar con Judas Priest, Suicidal Tendencies y Exodus, presentándolos al público metalero internacional.",
+    },
+    trackHighlights: [
+      {
+        track: "Cowboys from Hell",
+        note: "Tema titular y carta de presentación: riff de Dimebag basado en cromatismos, batería con doble bombo en el estribillo y letra-manifiesto del nuevo Pantera. Standard absoluto de la banda en directo hasta su disolución.",
+      },
+      {
+        track: "Cemetery Gates",
+        note: "Power ballad de 7 minutos con intro acústica, solo melódico cantado de Dimebag y duelo final vocal entre Anselmo y la propia guitarra. Una de las composiciones más completas del catálogo y favorita absoluta del fandom.",
+      },
+      {
+        track: "Domination",
+        note: "Corte thrash-groove con sección central de doble bombo y riff cuadrado que Dimebag tocaría en festivales como muestra de su estilo. Modelo para el groove metal posterior y origen del 'Domination/Hollow' medley en directo.",
+      },
+    ],
+    rating: {
+      score: 9.4,
+      justification:
+        "Acta fundacional del groove metal: 12 cortes sin relleno, producción de Terry Date envejecida con dignidad y nacimiento del Dimebag Darrell que cambió el riffing del metal de los 90.",
+    },
+    criticQuotes: [
+      {
+        outlet: "AllMusic",
+        year: 1990,
+        url: "https://www.allmusic.com/album/cowboys-from-hell-mw0000203213",
+        quote:
+          "Cowboys from Hell es el disco con el que Pantera se reinventa por completo y, de paso, inventa el groove metal: el riffing de Dimebag Darrell y la voz de Phil Anselmo definen el sonido que dominará el metal de los 90 a partir de aquí.",
+      },
+      {
+        outlet: "Wikipedia",
+        year: 1990,
+        url: "https://en.wikipedia.org/wiki/Cowboys_from_Hell",
+        quote:
+          "Considerado uno de los álbumes pioneros del groove metal y certificado platino por la RIAA en 1997, marcó el punto de inflexión que llevó a Pantera del glam metal de su etapa anterior al estilo más pesado y agresivo por el que serían reconocidos en los años 90.",
+      },
+    ],
+  },
+
+  "pantera-vulgar-display-of-power": {
+    sections: {
+      historicalContext:
+        "Sexto álbum de estudio de Pantera, publicado el 25 de febrero de 1992 por Atco/EastWest. Llega tras el éxito sorpresa de 'Cowboys from Hell' (1990) y casi dos años de gira ininterrumpida abriendo para Judas Priest, Suicidal Tendencies, Skid Row y Megadeth. Grabado de nuevo con Terry Date en Pantego Sound (Texas) y mezclado en Dallas, la banda llegó al estudio con material endurecido por la carretera: la mayoría de los riffs nacieron en pruebas de sonido y soundchecks de la gira anterior.",
+      sound:
+        "Pantera abandona casi por completo los compases rápidos del thrash para centrarse en medios tiempos pesadísimos. Dimebag Darrell baja la afinación una nota (D estándar) y desarrolla un riffing más cuadrado, percusivo y disonante. Vinnie Paul recorta los rellenos y centra la batería en el groove. Phil Anselmo abandona el registro melódico para cantar desde la garganta, casi hardcore, prefigurando lo que será su voz en 'Far Beyond Driven'. La portada (un puño impactando contra una cara) sintetiza el tono del disco.",
+      legacy:
+        "Doble platino en EE.UU., top 44 en Billboard 200 sin apenas airplay y considerado por críticos como Robert Christgau, Decibel, Metal Hammer y Rolling Stone uno de los discos esenciales del metal de los 90. En 2017 Rolling Stone lo situó en el puesto 10 de su lista 'The 100 Greatest Metal Albums of All Time'. 'Walk' y 'Mouth for War' siguen siendo himnos de festival 30 años después y han sido versionados por bandas tan distintas como Avenged Sevenfold o Killswitch Engage.",
+    },
+    trackHighlights: [
+      {
+        track: "Walk",
+        note: "Riff en 12/8 con efecto wah de Dimebag y groove medio tiempo. Probablemente el riff más imitado de los 90 y entrada obligada de cualquier directo de Pantera tras 1992. Letra desafiante atribuida al harto de Anselmo con miembros que olvidaron sus orígenes.",
+      },
+      {
+        track: "Mouth for War",
+        note: "Apertura del disco: doble bombo agresivo, riff disonante y letra-mantra ('Channel all that hate'). El nuevo Pantera en 4 minutos, sin concesiones melódicas.",
+      },
+      {
+        track: "This Love",
+        note: "Medio tiempo con contraste limpio/distorsionado: estrofas susurradas que estallan en estribillo demoledor. Plantilla del 'soft-loud' que llevaría a Korn y Deftones unos años después.",
+      },
+    ],
+    rating: {
+      score: 9.7,
+      justification:
+        "Cima absoluta del groove metal: cero relleno, producción de Terry Date que sigue sonando demoledora 30 años después y un álbum entero de riffs que entraron al canon del género.",
+    },
+    criticQuotes: [
+      {
+        outlet: "AllMusic",
+        year: 1992,
+        url: "https://www.allmusic.com/album/vulgar-display-of-power-mw0000099417",
+        quote:
+          "Vulgar Display of Power es el disco que define el metal de la década: Pantera se quita de encima cualquier resto de melodía heredada del thrash para entregar un trabajo abrasivo, físico y absolutamente intransigente, con un Dimebag Darrell en estado de gracia y un Phil Anselmo convertido en una de las voces más temibles del género.",
+      },
+      {
+        outlet: "Wikipedia",
+        year: 1992,
+        url: "https://en.wikipedia.org/wiki/Vulgar_Display_of_Power",
+        quote:
+          "Certificado doble platino por la RIAA y considerado de forma transversal uno de los álbumes de heavy metal más importantes e influyentes jamás grabados; en 2017 Rolling Stone lo situó en el puesto 10 de su lista de los 100 mejores discos de metal de todos los tiempos.",
+      },
+      {
+        outlet: "Rolling Stone",
+        year: 2017,
+        url: "https://www.rollingstone.com/music/music-lists/100-greatest-metal-albums-of-all-time-113614/pantera-vulgar-display-of-power-1992-119769/",
+        quote:
+          "Con Vulgar Display of Power, Pantera dejó claro que el metal podía seguir siendo pesado, agresivo y completamente físico sin recurrir a la velocidad del thrash; un disco que redefinió lo que la siguiente generación de bandas entendería por 'duro'.",
+      },
+    ],
+  },
 };
 
 /**

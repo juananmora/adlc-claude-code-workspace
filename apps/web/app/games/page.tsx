@@ -5,9 +5,9 @@ import type { Game } from "@/lib/game-types";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Games — Amstrad CPC",
+  title: "Games — Retro 8-bit (Amstrad CPC & Commodore 64)",
   description:
-    "10 clásicos icónicos de Amstrad CPC 464/6128, curados (1984-1995): aventura isométrica, arcade, shoot 'em up y más.",
+    "16 clásicos icónicos retro 8-bit (1984-1990): Amstrad CPC y Commodore 64. Aventura isométrica, arcade, shoot 'em up, lucha, aventuras gráficas y más.",
 };
 
 /**
@@ -30,7 +30,7 @@ export default async function GamesPage() {
   return (
     <>
       <section
-        aria-label="Cabecera de games Amstrad CPC"
+        aria-label="Cabecera de games retro 8-bit (Amstrad CPC y Commodore 64)"
         className="relative isolate overflow-hidden border-b border-stone-800/80 bg-[#0a0a0a]"
       >
         {/* Resplandor rojo difuso al fondo. */}
@@ -58,7 +58,7 @@ export default async function GamesPage() {
               GAMES
             </span>
             <span className="mt-3 block text-2xl text-[var(--metal-blood)] md:text-4xl lg:text-5xl [font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace]">
-              AMSTRAD CPC 464/6128
+              AMSTRAD CPC &amp; COMMODORE 64
             </span>
           </h1>
 
@@ -68,14 +68,15 @@ export default async function GamesPage() {
           />
 
           <p className="max-w-xl text-sm uppercase tracking-[0.22em] text-stone-400 [font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace] md:text-base">
-            10 clásicos icónicos &middot; 1984-1995
+            16 clásicos retro 8-bit &middot; 1984-1995
           </p>
 
           <p className="max-w-2xl text-base normal-case tracking-normal text-stone-300/90 [font-family:Inter,system-ui,sans-serif]">
-            Selección curada de joyas del Amstrad CPC: aventura isométrica
+            Selección curada de joyas del 8-bit europeo: aventura isométrica
             Ultimate, arcade conversions de Ocean e Imagine, Opera Soft made
-            in Spain y puzles que aún hoy se sostienen. Filtra por género o
-            busca por título.
+            in Spain en CPC más superventas de Commodore 64 como The Last
+            Ninja, IK+, Maniac Mansion, Wizball o Turrican. Filtra por género
+            o busca por título.
           </p>
         </div>
       </section>

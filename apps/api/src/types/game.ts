@@ -1,10 +1,16 @@
 /**
- * Tipos del catálogo Games — Amstrad CPC (iteración 7).
+ * Tipos del catálogo Games — retro 8-bit (Amstrad CPC + Commodore 64).
  *
  * El dataset estático se sirve desde `apps/api/src/data/games.ts` y se expone
  * mediante `GET /games` y `GET /games/:id` en `apps/api/src/routes/games.ts`.
  * El frontend en `apps/web/lib/game-types.ts` mantiene un mirror de estos
  * tipos.
+ *
+ * Historia:
+ * - iter-7: catálogo arranca con 10 títulos de Amstrad CPC (1984-1995).
+ * - iter-11: ampliación a multi-sistema con 6 títulos de Commodore 64
+ *   (1984-1990). El campo `system` deja de estar acoplado a CPC: el regex
+ *   de validación acepta tanto "Amstrad CPC ..." como "Commodore 64".
  */
 
 /** Cita de prensa contemporánea (Amstrad Action, MicroHobby, Crash, etc.). */
@@ -49,8 +55,10 @@ export interface Game {
   /** Género tipo "Arcade", "Aventura gráfica", "Plataformas", etc. */
   genre: GameGenre;
   /**
-   * Sistema soportado. Debe encajar con `/Amstrad CPC ?(464|6128|464 \/ 6128)/`.
-   * Ej.: "Amstrad CPC 464", "Amstrad CPC 6128", "Amstrad CPC 464 / 6128".
+   * Sistema soportado. Encaja con
+   * `/^(Amstrad CPC (464|6128|464 \/ 6128)|Commodore 64)$/`.
+   * Ej.: "Amstrad CPC 464", "Amstrad CPC 6128",
+   * "Amstrad CPC 464 / 6128", "Commodore 64".
    */
   system: string;
   /** Descripción extensa (>=200 chars) específica del juego (no genérica). */

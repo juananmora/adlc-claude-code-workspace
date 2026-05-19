@@ -1,11 +1,13 @@
 import type { Game } from "../types/game.js";
 
 /**
- * Catálogo curado de 10 clásicos de Amstrad CPC (iteración 7).
+ * Catálogo curado de clásicos retro 8-bit.
+ * - 10 clásicos de Amstrad CPC (iteración 7).
+ * - 6 clásicos de Commodore 64 (iteración 11).
  *
- * Las portadas viven en `apps/web/public/covers/games/<slug>.jpg` (las
- * descarga el agente frontend en T5). Este dataset sólo declara la ruta
- * relativa. Sin URL absoluta para permitir despliegues sin tocar datos.
+ * Las portadas viven en `apps/web/public/covers/games/<slug>.jpg`. Este
+ * dataset sólo declara la ruta relativa. Sin URL absoluta para permitir
+ * despliegues sin tocar datos.
  *
  * Cada cita de prensa cita su `outlet` y `year`. Las URLs se incluyen sólo
  * cuando se ha podido verificar el enlace canónico https; en caso contrario
@@ -242,6 +244,162 @@ export const GAMES: readonly Game[] = [
         year: 1988,
         quote:
           "Difícil pedir más a una conversión de 8 bits: scroll suave, sprites grandes y niveles fieles al recreativo.",
+      },
+    ],
+  },
+  {
+    id: "the-last-ninja",
+    title: "The Last Ninja",
+    year: 1987,
+    developer: "System 3",
+    publisher: "System 3",
+    genre: "Acción isométrica",
+    system: "Commodore 64",
+    description:
+      "Aventura isométrica de System 3 dirigida por Mark Cale y John Twiddy en la que Armakuni, último guerrero ninja, viaja a la isla de Lin Fen para vengar a su clan y recuperar los pergaminos sagrados del malvado shogun Kunitoki. Combina combate cuerpo a cuerpo con shuriken, nunchakus y espadas, exploración de seis escenarios (jardines, palacio, alcantarillas) y resolución de puzles con objetos. La banda sonora de Ben Daglish y Anthony Lees y los gráficos isométricos a base de mosaicos lo convirtieron en uno de los superventas absolutos del C64 británico.",
+    coverUrl: cover("the-last-ninja"),
+    quotes: [
+      {
+        outlet: "Zzap!64",
+        year: 1987,
+        quote:
+          "The Last Ninja es probablemente el juego más impresionante visualmente que ha aparecido nunca en un Commodore 64; gráficos, sonido y jugabilidad de altura.",
+      },
+      {
+        outlet: "Commodore User",
+        year: 1987,
+        quote:
+          "Una obra maestra de System 3 que combina combate, exploración y puzles con un nivel técnico que rara vez se ha visto en el C64.",
+      },
+    ],
+  },
+  {
+    id: "impossible-mission",
+    title: "Impossible Mission",
+    year: 1984,
+    developer: "Epyx",
+    publisher: "Epyx",
+    genre: "Plataformas puzle",
+    system: "Commodore 64",
+    description:
+      "Plataformas puzle de Dennis Caswell para Epyx en el que un agente secreto debe infiltrarse en el complejo subterráneo del malvado profesor Elvin Atombender, recorrer 32 habitaciones repartidas en varias torres, esquivar robots patrulleros y registrar mobiliario en busca de fragmentos de contraseña. Cada pieza se recompone en un mini-juego de puzle antes de poder acceder al ordenador central. Famoso por la frase digitalizada 'Another visitor… stay a while… stay forever!' del villano y por la animación rotoscópica del protagonista, fue uno de los primeros juegos en usar voz sintetizada de forma extensiva en un 8-bit.",
+    coverUrl: cover("impossible-mission"),
+    quotes: [
+      {
+        outlet: "Zzap!64",
+        year: 1985,
+        quote:
+          "Impossible Mission es uno de esos juegos que justifica la compra de un Commodore 64: animación, sonido digitalizado y un diseño que engancha pantalla a pantalla.",
+      },
+      {
+        outlet: "Computer Gaming World",
+        year: 1985,
+        quote:
+          "Una mezcla brillante de plataformas, puzles y exploración, con detalles técnicos —voz digitalizada incluida— que pocos juegos de su época pueden igualar.",
+      },
+    ],
+  },
+  {
+    id: "maniac-mansion",
+    title: "Maniac Mansion",
+    year: 1987,
+    developer: "Lucasfilm Games",
+    publisher: "Lucasfilm Games",
+    genre: "Aventura gráfica",
+    system: "Commodore 64",
+    description:
+      "Aventura gráfica diseñada por Ron Gilbert y Gary Winnick para Lucasfilm Games y debut absoluto del motor SCUMM. El jugador encarna a Dave y elige a dos de sus seis amigos para entrar en la mansión del Dr. Fred, donde un meteorito alienígena ha trastornado a toda la familia Edison y mantiene secuestrada a su novia Sandy. Cada combinación de personajes habilita rutas, puzles y finales distintos (hasta cinco), inaugurando una rejugabilidad poco común para la época. Marcó el inicio de la edad de oro de la aventura gráfica de LucasArts.",
+    coverUrl: cover("maniac-mansion"),
+    quotes: [
+      {
+        outlet: "Zzap!64",
+        year: 1988,
+        quote:
+          "Maniac Mansion es una aventura gráfica adelantada a su tiempo: humor cinematográfico, varios finales y una interfaz de iconos que cambia para siempre el género.",
+      },
+      {
+        outlet: "Compute!'s Gazette",
+        year: 1988,
+        quote:
+          "Lucasfilm Games entrega una aventura con tantas variantes y secretos que cada partida se siente nueva; un punto de inflexión para el género en los 8 bits.",
+      },
+    ],
+  },
+  {
+    id: "ik-plus",
+    title: "International Karate +",
+    year: 1987,
+    developer: "System 3",
+    publisher: "System 3",
+    genre: "Lucha",
+    system: "Commodore 64",
+    description:
+      "Secuela de International Karate, diseñada por Archer Maclean para System 3, que introduce la novedad radical de tres karatekas en pantalla luchando simultáneamente en torneo. El jugador maneja al combatiente rojo o verde y debe acumular más puntos que el rival amarillo, controlado por la CPU, en rondas con catorce movimientos distintos (patadas voladoras, barridos, puñetazos cortos). Entre asalto y asalto, mini-juegos cómicos rompen el ritmo: rebotar pelotas con la cabeza o partir bombas. Considerado durante años la cumbre del juego de lucha en C64.",
+    coverUrl: cover("ik-plus"),
+    quotes: [
+      {
+        outlet: "Zzap!64",
+        year: 1988,
+        quote:
+          "IK+ es sencillamente el mejor juego de lucha que ha aparecido nunca en el Commodore 64: control preciso, tres luchadores en pantalla y un sentido del humor que no se agota.",
+      },
+      {
+        outlet: "Your Sinclair",
+        year: 1988,
+        quote:
+          "Archer Maclean ha conseguido lo imposible: meter tres luchadores con animaciones fluidas en un 8 bits sin sacrificar jugabilidad. Brillante.",
+      },
+    ],
+  },
+  {
+    id: "wizball",
+    title: "Wizball",
+    year: 1987,
+    developer: "Sensible Software",
+    publisher: "Ocean Software",
+    genre: "Shoot 'em up",
+    system: "Commodore 64",
+    description:
+      "Shoot 'em up de scroll horizontal diseñado por Jon Hare y Chris Yates (Sensible Software) en el que el mago Wiz, transformado en una bola flotante, debe restaurar el color del reino de Wizworld recogiendo gotas de pintura mientras esquiva enemigos. La nave mejora progresivamente con potenciadores (estabilizadores, gato compañero Catelite, escudos) que cambian por completo el control, en una de las curvas de aprendizaje más originales del género. La música del C64 firmada por Martin Galway se considera una de las grandes bandas sonoras del 8 bits.",
+    coverUrl: cover("wizball"),
+    quotes: [
+      {
+        outlet: "Zzap!64",
+        year: 1987,
+        quote:
+          "Wizball es uno de los juegos más adictivos y originales que han aparecido en el C64: jugabilidad genial, gráficos coloristas y una banda sonora de Martin Galway sencillamente imprescindible.",
+      },
+      {
+        outlet: "The Games Machine",
+        year: 1987,
+        quote:
+          "Sensible Software firma con Wizball uno de esos juegos que justifican la existencia del Commodore 64; mezcla shoot 'em up, plataformas y puzle con un acabado impecable.",
+      },
+    ],
+  },
+  {
+    id: "turrican",
+    title: "Turrican",
+    year: 1990,
+    developer: "Manfred Trenz / Factor 5",
+    publisher: "Rainbow Arts",
+    genre: "Plataformas run & gun",
+    system: "Commodore 64",
+    description:
+      "Plataformas run & gun diseñado por Manfred Trenz para Rainbow Arts en el que el soldado Turrican, encapsulado en una armadura cibernética, debe acabar con la entidad alienígena Morgul recorriendo cinco mundos abiertos con scroll multidireccional. Combina mecánicas de Metroid (exploración no lineal) y Psycho-Soldier (potencia de fuego masiva): el protagonista puede transformarse en una bola para rodar por túneles estrechos, dispara un rayo eléctrico orbital y acumula granadas. La música de Chris Hülsbeck en el SID del C64 es ya leyenda y la jugabilidad sentó cátedra del género en 8 bits.",
+    coverUrl: cover("turrican"),
+    quotes: [
+      {
+        outlet: "Zzap!64",
+        year: 1990,
+        quote:
+          "Turrican lleva el C64 al límite: enormes mapas con scroll multidireccional, armas brutales y una banda sonora de Chris Hülsbeck que ya forma parte de la historia del SID.",
+      },
+      {
+        outlet: "ASM (Aktueller Software Markt)",
+        year: 1990,
+        quote:
+          "Una demostración técnica y jugable del enorme potencial que aún tenía el Commodore 64 en 1990; Manfred Trenz firma una obra cumbre del run & gun europeo.",
       },
     ],
   },

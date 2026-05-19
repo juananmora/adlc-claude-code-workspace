@@ -42,7 +42,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe("header y navegación", () => {
-  test("entrada 'Games' en el header navega a /games y muestra 10 cards", async ({
+  test("entrada 'Games' en el header navega a /games y muestra 16 cards", async ({
     page,
   }) => {
     // Partimos de home y navegamos vía el header para validar el link del menú.
@@ -57,7 +57,7 @@ test.describe("header y navegación", () => {
     const cards = page.getByTestId("game-card");
     await expect
       .poll(async () => cards.count(), { timeout: 10_000 })
-      .toBe(10);
+      .toBe(16);
   });
 });
 
@@ -116,7 +116,7 @@ test.describe("chips de género", () => {
     await expect(chip).toHaveAttribute("aria-pressed", "true");
   });
 
-  test("click otra vez en el mismo chip lo deselecciona y vuelve a 10 cards", async ({
+  test("click otra vez en el mismo chip lo deselecciona y vuelve a 16 cards", async ({
     page,
   }) => {
     const chip = page.getByTestId("game-genre-chip-aventura-isometrica");
@@ -148,7 +148,7 @@ test.describe("chips de género", () => {
     const cards = page.getByTestId("game-card");
     await expect
       .poll(async () => cards.count(), { timeout: 8_000 })
-      .toBe(10);
+      .toBe(16);
   });
 
   test("combinar género 'Aventura isométrica' + buscador 'knight' devuelve solo Knight Lore", async ({
@@ -187,7 +187,7 @@ test.describe("chips de género", () => {
 });
 
 test.describe("limpiar filtros", () => {
-  test("'Limpiar filtros' resetea género + búsqueda y vuelve a 10 cards", async ({
+  test("'Limpiar filtros' resetea género + búsqueda y vuelve a 16 cards", async ({
     page,
   }) => {
     const chip = page.getByTestId("game-genre-chip-aventura-isometrica");
@@ -229,7 +229,7 @@ test.describe("limpiar filtros", () => {
     const cards = page.getByTestId("game-card");
     await expect
       .poll(async () => cards.count(), { timeout: 8_000 })
-      .toBe(10);
+      .toBe(16);
   });
 });
 

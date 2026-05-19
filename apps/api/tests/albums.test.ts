@@ -128,6 +128,23 @@ describe("GET /albums", () => {
     const body = res.json() as Album[];
     expect(body).toEqual([]);
   });
+
+  it("filters by band=Pantera returning the 2 albums added in iter-11", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: "/albums?band=Pantera",
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json() as Album[];
+    expect(body).toHaveLength(2);
+    for (const album of body) {
+      expect(album.band).toBe("Pantera");
+      expect(album.genre).toBe("Groove Metal");
+    }
+    const ids = body.map((a) => a.id);
+    expect(ids).toContain("pantera-cowboys-from-hell");
+    expect(ids).toContain("pantera-vulgar-display-of-power");
+  });
 });
 
 describe("GET /albums/:id", () => {

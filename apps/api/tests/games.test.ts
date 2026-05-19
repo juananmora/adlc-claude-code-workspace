@@ -27,8 +27,10 @@ const MIN_YEAR = 1984;
 const MAX_YEAR = 1995;
 const MIN_DESCRIPTION_LENGTH = 200;
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const SYSTEM_PATTERN = /^Amstrad CPC (464|6128|464 \/ 6128)$/;
+const SYSTEM_PATTERN =
+  /^(Amstrad CPC (464|6128|464 \/ 6128)|Commodore 64)$/;
 const HTTPS_PATTERN = /^https:\/\//;
+const EXPECTED_GAMES_COUNT = 16;
 
 describe("GET /games", () => {
   it("returns all games", async () => {
@@ -36,7 +38,28 @@ describe("GET /games", () => {
     expect(res.statusCode).toBe(200);
     const body = res.json() as Game[];
     expect(Array.isArray(body)).toBe(true);
-    expect(body.length).toBe(10);
+    expect(body.length).toBe(EXPECTED_GAMES_COUNT);
+  });
+
+  it("includes the 6 Commodore 64 entries added in iter-11", async () => {
+    const res = await app.inject({ method: "GET", url: "/games" });
+    expect(res.statusCode).toBe(200);
+    const body = res.json() as Game[];
+    const ids = body.map((g) => g.id);
+    for (const expected of [
+      "the-last-ninja",
+      "impossible-mission",
+      "maniac-mansion",
+      "ik-plus",
+      "wizball",
+      "turrican",
+    ]) {
+      expect(ids).toContain(expected);
+    }
+    for (const game of body.filter((g) => g.system === "Commodore 64")) {
+      expect(game.system).toBe("Commodore 64");
+    }
+    expect(body.filter((g) => g.system === "Commodore 64")).toHaveLength(6);
   });
 
   it("filters by ?q= substring case-insensitive (q=knight returns Knight Lore)", async () => {
@@ -215,11 +238,11 @@ describe("GAME_GENRES", () => {
 });
 
 describe("dataset size", () => {
-  it("contains exactly 10 games", () => {
-    expect(GAMES).toHaveLength(10);
+  it(`contains exactly ${EXPECTED_GAMES_COUNT} games (10 CPC + 6 C64)`, () => {
+    expect(GAMES).toHaveLength(EXPECTED_GAMES_COUNT);
   });
 
-  it("games-dataset has exactly 10 games (id-named test for acceptance criteria)", () => {
-    expect(GAMES.length).toBe(10);
+  it(`games-dataset has exactly ${EXPECTED_GAMES_COUNT} games (id-named test for acceptance criteria)`, () => {
+    expect(GAMES.length).toBe(EXPECTED_GAMES_COUNT);
   });
 });

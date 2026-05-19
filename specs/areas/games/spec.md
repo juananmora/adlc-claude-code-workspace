@@ -1,8 +1,8 @@
-# Spec — Catálogo de Games Amstrad CPC (`/games`)
+# Spec — Catálogo de Games retro 8-bit (`/games`)
 
-10 clásicos icónicos del Amstrad CPC 464/6128 (1984-1995), con ficha de detalle, filtros y buscador.
+16 clásicos icónicos del retro 8-bit europeo (1984-1995): 10 de Amstrad CPC 464/6128 + 6 de Commodore 64. Ficha de detalle, filtros y buscador.
 
-> **Estado vivo.** Última actualización: iter-7 (commit `c03bcfc`).
+> **Estado vivo.** Última actualización: iter-11 (multi-sistema CPC + C64).
 
 ## Requirements
 
@@ -17,21 +17,21 @@ then SHALL exportar:
 
 **Validación:** `npx tsc --noEmit` + uso en routes/data.
 
-### REQ-GAMES-2: Dataset de 10 juegos
+### REQ-GAMES-2: Dataset de 16 juegos multi-sistema
 
 Given `apps/api/src/data/games.ts`,
 when se importa `GAMES`,
-then SHALL ser `readonly Game[]` con exactamente 10 entradas. Cada
-entrada cumple:
+then SHALL ser `readonly Game[]` con exactamente 16 entradas (10 CPC + 6 C64).
+Cada entrada cumple:
 - `id` kebab-case sin acentos (`^[a-z0-9]+(-[a-z0-9]+)*$`),
 - `year` en `[1984, 1995]`,
-- `system` matchea `/^Amstrad CPC (464|6128|464 \/ 6128)$/`,
+- `system` matchea `/^(Amstrad CPC (464|6128|464 \/ 6128)|Commodore 64)$/`,
 - `description.length >= 200`,
 - `coverUrl` empieza por `/covers/games/`,
 - `quotes.length in [1, 2]` con cada quote `outlet`/`year`/`quote` no
   vacíos y `url` ausente o `^https://`.
 
-**Validación:** suite dinámica `apps/api/tests/games.test.ts` (123 tests).
+**Validación:** suite dinámica `apps/api/tests/games.test.ts`.
 
 ### REQ-GAMES-3: Constante GAME_GENRES
 
@@ -46,7 +46,7 @@ ordenados alfabéticamente.
 
 Given el dataset,
 when un cliente hace `GET /games`,
-then SHALL devolver los 10 juegos. Parámetros `?q=<substring>` y
+then SHALL devolver los 16 juegos. Parámetros `?q=<substring>` y
 `?genre=<exacto>` filtran case-insensitive y exacto respectivamente.
 Combinables. Schema: `q maxLength 200`, `genre maxLength 50`,
 `additionalProperties: false`.
@@ -79,14 +79,15 @@ cuando vale `"all"`.
 Given el navegador en `/games`,
 when la página carga,
 then MUST mostrar:
-- hero con `<h1>` que contenga literalmente "AMSTRAD CPC 464/6128",
-- subtítulo "10 CLÁSICOS ICÓNICOS · 1984-1995" (NO "más vendidos"),
-- 10 cards con cover + cinta de género + título + año,
+- hero con `<h1>` que contenga literalmente "AMSTRAD CPC" y "COMMODORE 64",
+- subtítulo "16 CLÁSICOS RETRO 8-BIT · 1984-1995",
+- 16 cards con cover + cinta de género + título + año,
 - buscador `data-testid="game-search-input"` con `aria-label="Buscar juegos"`,
 - fila de chips `role="group" aria-label="Filtrar por género"` con 1
-  chip "Todos" + 8 chips de género (`data-testid="game-genre-chip-<slug>"`).
+  chip "Todos" + N chips de género (`data-testid="game-genre-chip-<slug>"`),
+  donde N = `GAME_GENRES.length` (13 tras iter-11).
 
-**Validación:** `e2e/games.spec.ts:45` + smoke MCP `reports/iter-7/smoke-games-list.png`.
+**Validación:** `e2e/games.spec.ts` + smoke MCP `reports/iter-11/smoke-games-c64.png`.
 
 ### REQ-GAMES-8: Buscador con debounce
 
@@ -102,9 +103,10 @@ con debounce 250ms y AbortController.
 Given el listado,
 when el usuario hace click en el chip "Aventura isométrica",
 then SHALL mostrar exactamente las cards con `data-genre="Aventura
-isométrica"` (3 actualmente). Click de nuevo en el mismo chip lo
-deselecciona y restaura el listado completo (10). "Todos" exhibe
-`aria-pressed="true"` cuando ningún género está activo.
+isométrica"` (3 actualmente: Knight Lore, Head Over Heels, La Abadía
+del Crimen). Click de nuevo en el mismo chip lo deselecciona y restaura
+el listado completo (16). "Todos" exhibe `aria-pressed="true"` cuando
+ningún género está activo.
 
 **Validación:** `e2e/games.spec.ts:89`, `:119`.
 
@@ -122,7 +124,7 @@ Given filtros activos (chip + búsqueda),
 when el usuario hace click en "Limpiar filtros"
 (`data-testid="game-clear-filters"`),
 then el input SHALL volver a vacío, el chip "Todos" exhibe
-`aria-pressed="true"` y el listado vuelve a 10 cards.
+`aria-pressed="true"` y el listado vuelve a 16 cards.
 
 **Validación:** `e2e/games.spec.ts:190`.
 
@@ -167,13 +169,13 @@ then SHALL aplicar:
 
 **Validación:** smoke MCP en 2 fichas.
 
-### REQ-GAMES-15: 10 portadas con MIME válido
+### REQ-GAMES-15: 16 portadas con MIME válido
 
 Given `apps/web/public/covers/games/`,
 when se inspeccionan los archivos,
-then SHALL contener exactamente 10 archivos `<id>.jpg`, todos `>0` bytes,
-renderizables en navegador (mime sniffing absorbe los PNG renombrados
-a .jpg como deuda menor documentada).
+then SHALL contener al menos 16 archivos `<id>.jpg` (uno por entry de
+`GAMES`), todos `>0` bytes, renderizables en navegador (mime sniffing
+absorbe los PNG renombrados a .jpg como deuda menor documentada).
 
 **Validación:** `Get-ChildItem` + smoke MCP listado.
 
@@ -185,6 +187,15 @@ Cumplido en iter-7 (commit `c03bcfc`). Decisiones clave registradas:
 - `buildUrl` duplicado entre `albums-api.ts`/`games-api.ts`/`api.ts` (deuda preexistente REC-7).
 - `la-abadia-del-crimen.jpg` es DOS box art (no inlay CPC nativa).
 - 13 quotes sin `url` declarada (gate latente: REC-5 muestreo archive.org).
+
+iter-11 (PRD `specs/iter-11-prd.md`) amplía a multi-sistema:
+- +6 títulos Commodore 64 (1984-1990): The Last Ninja, Impossible Mission,
+  Maniac Mansion, IK+, Wizball, Turrican.
+- SYSTEM_PATTERN deja de estar acoplado a CPC.
+- Hero `/games` pasa a "AMSTRAD CPC & COMMODORE 64".
+- Boulder Dash NO se duplica para C64 (la entry CPC ya cubre la obra,
+  decisión consciente).
+- 12 nuevas quotes C64 sin `url` declarada (mismo gate latente REC-5).
 
 Ver `specs/acceptance-criteria-archive.md` § "Catálogo Games — Amstrad CPC (iteración 7)".
 
