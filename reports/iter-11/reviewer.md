@@ -135,3 +135,20 @@ Iter-11 puede pasar a Fase 11 (aprobación humana) y luego a `/ship`. Recomiendo
 ---
 
 **APROBAR** — listo para `/ship`.
+
+## Post-cierre: validación dockerizada (añadido tras feedback humano)
+
+Tras el push del PR #1, el usuario señaló dos huecos en el flujo: (1) no se lanzó al `qa-engineer` y (2) no se rebuild/validó el stack dockerizado. Ambos quedaron registrados en memoria persistente para iters futuras (`feedback_adlc_mandatory_agents.md`, `feedback_adlc_docker_final_check.md`).
+
+Para cerrar el segundo retroactivamente sobre este mismo PR:
+
+| Paso | Resultado |
+|---|---|
+| `docker compose build` (api + web) | OK, ambas imágenes reconstruidas. |
+| `docker compose up -d` | OK, `ironheart-api` y `ironheart-web` en estado `healthy`. |
+| API `/albums?band=Pantera` desde contenedor | 2 entradas (verificado). |
+| API `/games` desde contenedor | 16 entradas, 6 con `system="Commodore 64"` (verificado). |
+| SSR `/games`, `/albums`, `/games/maniac-mansion`, `/games/the-last-ninja`, `/albums/pantera-vulgar-display-of-power`, `/albums/pantera-cowboys-from-hell` | Las 6 rutas devuelven 200 vía Invoke-WebRequest contra el contenedor. La trampa de iter-9 (SSR roto en Docker por DNS interno) NO se reproduce. |
+| Smoke MCP dockerizado | 4 capturas en `reports/iter-11/docker-smoke-*.png`. Console limpia en las 4 navegaciones; portada Pantera y SSR de ficha Maniac Mansion correctos. |
+
+Conclusión: el stack dockerizado se comporta igual que `npm run dev` — sin regresiones por contenedor.
