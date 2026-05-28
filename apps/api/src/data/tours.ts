@@ -9,8 +9,12 @@ import type { Tour } from "../types/tour.js";
  * en un catálogo editorial; no son ledger contable de venues. Las
  * descripciones (>=200 chars cada una) recogen el contexto histórico.
  *
- * Los carteles viven en `apps/web/public/covers/tours/<id>.jpg` (los
- * descarga el agente frontend). Este dataset solo declara la ruta relativa.
+ * Los carteles viven en `apps/web/public/covers/tours/<id>.jpg`.
+ * Tres tours (world-slavery, cowboys-from-hell, black-album) reutilizan la
+ * portada del álbum promocionado del catálogo /albums (fair use editorial,
+ * mismo patrón que /games y /consoles). Los 7 restantes usan fotografías
+ * Picsum (Unsplash License) en escala de grises, descargadas con seed
+ * determinista por slug para mantener cohesión con la paleta IRON DECK.
  */
 const cover = (slug: string): string => `/covers/tours/${slug}.jpg`;
 
