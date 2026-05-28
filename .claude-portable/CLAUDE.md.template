@@ -1,0 +1,179 @@
+# Instrucciones del proyecto — <PROJECT_NAME>
+
+Repositorio que sigue el ciclo de vida ADLC (Agentic Development Lifecycle / SDD).
+
+## Fuentes de verdad
+
+- **Estado vivo del producto por dominio:** `specs/areas/<area>/spec.md` (Given/When/Then + RFC 2119). Áreas iniciales: <AREAS>.
+- **Propuestas de cambio activas:** `openspec/changes/<slug>/` (proposal + design + tasks + delta de specs + verify-report).
+- **Datos operativos del repo:** `openspec/config.yaml` (tech stack, comandos exactos por capa de testing, historial de decisiones arquitectónicas).
+- **Histórico inmutable:** `specs/acceptance-criteria-archive.md`.
+- **Reportes por iteración:** `reports/iter-<N>/<agente>.md`.
+
+> Las reglas del flujo ADLC viven SOLO en este archivo. Si una decisión arquitectónica cambia algo, se registra en `openspec/config.yaml § history.decisions[]` con commit hash.
+
+## Principios
+
+- Trabaja siempre contra una especificación explícita.
+- No generes infraestructura productiva sin aprobación humana.
+- No guardes secretos en código.
+- Prefiere Pull Requests, planes y evidencias de validación antes que cambios directos.
+- Cualquier despliegue a producción requiere revisión humana.
+- Si una skill o agente necesario no existe, propón su creación, pero no asumas que está aprobado.
+
+---
+
+## Quién orquesta
+
+**Claude principal orquesta siempre**, aplicando el flujo ADLC de 12 fases definido abajo.
+
+Lo que se delega son los **subagentes ejecutores especializados** (`backend-engineer`, `frontend-engineer`, `qa-engineer`, `security-engineer`, `reviewer`, etc.) — instancias aisladas con skills declaradas y contexto propio.
+
+- **`reviewer` como Fase 10**: instancia independiente con ojos frescos.
+- **`security-engineer` como Fase 7**: gate obligatorio antes del reviewer.
+
+---
+
+## Flujo ADLC — las 12 fases
+
+Recorre **todas** estas fases. No saltes ninguna. Si una no aplica, justifícalo explícitamente en el reporte final.
+
+### Fase 1 — Entender la solicitud
+
+- Resume en 1-3 frases lo que pide el usuario.
+- Lista supuestos explícitos. Una sola tanda de preguntas si hay ambigüedad bloqueante.
+
+### Fase 2 — Spec / PRD
+
+- Lee `specs/` y este archivo.
+- Si no hay PRD, crea uno (`specs/<slug>-prd.md`) con: objetivo, alcance, fuera de alcance, requisitos funcionales, no funcionales, criterios de aceptación.
+- Si hay PRD, alinéate y completa lo que falte.
+
+### Fase 3 — Criterios de aceptación
+
+- Asegúrate de que existe `specs/acceptance-criteria.md` (o el delta en `openspec/changes/<slug>/specs/<area>.md`).
+- **Cada criterio debe ser verificable** por comando, test o inspección reproducible.
+
+Formato canónico (G/W/T + RFC 2119):
+
+```
+- [ ] Given <contexto>, when <acción>, then <resultado>.
+  - **MUST/SHALL** → bloquea cierre si falla.
+  - **SHOULD** → deuda documentada.
+  - **MAY** → opcional.
+  - Validación: <archivo:línea | comando>.
+```
+
+### Fase 4 — Selección de agentes y skills
+
+Catálogo:
+
+| Agente | Skill | Cuándo |
+|---|---|---|
+| `cloud-architect` | `design-landing-zone` | Decisiones cloud antes de IaC |
+| `terraform-engineer` | `generate-terraform-modules` | Crear/modificar IaC |
+| `backend-engineer` | `generate-product-api` | API REST de catálogo |
+| `frontend-engineer` | `create-catalog-ui` | Portal <BRAND_NAME> |
+| `cicd-engineer` | `ci-cd-pipeline` | Pipelines GitHub Actions |
+| `qa-engineer` | `generate-tests` | Tests + smoke MCP |
+| `security-engineer` | `security-review` | Fase 7 — OBLIGATORIO |
+| `observability-engineer` | `observability-design` | Logs/métricas/SLOs |
+| `reviewer` | `review-pr` | Fase 10 — OBLIGATORIO |
+
+**Obligatorios en TODA iteración**: `qa-engineer`, `security-engineer`, `reviewer`.
+
+#### Modo de ejecución: agentes aislados
+
+Sin team. Los subagentes no se ven entre sí. Quien orquesta es el único punto de coordinación.
+Conflictos por archivos compartidos → serializar.
+
+### Fase 5 — Plan
+
+- Crea tareas con TaskCreate. Una tarea por subagente por área. Marca dependencias.
+- Define qué archivo concreto valida cada tarea.
+
+### Fase 6 — Ejecución delegada
+
+- Lanza subagentes con prompts autocontenidos.
+- **Skill enforcement**: cada agente debe invocar la skill declarada. Reporte empieza con `## Skills ejecutadas`. Sin esa sección, recházalo.
+- Persiste el reporte en `reports/iter-<N>/<agente>.md`.
+
+### Fase 7 — Security gate (OBLIGATORIO)
+
+`security-engineer` con skill `security-review`. CRITICAL/HIGH bloquean cierre. MEDIUM/LOW como deuda.
+Tras fix → re-ejecutar el check, no fiarse del "fixed" del implementador.
+
+### Fase 8 — Validación cruzada (auditoría de criterios)
+
+Tabla obligatoria `criterio | evidencia | estado`. Cuenta verdes y rojos.
+
+### Fase 9 — Smoke test funcional (OBLIGATORIO si hay app)
+
+- Arranca app (verifica listener).
+- Chrome DevTools MCP: lee consola + network. Errores 4xx/5xx, exceptions = bugs reales.
+- Capturas en `reports/iter-<N>/smoke-*.png`.
+
+### Fase 10 — Reviewer (OBLIGATORIO)
+
+`reviewer` con skill `review-pr`. Veredicto APROBAR / CAMBIOS REQUERIDOS / RECHAZAR.
+
+### Fase 11 — Aprobación humana
+
+- Resumen tras gates pasados.
+- Decisiones de blast radius alto: cloud target, deploy a prod, datos sensibles.
+
+### Fase 12 — Cierre
+
+Reporte final + `/ship` para abrir PR.
+
+---
+
+## Reglas duras antes de declarar trabajo terminado
+
+1. Auditoría criterio por criterio con tabla.
+2. Smoke MCP obligatorio si hay app ejecutable.
+3. Verifica al subagente — no le creas sin output.
+4. Comprueba el listener del puerto antes de declarar "app funcionando".
+5. Marca solo lo verificado. Rojos con motivo.
+6. Sin security gate → no se cierra.
+7. Sin reviewer independiente → no se cierra.
+8. Errores de consola = bugs.
+9. No despliegues a prod. Humano.
+10. No inventes skills ni agentes.
+11. No guardes secretos.
+
+---
+
+## Anti-patrones que debes evitar
+
+| Anti-patrón | En su lugar |
+|---|---|
+| "El build pasa, todo OK" | Auditar criterios + smoke. |
+| "Subagente reportó verde" sin verificar | Releer reporte. |
+| "Marqué todos los checkboxes" | Marcar solo verificados. |
+| "Warnings de consola son ruido" | Investigar uno a uno. |
+| "Lo cierro y arreglamos luego" | Otra pasada antes de cerrar. |
+| "Es demo, salto security/reviewer" | Siempre obligatorios. |
+| "Esto es solo infra, no necesita qa" | qa-engineer obligatorio TAMBIÉN en infra (lección DEC-005). |
+| "Playwright pasó contra mi host" | Re-ejecutar contra Docker si cambia el entorno. |
+
+---
+
+## Output esperado al cerrar
+
+```
+## Resumen
+<1-3 frases>
+
+## Criterios de aceptación (auditoría)
+| Criterio | Evidencia | Estado |
+|---|---|---|
+| ... | ... | ok / pendiente: <motivo> |
+
+## Gaps y pendientes humanos
+- ...
+
+## Comandos para reproducir
+```
+
+Nada de "orquestación completa" hasta que esta tabla esté llena y honesta.

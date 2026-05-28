@@ -34,3 +34,6 @@ fetch-err.ps1
 # IDE
 .vscode/
 .idea/
+
+# Antigravity CLI cache
+.antigravitycli/
