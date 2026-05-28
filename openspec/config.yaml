@@ -100,8 +100,8 @@ testing:
 # Cualquier decisión que cambie cómo se trabaja con este repo entra aquí
 # con rationale y commit hash.
 history:
-  iterations_closed: 10
-  last_close: "2026-05-17"  # iter-10 commit 6339801
+  iterations_closed: 12
+  last_close: "2026-05-28"  # iter-12 commit 207cc03 (PR #2 merged)
 
   decisions:
     - id: "DEC-001"
@@ -267,3 +267,75 @@ history:
         Reportes en reports/iter-10/. Verify-report en
         openspec/changes/consoles/verify-report.md.
       commit: "6339801"
+
+    - id: "DEC-007"
+      date: "2026-05-28"
+      title: "iter-12: harness reescrito (agentes+skills+portable) + área /tours"
+      rationale: |
+        Doble entrega en una sola iter:
+
+        (1) Reescritura completa del harness ADLC para eliminar
+        ambigüedad. Los 9 agentes y las 11 skills pasan de ser bullets
+        genéricos a artefactos prescriptivos con stack fijo (Next.js 15
+        + Fastify 5 + Vitest + Playwright + Azure/Terraform AzureRM ~> 4.0),
+        snippets canónicos, comandos exactos PowerShell y anti-patrones
+        específicos derivados de DEC-001..DEC-006 (especialmente DEC-005:
+        qa obligatorio también en infra, Playwright contra Docker,
+        resolveApiBase en SSR). Se empaqueta en `.claude-portable/` con
+        README + CLAUDE.md.template + openspec/config.yaml.template para
+        trasplantar el harness a un nuevo repo y obtener el mismo nivel
+        de calidad.
+
+        (2) Primera iter ejecutada con el harness reescrito como prueba
+        de validación: nueva área `/tours` con 10 giras históricas del
+        metal (1984-2008). Backend Fastify + frontend IRON DECK + tests
+        vitest + Playwright contra Docker + smoke MCP. Todas las
+        lecciones de DEC-005 aplicadas desde el primer minuto:
+        resolveApiBase() + encodeURIComponent() en tours-api.ts desde el
+        inicio, Playwright contra `docker compose up -d`, smoke MCP en
+        listado + 2 fichas server components + 404.
+
+        Entregables /tours:
+        - apps/api: types/tour.ts, data/tours.ts (10 entradas ordenadas
+          year ASC), routes/tours.ts (GET /tours?q&decade&band,
+          GET /tours/:id), tests/tours.test.ts (75 tests).
+        - apps/web: lib/{tour-types,tours-api}.ts (con resolveApiBase +
+          encodeURIComponent), app/tours/{layout, page, [id]/page,
+          [id]/not-found}.tsx, components/{tour-card,tours-grid}.tsx,
+          link "Tours" en iron-deck-header.tsx entre "Consolas" y "About".
+        - apps/web/e2e/tours.spec.ts (9 tests).
+        - apps/web/public/covers/tours/*.jpg (10 placeholders JPG mínimos
+          base64; sustituir por cartelería real fair-use en iter futura).
+        - apps/web/lib/credits.ts ampliado a kind = "album" | "game" |
+          "tour" + 10 entradas nuevas.
+
+        Gates:
+        - vitest backend: 511/511 verdes (75 nuevos + 436 previos de
+          iter-11).
+        - tsc apps/api y apps/web: exit 0.
+        - lint apps/web: 0 warnings.
+        - Playwright contra Docker: 63/63 verdes (9 nuevos + 54 previos).
+        - Smoke MCP: 0 errores consola en /tours, /tours/world-slavery-tour,
+          /tours/black-album-tour, /tours/unknown-xxx (capturas en
+          reports/iter-12/smoke-tours-*.png).
+        - security-engineer: APROBADO. 0 CRITICAL / 0 HIGH / 0 MEDIUM /
+          2 LOW (SEC-12-L01 placeholders de cartelería, SEC-12-L02 echo
+          de id en 404; ninguna bloquea).
+        - reviewer: APROBAR con observaciones no bloqueantes.
+
+        Validación del harness:
+        - 5 agentes ejecutados (backend, frontend, qa, security, reviewer)
+          via tool Agent con prompts autocontenidos.
+        - Cada uno invocó la skill declarada y reportó con
+          "## Skills ejecutadas" como exige CLAUDE.md.
+        - Reportes persistidos en reports/iter-12/.
+        - PR #2 abierto con auditoría reutilizada del reviewer.
+
+        Specs movidas tras cierre:
+        - openspec/changes/tours/specs/tours.md → specs/areas/tours/spec.md.
+
+        Reportes en reports/iter-12/. Verify-report en
+        openspec/changes/tours/verify-report.md (queda como plantilla;
+        la evidencia real vive en reports/iter-12/reviewer.md y
+        reports/iter-12/orchestrator.md).
+      commit: "207cc03"
