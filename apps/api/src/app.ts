@@ -6,6 +6,7 @@ import { productsRoutes } from "./routes/products.js";
 import { albumsRoutes } from "./routes/albums.js";
 import { gamesRoutes } from "./routes/games.js";
 import { consolesRoutes } from "./routes/consoles.js";
+import { toursRoutes } from "./routes/tours.js";
 
 export interface BuildAppOptions {
   config?: AppConfig;
@@ -33,6 +34,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   await app.register(albumsRoutes);
   await app.register(gamesRoutes);
   await app.register(consolesRoutes);
+  await app.register(toursRoutes);
 
   app.setErrorHandler((error: FastifyError, _request, reply) => {
     const statusCode = error.statusCode ?? 500;
