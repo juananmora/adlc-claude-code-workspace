@@ -1,8 +1,11 @@
 /**
- * Tipos del dominio "Games — Amstrad CPC" (iteración 7).
+ * Tipos del dominio "Games — retro 8-bit" (Amstrad CPC + Commodore 64).
  *
  * Mirror manual de `apps/api/src/types/game.ts`. No se importa cross-package
  * (mismo patrón que `album-types.ts`): si cambias uno, cambia el otro.
+ *
+ * iter-7 introdujo Amstrad CPC. iter-11 generaliza el dominio a multi-sistema
+ * añadiendo Commodore 64. El conjunto de `GAME_GENRES` crece a 13.
  *
  * Decisión sobre `GameGenre`:
  * - El backend tipa `GameGenre = string` deliberadamente para no forzar un
@@ -46,8 +49,10 @@ export interface Game {
   /** Género del catálogo. */
   genre: GameGenre;
   /**
-   * Sistema soportado. Debe encajar con `/Amstrad CPC ?(464|6128|464 \/ 6128)/`.
-   * Ej.: "Amstrad CPC 464", "Amstrad CPC 6128", "Amstrad CPC 464 / 6128".
+   * Sistema soportado. Encaja con
+   * `/^(Amstrad CPC (464|6128|464 \/ 6128)|Commodore 64)$/`.
+   * Ej.: "Amstrad CPC 464", "Amstrad CPC 6128",
+   * "Amstrad CPC 464 / 6128", "Commodore 64".
    */
   system: string;
   /** Descripción extensa (>=200 chars) específica del juego (no genérica). */
@@ -69,10 +74,15 @@ export interface Game {
  * la API en `game.genre` (filtro exact-match server-side).
  */
 export const GAME_GENRES = [
+  "Acción isométrica",
   "Arcade de aventura",
+  "Aventura gráfica",
   "Aventura isométrica",
   "Beat 'em up",
   "Conducción arcade",
+  "Lucha",
+  "Plataformas puzle",
+  "Plataformas run & gun",
   "Puzle de acción",
   "Shoot 'em up",
   "Shooter sobre raíles",

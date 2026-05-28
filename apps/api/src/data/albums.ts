@@ -36,6 +36,8 @@ const COVERS: Record<string, string> = {
   "nightwish-once": "/covers/nightwish-once.jpg",
   "motley-crue-shout-at-the-devil": "/covers/motley-crue-shout-at-the-devil.jpg",
   "motley-crue-dr-feelgood": "/covers/motley-crue-dr-feelgood.jpg",
+  "pantera-cowboys-from-hell": "/covers/pantera-cowboys-from-hell.jpg",
+  "pantera-vulgar-display-of-power": "/covers/pantera-vulgar-display-of-power.jpg",
 };
 
 const cover = (slug: string) => COVERS[slug] ?? "/covers/placeholder.jpg";
@@ -528,6 +530,53 @@ export const albums: AlbumWithoutReview[] = [
       "She Goes Down",
       "Don't Go Away Mad (Just Go Away)",
       "Time for Change",
+    ],
+  },
+  {
+    id: "pantera-cowboys-from-hell",
+    title: "Cowboys from Hell",
+    band: "Pantera",
+    year: 1990,
+    genre: "Groove Metal",
+    description:
+      "Quinto álbum de estudio y debut en major (Atco/Atlantic) de Pantera, el disco con el que la banda de Arlington (Texas) deja atrás el glam metal de sus primeros LPs y firma el acta fundacional del groove metal con Phil Anselmo a la voz y los hermanos Abbott al mando.",
+    coverUrl: cover("pantera-cowboys-from-hell"),
+    tracks: [
+      "Cowboys from Hell",
+      "Primal Concrete Sledge",
+      "Psycho Holiday",
+      "Heresy",
+      "Cemetery Gates",
+      "Domination",
+      "Shattered",
+      "Clash with Reality",
+      "Medicine Man",
+      "Message in Blood",
+      "The Sleep",
+      "The Art of Shredding",
+    ],
+  },
+  {
+    id: "pantera-vulgar-display-of-power",
+    title: "Vulgar Display of Power",
+    band: "Pantera",
+    year: 1992,
+    genre: "Groove Metal",
+    description:
+      "Sexto álbum de estudio de Pantera y consolidación absoluta del groove metal: Dimebag Darrell pulveriza el riffing del thrash en favor del medio tiempo demoledor, Vinnie Paul aterriza el pulso y Phil Anselmo canta desde la garganta más amenazante de los 90.",
+    coverUrl: cover("pantera-vulgar-display-of-power"),
+    tracks: [
+      "Mouth for War",
+      "A New Level",
+      "Walk",
+      "Fucking Hostile",
+      "This Love",
+      "Rise",
+      "No Good (Attack the Radical)",
+      "Live in a Hole",
+      "Regular People (Conceit)",
+      "By Demons Be Driven",
+      "Hollow",
     ],
   },
 ];

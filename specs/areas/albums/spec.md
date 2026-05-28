@@ -1,8 +1,8 @@
 # Spec — Catálogo de discos heavy metal (`/albums`)
 
-22 álbumes con crítica multi-sección, filtros por banda y género, ficha de detalle.
+24 álbumes con crítica multi-sección, filtros por banda y género, ficha de detalle.
 
-> **Estado vivo.** Última actualización: iter-6 (commit `4cc586a`).
+> **Estado vivo.** Última actualización: iter-11 (Pantera +2).
 
 ## Requirements
 
@@ -10,7 +10,7 @@
 
 Given el dataset estático de álbumes,
 when un cliente hace `GET /albums`,
-then la API SHALL devolver `>=22` entradas, cada una con `id`, `title`,
+then la API SHALL devolver `>=24` entradas, cada una con `id`, `title`,
 `band`, `year`, `genre`, `description`, `coverUrl`, `tracks` (array no
 vacío) y `review` (objeto completo).
 
@@ -55,7 +55,7 @@ derivado del dataset.
 
 Given el navegador en `/albums`,
 when la página carga,
-then MUST mostrar 22 cards en grid responsive con cover + título +
+then MUST mostrar 24 cards en grid responsive con cover + título +
 banda + año + cinta de género; hero con foto promocional y heading
 "DISCOS QUE NO MUEREN".
 
@@ -120,10 +120,11 @@ páginas del catálogo (resuelto en hotfix iter-7.1).
 
 ## Evidencia histórica
 
-Iters 3, 4, 5, 6 cerraron este catálogo:
+Iters 3, 4, 5, 6, 11 fueron ampliando este catálogo:
 - iter-3: 14 álbumes + filtro banda.
 - iter-4: crítica multi-sección (83 tests dinámicos).
 - iter-5: filtro por género (chips).
 - iter-6: +2 álbumes de Mötley Crüe (22 totales).
+- iter-11: +2 álbumes de Pantera, Cowboys from Hell y Vulgar Display of Power (24 totales). Estrena género `Groove Metal`.
 
 Ver `specs/acceptance-criteria-archive.md` §§ "Discos heavy metal", "Crítica de discos", "Filtro por género", "Catálogo Mötley Crüe".

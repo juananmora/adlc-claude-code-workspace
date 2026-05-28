@@ -59,6 +59,12 @@ export function IronDeckHeader() {
             Consolas
           </Link>
           <Link
+            href="/tours"
+            className="transition-colors hover:text-[var(--iron-red)] hover:underline underline-offset-8 decoration-2"
+          >
+            Tours
+          </Link>
+          <Link
             href="/about"
             className="transition-colors hover:text-[var(--iron-red)] hover:underline underline-offset-8 decoration-2"
           >

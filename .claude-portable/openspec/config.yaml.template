@@ -1,0 +1,99 @@
+# OpenSpec config — datos operativos del workspace
+#
+# Propósito: referencia rápida de
+#   1. tech stack real del repo,
+#   2. comandos exactos de cada capa de testing,
+#   3. log auditable de decisiones arquitectónicas con commit hash.
+#
+# Lo que NO contiene: reglas del flujo ADLC. Esas viven SOLO en CLAUDE.md.
+#
+# Fuentes de verdad:
+#   - 12 fases ADLC y reglas duras: CLAUDE.md (raíz del repo).
+#   - Estado vivo por dominio: specs/areas/<area>/spec.md (G/W/T + RFC 2119).
+#   - Propuestas de cambio activas: openspec/changes/<slug>/.
+
+schema: spec-driven
+
+context: |
+  Monorepo ADLC / SDD / Harness Engineering — <PROJECT_NAME>.
+  Apps:
+    - apps/api  → Fastify 5 + TypeScript 5.6 + Vitest 4 (ESM, port 4000)
+    - apps/web  → Next.js 15 + React 19 + Tailwind 3.4 + Playwright 1.60
+                  (port 3000, --workers=1 obligatorio)
+  Infra: Terraform + azurerm ~> 4.0 en infra/landing-zone/.
+  Áreas iniciales: <AREAS>.
+  Agentes ejecutores (9): backend-engineer, frontend-engineer, qa-engineer,
+                          security-engineer, reviewer, cloud-architect,
+                          terraform-engineer, cicd-engineer, observability-engineer.
+  Skills (11): ver `.claude/skills/` y CLAUDE.md § Fase 4.
+  Orquestación: Claude principal aplica CLAUDE.md directamente
+                (no hay agente orquestador dedicado).
+
+strict_tdd: false   # cambia a true si exiges tests-antes en este proyecto.
+
+testing:
+  layers:
+    unit:
+      available: true
+      tool: "vitest"
+      command: "npm test"
+      cwd: "apps/api"
+
+    integration:
+      available: true
+      tool: "fastify app.inject() + vitest"
+      cwd: "apps/api"
+      note: "Tests con buildApp + inject."
+
+    e2e:
+      available: true
+      tool: "Playwright"
+      command: "npx playwright test --workers=1"
+      cwd: "apps/web"
+      note: "workers=1 obligatorio: API single-threaded en dev."
+
+    smoke:
+      available: true
+      tool: "Chrome DevTools MCP"
+      note: "Manual desde el chat. Capturas en reports/iter-<N>/."
+
+  coverage:
+    available: true
+    command: "npx vitest run --coverage"
+    cwd: "apps/api"
+
+  quality:
+    type_checker:
+      available: true
+      commands:
+        - "npx tsc --noEmit  # cwd: apps/api"
+        - "npx tsc --noEmit -p tsconfig.json  # cwd: apps/web"
+
+    linter:
+      available: true
+      command: "next lint"
+      cwd: "apps/web"
+
+    formatter:
+      available: false
+
+    security_audit:
+      available: true
+      commands:
+        - "npm audit --audit-level=high  # cwd: apps/api"
+        - "npm audit --audit-level=high  # cwd: apps/web"
+      note: "Gate Fase 7."
+
+history:
+  iterations_closed: 0
+  last_close: ""
+
+  decisions: []
+  # Plantilla de entrada (añadir al cerrar cada iter):
+  # - id: "DEC-001"
+  #   date: "YYYY-MM-DD"
+  #   title: "Título corto"
+  #   rationale: |
+  #     Explicación con rationale, gates pasados, hallazgos.
+  #     Reportes en reports/iter-N/. Verify-report en openspec/changes/<slug>/verify-report.md.
+  #   commit: "<sha>"

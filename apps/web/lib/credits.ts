@@ -20,7 +20,7 @@ export interface CreditEntry {
   /** Título legible. */
   title: string;
   /** "album" o "game". */
-  kind: "album" | "game";
+  kind: "album" | "game" | "tour";
   /** Autor original (band para álbumes, developer para juegos). */
   author: string;
   /** Publisher del soporte físico original. */
@@ -334,5 +334,112 @@ export const CREDITS: readonly CreditEntry[] = [
     year: 1988,
     sourceUrl: "https://en.wikipedia.org/wiki/R-Type",
     note: "La portada disponible es el flyer arcade original.",
+  },
+
+  // ============================================================
+  // TOURS (10 entradas) — orden idéntico a apps/api/src/data/tours.ts
+  // Carteles placeholder generados in-house (iter-12); las giras como
+  // tales son hechos editoriales públicos y la atribución apunta a las
+  // entradas canónicas en Wikipedia.
+  // ============================================================
+  {
+    id: "world-slavery-tour",
+    title: "World Slavery Tour",
+    kind: "tour",
+    author: "Iron Maiden",
+    publisher: "EMI / Sanctuary",
+    year: 1984,
+    sourceUrl: "https://en.wikipedia.org/wiki/World_Slavery_Tour",
+    note: "Cartel placeholder (iter-12). La gira es hecho editorial público.",
+  },
+  {
+    id: "monsters-of-rock-86",
+    title: "Monsters of Rock 1986",
+    kind: "tour",
+    author: "Van Halen / Scorpions / Ozzy Osbourne",
+    publisher: "Monsters of Rock (festival itinerante)",
+    year: 1986,
+    sourceUrl: "https://en.wikipedia.org/wiki/Monsters_of_Rock",
+    note: "Cartel placeholder (iter-12).",
+  },
+  {
+    id: "damaged-justice-tour",
+    title: "Damaged Justice Tour",
+    kind: "tour",
+    author: "Metallica",
+    publisher: "Elektra Records",
+    year: 1988,
+    sourceUrl: "https://en.wikipedia.org/wiki/Damaged_Justice_Tour",
+    note: "Cartel placeholder (iter-12).",
+  },
+  {
+    id: "clash-of-the-titans",
+    title: "Clash of the Titans",
+    kind: "tour",
+    author: "Slayer / Megadeth / Anthrax",
+    publisher: "Clash of the Titans (gira conjunta)",
+    year: 1990,
+    sourceUrl: "https://en.wikipedia.org/wiki/Clash_of_the_Titans_(tour)",
+    note: "Cartel placeholder (iter-12).",
+  },
+  {
+    id: "cowboys-from-hell-tour",
+    title: "Cowboys From Hell Tour",
+    kind: "tour",
+    author: "Pantera",
+    publisher: "Atco Records",
+    year: 1990,
+    sourceUrl: "https://en.wikipedia.org/wiki/Cowboys_from_Hell",
+    note: "Cartel placeholder (iter-12).",
+  },
+  {
+    id: "use-your-illusion-tour",
+    title: "Use Your Illusion Tour",
+    kind: "tour",
+    author: "Guns N' Roses",
+    publisher: "Geffen Records",
+    year: 1991,
+    sourceUrl: "https://en.wikipedia.org/wiki/Use_Your_Illusion_Tour",
+    note: "Cartel placeholder (iter-12).",
+  },
+  {
+    id: "black-album-tour",
+    title: "Wherever I May Roam (Black Album Tour)",
+    kind: "tour",
+    author: "Metallica",
+    publisher: "Elektra Records",
+    year: 1991,
+    sourceUrl: "https://en.wikipedia.org/wiki/Wherever_I_May_Roam_Tour",
+    note: "Cartel placeholder (iter-12).",
+  },
+  {
+    id: "ozzfest-1996",
+    title: "Ozzfest 1996",
+    kind: "tour",
+    author: "Ozzy Osbourne",
+    publisher: "Ozzfest (festival itinerante)",
+    year: 1996,
+    sourceUrl: "https://en.wikipedia.org/wiki/Ozzfest",
+    note: "Cartel placeholder (iter-12).",
+  },
+  {
+    id: "iowa-world-tour",
+    title: "Iowa World Tour",
+    kind: "tour",
+    author: "Slipknot",
+    publisher: "Roadrunner Records",
+    year: 2001,
+    sourceUrl: "https://en.wikipedia.org/wiki/Iowa_(album)",
+    note: "Cartel placeholder (iter-12).",
+  },
+  {
+    id: "judas-priest-redeemer",
+    title: "Redeemer of Souls World Tour",
+    kind: "tour",
+    author: "Judas Priest",
+    publisher: "Epic Records",
+    year: 2008,
+    sourceUrl: "https://en.wikipedia.org/wiki/Nostradamus_(Judas_Priest_album)",
+    note: "Cartel placeholder (iter-12).",
   },
 ];
