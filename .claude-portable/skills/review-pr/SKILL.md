@@ -39,7 +39,7 @@ Tabla obligatoria en tu reporte:
 |---|---|---|---|
 | Given /consoles, when GET, then 200 + 10 items | MUST | apps/api/tests/consoles.test.ts:37 + output 127/127 verde | OK |
 | Given filtro Gen 5, when click chip, then 2 cards visibles | MUST | apps/web/e2e/consoles.spec.ts:138 + output Playwright 54/54 | OK |
-| Given ficha en Docker, when SSR, then 200 + render OK | MUST | smoke MCP en reports/iter-9/orchestrator.md | OK |
+| Given ficha en Docker, when SSR, then 200 + render OK | MUST | smoke MCP en reports/iter-N/orchestrator.md | OK |
 | ... | SHOULD | (sin test, gap documentado) | PENDIENTE |
 ```
 
@@ -84,7 +84,7 @@ Para cada archivo modificado:
 
 ### 4. Coherencia specs
 
-- ¿Cada criterio MUST en `specs/areas/<area>/spec.md` está en formato G/W/T + RFC 2119? (obligatorio post-DEC-002 / iter-8+).
+- ¿Cada criterio MUST en `specs/areas/<area>/spec.md` está en formato G/W/T + RFC 2119? Obligatorio para criterios nuevos.
 - ¿Las specs aprobadas del change se han movido a `specs/areas/<area>/spec.md` al cerrar?
 - ¿`openspec/config.yaml § history.decisions[]` tiene entrada para esta iter con commit hash?
 

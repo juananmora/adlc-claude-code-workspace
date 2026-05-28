@@ -7,7 +7,7 @@ allowed-tools: Read Write Edit Grep Glob
 
 # Skill: Create PRD
 
-Skill prescriptiva para producir spec verificable según el modelo del repo (DEC-002).
+Skill prescriptiva para producir spec verificable.
 
 ## Modelo del repo
 
@@ -21,8 +21,8 @@ Skill prescriptiva para producir spec verificable según el modelo del repo (DEC
   ├─ specs/<area>.md   # delta a aplicar a specs/areas/<area>/spec.md al cerrar
   └─ verify-report.md  # evidencias al cerrar (se rellena durante la iter)
   ```
-- **Archivo histórico**: `specs/acceptance-criteria-archive.md` (iter-1 a iter-7, inmutable).
-- **PRD raíz por iter (opcional)**: `specs/iter-<N>-prd.md` para objetivos transversales.
+- **Archivo histórico** (opcional): `specs/acceptance-criteria-archive.md` para criterios legacy que precedan al modelo G/W/T. Inmutable.
+- **PRD raíz por iteración** (opcional): `specs/iter-<N>-prd.md` solo para objetivos transversales que no encajen en un único área.
 
 ## Estructura del PRD/Spec
 
@@ -120,7 +120,7 @@ Tabla `riesgo | impacto | mitigación`.
 - Cada criterio debe llevar `MUST/SHALL/SHOULD/MAY` y validación citada.
 - Sin verbos vagos ("funcionan", "queda bien", "es robusto").
 - Si la validación no existe todavía, marca el criterio `[ ]` y crea tarea de QA para generarla.
-- Convención **no retroactiva**: criterios pre-iter-8 quedan en su formato actual en `specs/acceptance-criteria-archive.md`. Solo aplica G/W/T a criterios nuevos.
+- Convención **no retroactiva**: los criterios escritos antes de adoptar G/W/T pueden quedarse en `specs/acceptance-criteria-archive.md` con su formato anterior. Solo aplica G/W/T a criterios nuevos.
 - Si la propuesta es un change explícito, **crea el directorio completo** `openspec/changes/<slug>/` con todos los archivos (proposal, design, tasks, specs/, verify-report stub).
 
 ## Anti-patrones

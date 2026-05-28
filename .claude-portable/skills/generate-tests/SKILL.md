@@ -181,7 +181,7 @@ npx playwright test --headed --workers=1              # debug visual
 - Filtra ruido conocido del dev runtime (next devtools warnings, fast refresh).
 - Cualquier nuevo ruido se añade ahí con justificación documentada — **nunca se ignoran errores reales**.
 
-### 5. Validación contra Docker (post-DEC-005)
+### 5. Validación contra Docker (obligatoria si la iter toca infra)
 
 Si la iter toca infra, docker-compose, Dockerfile, `resolveApiBase()`, o variables de entorno de la app:
 
@@ -233,4 +233,4 @@ Por cada una: capturar consola y network. Errores 4xx/5xx, exceptions, warnings 
 | Eliminar test que falla "porque es flaky" | Investigar root cause; si es timing, usar `expect.poll`. |
 | Test que asume orden de items no garantizado | Orden no es contrato salvo que la spec lo diga. |
 | Snapshot tests para HTML grande | Frágiles. Asserts dirigidos por `data-testid` y roles. |
-| Saltarse Docker porque "es solo un refactor" | DEC-005: el bug se escapó precisamente por eso. |
+| Saltarse Docker porque "es solo un refactor" | Los bugs SSR/DNS interno se escapan precisamente ahí. Si la iter toca infra, Docker o el helper de URL, re-ejecutar Playwright contra `docker compose up -d` no es opcional. |

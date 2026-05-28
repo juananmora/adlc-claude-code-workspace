@@ -134,7 +134,7 @@ Claude principal aplicará el flujo ADLC de 12 fases del `CLAUDE.md`. Verás:
 
 ## Reglas críticas codificadas (no las saltes)
 
-- **qa-engineer + security-engineer + reviewer son OBLIGATORIOS en TODA iter.** Incluso si "solo es infra" o "solo es refactor". DEC-005 del repo origen aprendido por las malas.
+- **qa-engineer + security-engineer + reviewer son OBLIGATORIOS en TODA iter.** Incluso si "solo es infra" o "solo es refactor" — los bugs de SSR/Docker se escapan precisamente ahí.
 - **Playwright `--workers=1` siempre.** La API de Fastify dev es single-threaded.
 - **`resolveApiBase()` en cualquier `fetch` server-side del frontend.** Sin esto, las fichas se rompen en Docker.
 - **Validación contra Docker** cuando la iter toca infra/docker/deploy. No basta `npm run dev`.
@@ -175,4 +175,4 @@ foreach ($s in $skills) { if (-not (Test-Path ".claude/skills/$s/SKILL.md")) { W
 
 ## Origen
 
-Este pack se generó a partir del repo `adlc-claude-code-workspace` tras 10 iteraciones reales con catálogos (`products`, `albums`, `games`, `consoles`), dockerización y bug de SSR/Docker (DEC-005). Cada anti-patrón documentado viene de un incidente real.
+Este pack destila prácticas de un flujo ADLC validado end-to-end con varios catálogos web sobre el mismo stack (Next.js + Fastify + Azure). Cada anti-patrón documentado viene de un incidente real en producción: bug SSR cuando los server components hacen fetch a `localhost` dentro de un contenedor, regresiones que pasaron tests pero rompieron Docker, fichas que dejaron de renderizar tras un refactor de infra. La regla de "qa + security + reviewer obligatorios en TODA iter" no es burocracia: es la salvaguarda que evita repetir esos bugs.

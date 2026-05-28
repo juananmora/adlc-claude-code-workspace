@@ -71,7 +71,7 @@ Confirma en el reporte del qa-engineer o del orquestador:
 
 ### 5. Specs vs realidad
 
-- ¿Cada criterio MUST nuevo en `specs/areas/<area>/spec.md` está en formato G/W/T + RFC 2119? Si la iter es post-DEC-002 (iter-8+): cero excepciones.
+- ¿Cada criterio MUST nuevo en `specs/areas/<area>/spec.md` está en formato G/W/T + RFC 2119? Cero excepciones para criterios nuevos.
 - ¿El verify-report del change (si existe en `openspec/changes/<slug>/`) marca cada criterio con evidencia?
 - ¿Se han movido las specs aprobadas a `specs/areas/<area>/spec.md` al cerrar?
 

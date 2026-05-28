@@ -154,7 +154,7 @@ Reporte final + `/ship` para abrir PR.
 | "Warnings de consola son ruido" | Investigar uno a uno. |
 | "Lo cierro y arreglamos luego" | Otra pasada antes de cerrar. |
 | "Es demo, salto security/reviewer" | Siempre obligatorios. |
-| "Esto es solo infra, no necesita qa" | qa-engineer obligatorio TAMBIÉN en infra (lección DEC-005). |
+| "Esto es solo infra, no necesita qa" | qa-engineer obligatorio TAMBIÉN en iteraciones de infra/devops/refactor. Los bugs SSR + DNS interno se escapan ahí. |
 | "Playwright pasó contra mi host" | Re-ejecutar contra Docker si cambia el entorno. |
 
 ---

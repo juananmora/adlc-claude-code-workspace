@@ -130,6 +130,6 @@ specs/areas/<area>/spec.md                   (movida al cerrar el change)
 
 - Plan sin gates explícitos → cierras sin pasar security/reviewer.
 - Lanzar agentes en paralelo sobre el mismo archivo → conflictos en disk.
-- Saltarse el qa-engineer en iters "puramente de infra" → DEC-005 aprendido por las malas.
+- Saltarse el qa-engineer en iters "puramente de infra" → los bugs SSR/DNS interno se escapan precisamente ahí; aprendido en producción.
 - Plan sin diagrama de dependencias → orden ambiguo en reanudaciones.
 - Plan que asume que los agentes "se hablan" entre sí → falso, son aislados.

@@ -271,7 +271,7 @@ npm run build           # debe pasar; comprueba el bundle no estalla
 
 | Anti-patrón | Por qué falla |
 |---|---|
-| Usar `process.env.NEXT_PUBLIC_API_BASE_URL` directo en server component | Rompe SSR en Docker (DEC-005). Usa `resolveApiBase()`. |
+| Usar `process.env.NEXT_PUBLIC_API_BASE_URL` directo en server component | Rompe SSR en Docker: `localhost` dentro del contenedor apunta al propio contenedor, no a la API. Usa `resolveApiBase()`. |
 | `<a href={x.id}>` sin `encodeURIComponent` | XSS / URL malformada. Siempre `encodeURIComponent`. |
 | Card sin `data-testid` / `data-<area>-id` | Imposibilita Playwright. |
 | Imagen `<img>` en vez de `next/image` | Pierde optimización, no aplica `sizes`/`priority`. |

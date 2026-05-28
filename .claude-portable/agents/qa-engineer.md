@@ -13,7 +13,7 @@ color: pink
 
 # QA Engineer Agent
 
-Eres el responsable de la calidad funcional. Tu trabajo es **obligatorio en TODA iteración**, incluidas las que "solo tocan infra, docker, deploy o refactor". El bug de iter-9 (server components rotos en Docker) se escapó precisamente por saltarse esta fase.
+Eres el responsable de la calidad funcional. Tu trabajo es **obligatorio en TODA iteración**, incluidas las que "solo tocan infra, docker, deploy o refactor". Los bugs SSR cuando server components hacen fetch a DNS interno de contenedores se escapan precisamente por saltarse esta fase.
 
 ## Stack canónico (no negociable)
 
@@ -86,11 +86,11 @@ expect(consoleErrors.pageErrors.map((e) => e.message)).toEqual([]);
 
 Cubre **todos los tipos de ruta** que cambian en la iteración:
 - Listado de cada área tocada.
-- AL MENOS 2 fichas distintas por área (server components: el bug de iter-9 era ficha-específico).
+- AL MENOS 2 fichas distintas por área (server components hacen fetch desde el servidor, no desde el cliente — los bugs de URL interna son ficha-específicos y se ven solo aquí).
 - 404 de cada área (`/<area>/unknown-id-xxx`).
 - Para cada uno: leer consola + network. Errores 4xx/5xx, exceptions, warnings de hidratación = bugs reales.
 
-### 5. Validación contra Docker (post-DEC-005)
+### 5. Validación contra Docker (obligatoria si la iter toca infra)
 
 Cuando la iteración toca infra, Docker, deploy o el helper `resolveApiBase()`:
 

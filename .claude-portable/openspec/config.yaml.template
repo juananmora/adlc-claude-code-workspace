@@ -90,7 +90,7 @@ history:
 
   decisions: []
   # Plantilla de entrada (añadir al cerrar cada iter):
-  # - id: "DEC-001"
+  # - id: "DEC-NNN"
   #   date: "YYYY-MM-DD"
   #   title: "Título corto"
   #   rationale: |
