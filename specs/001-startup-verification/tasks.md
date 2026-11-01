@@ -16,7 +16,7 @@
 - [x] T005 [US3] Document in `apps/api/README.md` that `npm run build --prefix apps/api` and `npm test --prefix apps/api` are API-scoped checks distinct from live listener verification; explicitly state that API-only results do not validate `apps/web`, Docker Compose, Terraform, or Python harnesses; depends on: T004
 
 ## Integration and polish
-- [ ] T006 [US3] Run `npm test --prefix apps/api` and record its observed result separately from both live startup checks; retain the exact API-only scope in `apps/api/README.md`; depends on: T005
+- [x] T006 [US3] Run `npm test --prefix apps/api` and record its observed result separately from both live startup checks; retain the exact API-only scope in `apps/api/README.md`; depends on: T005
 - [ ] T007 [US1] Review the final change with `git diff --check` and `git diff --name-only`; confirm `apps/api/README.md` is the only feature file changed and no application code, tests, dependencies, runtime settings, or infrastructure were modified; depends on: T006
 
 ## Execution notes
