@@ -1,1 +1,11 @@
-{"status":"gaps","findings":[{"requirement":"FR-004; SDD artifact consistency","severity":"MEDIUM","gap":"plan.md, research.md, analysis.md, quickstart.md, and contracts/README.md still state that PORT=\"\" conflicts with the specification or remains unresolved, and contain validation-pending claims contradicted by the approved spec, current API README, and controlled completion events T001-T007.","appendedTask":"T008"}]}
+{
+  "status": "gaps",
+  "findings": [
+    {
+      "requirement": "FR-004; SDD artifact consistency",
+      "severity": "MEDIUM",
+      "gap": "plan.md, research.md, analysis.md, quickstart.md, and contracts/README.md still contain obsolete claims that PORT=\"\" conflicts with the approved specification and/or that build, test, and startup evidence is pending. T008 already covers reconciling these files to the approved spec, README, and controlled task trace, but its latest event is failed and no completed event exists.",
+      "appendedTask": "T008 (existing incomplete task; no duplicate appended)"
+    }
+  ]
+}
