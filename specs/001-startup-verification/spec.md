@@ -79,7 +79,7 @@ A maintainer wants to run the configured API build and tests without overgeneral
 ## Edge cases
 
 - Port `4000` is already occupied: startup cannot be treated as successful; an alternate valid `PORT` may be used for a local check.
-- `PORT` is empty or outside the range 1–65535: document that configuration/startup fails rather than reporting readiness.
+- An empty `PORT` is treated as unset and uses the default 4000. A non-empty `PORT` whose parsed integer is outside 1–65535 or is not a number fails configuration/startup.
 - `HOST` differs from the default: the request must target an address reachable through that configured interface; a loopback URL is not guaranteed to work for every host setting.
 - Build or tests pass but the server process is not running: readiness remains unverified until the live HTTP request succeeds.
 - The API README references `.env.example`, but the file is absent in this checkout: do not make that copy step a prerequisite.
