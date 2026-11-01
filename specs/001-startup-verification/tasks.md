@@ -4,7 +4,7 @@
 - [x] T001 [US1] Obtain human approval for revising `specs/001-startup-verification/spec.md` so `PORT=""` matches the existing fallback to port 4000; keep this approval gate ahead of implementation and do not change API behavior.
 
 ## Foundations
-- [ ] T002 [US1] Update `apps/api/README.md` with compatible Node.js/npm prerequisites, `npm ci --prefix apps/api --ignore-scripts --no-audit --no-fund`, current `HOST=0.0.0.0` and `PORT=4000` defaults, valid environment overrides, loopback reachability caveats, and no dependency on the absent `.env.example`; document the empty-`PORT` fallback only after T001 approves matching spec wording; depends on: T001
+- [x] T002 [US1] Update `apps/api/README.md` with compatible Node.js/npm prerequisites, `npm ci --prefix apps/api --ignore-scripts --no-audit --no-fund`, current `HOST=0.0.0.0` and `PORT=4000` defaults, valid environment overrides, loopback reachability caveats, and no dependency on the absent `.env.example`; document the empty-`PORT` fallback only after T001 approves matching spec wording; depends on: T001
 
 ## User story 1 — Development startup
 - [ ] T003 [US1] Document and verify development startup in `apps/api/README.md` using `npm run dev --prefix apps/api` and `curl --fail --show-error --include http://127.0.0.1:4000/health`; require HTTP 200 with JSON `{ "status": "ok" }`, and describe Ctrl+C shutdown and the meaning of the `shutting down` message; depends on: T002
