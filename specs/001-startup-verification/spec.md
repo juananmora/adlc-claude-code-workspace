@@ -8,7 +8,7 @@ This feature specifies documentation and verification expectations for the exist
 
 The repository currently defines `npm run dev`, `npm run build`, `npm start`, and `npm test` in `apps/api/package.json`. `src/config.ts` defaults to host `0.0.0.0` and port `4000`; `src/app.ts` implements `GET /health` with `{ "status": "ok" }`; `tests/products.test.ts` exercises that route with Fastify `app.inject()`, which does not establish that the standalone server bound a port. The package manifest does not declare a local Node.js version. The API Dockerfile uses Node 22, but Docker is not part of this feature's verification scope.
 
-The API README refers to copying `apps/api/.env.example`, but that file is not present in the current checkout. Startup instructions MUST state environment defaults based on `src/config.ts` and MUST NOT depend on copying a file that is absent. A non-empty `PORT` must be an integer from 1 through 65535; an empty `PORT` is treated as unset and uses the default 4000. `HOST` can override the listen interface. No local runtime-version pin is declared in `package.json`.
+The API README refers to copying `apps/api/.env.example`, but that file is not present in the current checkout. Startup instructions MUST state environment defaults based on `src/config.ts` and MUST NOT depend on copying a file that is absent. A non-empty `PORT` is parsed as an integer and the parsed value must be from 1 through 65535; an empty `PORT` is treated as unset and uses the default 4000. `HOST` can override the listen interface. No local runtime-version pin is declared in `package.json`.
 
 ### In scope
 
@@ -101,8 +101,6 @@ A maintainer wants to run the configured API build and tests without overgeneral
 - Question: How should the specification describe `PORT=""` given the existing configuration parser?
 - Human answer: Revise the spec to reflect the existing fallback to port 4000; do not change API behavior.
 - Resolution: An empty `PORT` is treated as unset and uses 4000. Only non-empty invalid port values fail validation.
-
-
 - Question: Which environment should the `apps/api` startup verification cover?
 - Human answer: Only local API startup and an HTTP check of `/health`; Docker Compose is excluded.
 - Resolution: The scope and scenarios cover the local development and compiled API start scripts only, with `GET /health` as the readiness check. No Docker Compose acceptance scenario is included.
