@@ -28,4 +28,4 @@
 - Validation is limited to `apps/api`; do not claim that the web app, Docker Compose, Terraform, or Python harnesses were validated.
 
 ## Convergence follow-up
-- [ ] T008 [US3] Reconcile `specs/001-startup-verification/plan.md`, `research.md`, `analysis.md`, `quickstart.md`, and `contracts/README.md` with the approved `spec.md`, `apps/api/README.md`, and controlled events T001–T007; remove obsolete statements that `PORT=""` is unresolved or fails and replace stale “not executed/pending” claims only with the exact evidence recorded in `task-trace.jsonl`; preserve the human-review checklists and do not change source or specification; depends on: T007
+- [x] T008 [US3] Reconcile `specs/001-startup-verification/plan.md`, `research.md`, `analysis.md`, `quickstart.md`, and `contracts/README.md` with the approved `spec.md`, `apps/api/README.md`, and controlled events T001–T007; remove obsolete statements that `PORT=""` is unresolved or fails and replace stale “not executed/pending” claims only with the exact evidence recorded in `task-trace.jsonl`; preserve the human-review checklists and do not change source or specification; depends on: T007
