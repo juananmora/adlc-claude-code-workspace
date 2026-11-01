@@ -1,7 +1,7 @@
 # Tasks: API local startup verification
 
 ## Setup
-- [ ] T001 [US1] Obtain human approval for revising `specs/001-startup-verification/spec.md` so `PORT=""` matches the existing fallback to port 4000; keep this approval gate ahead of implementation and do not change API behavior.
+- [x] T001 [US1] Obtain human approval for revising `specs/001-startup-verification/spec.md` so `PORT=""` matches the existing fallback to port 4000; keep this approval gate ahead of implementation and do not change API behavior.
 
 ## Foundations
 - [ ] T002 [US1] Update `apps/api/README.md` with compatible Node.js/npm prerequisites, `npm ci --prefix apps/api --ignore-scripts --no-audit --no-fund`, current `HOST=0.0.0.0` and `PORT=4000` defaults, valid environment overrides, loopback reachability caveats, and no dependency on the absent `.env.example`; document the empty-`PORT` fallback only after T001 approves matching spec wording; depends on: T001
