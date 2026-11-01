@@ -7,7 +7,7 @@
 - [x] T002 [US1] Update `apps/api/README.md` with compatible Node.js/npm prerequisites, `npm ci --prefix apps/api --ignore-scripts --no-audit --no-fund`, current `HOST=0.0.0.0` and `PORT=4000` defaults, valid environment overrides, loopback reachability caveats, and no dependency on the absent `.env.example`; document the empty-`PORT` fallback only after T001 approves matching spec wording; depends on: T001
 
 ## User story 1 — Development startup
-- [ ] T003 [US1] Document and verify development startup in `apps/api/README.md` using `npm run dev --prefix apps/api` and `curl --fail --show-error --include http://127.0.0.1:4000/health`; require HTTP 200 with JSON `{ "status": "ok" }`, and describe Ctrl+C shutdown and the meaning of the `shutting down` message; depends on: T002
+- [x] T003 [US1] Document and verify development startup in `apps/api/README.md` using `npm run dev --prefix apps/api` and `curl --fail --show-error --include http://127.0.0.1:4000/health`; require HTTP 200 with JSON `{ "status": "ok" }`, and describe Ctrl+C shutdown and the meaning of the `shutting down` message; depends on: T002
 
 ## User story 2 — Compiled startup
 - [ ] T004 [US2] Document and verify compiled startup in `apps/api/README.md` using `npm run build --prefix apps/api`, `npm start --prefix apps/api`, and `curl --fail --show-error --include http://127.0.0.1:4000/health`; record build and HTTP outcomes separately, require HTTP 200 with JSON `{ "status": "ok" }`, and describe occupied/invalid-port and bind failures as startup failures, not successful readiness; depends on: T003
