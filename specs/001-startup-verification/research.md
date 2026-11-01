@@ -1,31 +1,42 @@
 # Investigación técnica: verificación de arranque local del API
 
-## Alcance y fuentes consultadas
+## Alcance y fuentes
 
-Investigación de checkout local, sin ejecutar comandos ni consultar fuentes externas. Se leyeron la constitución, la especificación aprobada y su checklist, instrucciones del workspace, manifiesto y README del API, `src/config.ts`, `src/server.ts`, `src/app.ts`, configuración TypeScript/Vitest, test de productos y Dockerfile. Los resultados son inspección estática, no evidencia de build, tests o startup.
+Se contrastaron la constitución, la especificación aprobada, `apps/api/README.md`, `apps/api/package.json`, `src/config.ts`, `src/server.ts`, `src/app.ts`, configuración TypeScript/Vitest y el test existente de health. Los resultados estáticos se complementan con evidencia de ejecución registrada por los eventos controlados T001–T007 en `task-trace.jsonl`.
 
-## Hallazgos confirmados
+## Hallazgos y resolución
 
-| Tema | Hallazgo del checkout | Consecuencia de diseño |
+| Tema | Hallazgo/evidencia | Consecuencia |
 |---|---|---|
-| Stack API | Node.js, TypeScript, Fastify 5, ESM; scripts npm `dev`, `build`, `start`, `test` en `apps/api/package.json` | Usar scripts existentes y `--prefix apps/api`, sin herramientas/framework nuevos |
-| Build | `tsc -p tsconfig.json`, `outDir: dist`, `sourceMap: true` | Esperar salida en `apps/api/dist/`; no afirmar que existe hasta correr build |
-| Test | Vitest; el test `health` usa `app.inject()` | Es prueba del handler en proceso, no de bind/listener HTTP independiente |
-| Server | `server.ts` llama `app.listen`, registra SIGINT/SIGTERM y reporta `API ready` / `shutting down` | Documentar proceso foreground, health HTTP y parada normal, sin prometer más |
-| Configuración | `HOST` default `0.0.0.0`; `PORT` default `4000`; valor numérico inválido si parseado <=0, NaN o >65535 | El smoke por defecto puede dirigirse a `127.0.0.1:4000`; un override de HOST puede cambiar la dirección alcanzable |
-| PORT vacío | `parsePort` retorna fallback con `if (!value)`, por lo que `PORT=""` usa 4000 en el código inspeccionado | Conflicto con la edge case de la spec que exige que vacío falle; requiere aclaración antes de implementar. No se propone modificar código |
-| Archivo de entorno | El README menciona `apps/api/.env.example`, pero no está presente en el inventario del checkout; `.env` está en ignore | No hacer que copiar un archivo ausente sea prerrequisito ni introducir archivos con secretos |
-| Versión runtime | El paquete no declara `engines`; el Dockerfile usa Node 22 | Indicar Node/npm compatibles como prerrequisito, sin inferir versión local garantizada del Dockerfile |
-| Validación de workspace | `openspec/config.yaml` dispone comandos de test/build para API y el contexto de ejecución SDD da install/build/test y artefacto exactos | Mantener exactos `npm ci --prefix apps/api --ignore-scripts --no-audit --no-fund`, `npm run build --prefix apps/api`, `npm test --prefix apps/api`; el artefacto configurado es `apps/api/dist` |
+| Stack y scripts | API Node.js + TypeScript + Fastify 5/ESM. `package.json` define `dev`, `build`, `start` y `test`. | Se documentan los scripts existentes con `--prefix apps/api`; no se añaden wrappers. |
+| Build | `tsc -p tsconfig.json`, salida en `dist`. T004 registra build satisfactorio y `apps/api/dist/server.js`. | El build observado se informa separado del listener. |
+| Tests | Vitest; el health usa `app.inject()`. T006 registra `npm test --prefix apps/api` satisfactorio: 6 archivos, 511 tests. | Los tests no se presentan como evidencia de socket/listener. |
+| Server y health | `server.ts` inicia `app.listen`, maneja SIGINT/SIGTERM y reporta `shutting down`; `GET /health` responde `{ "status": "ok" }`. | T003 y T004 registran HTTP 200 y el JSON exacto en ambos modos; SIGINT registró `shutting down`. |
+| Configuración | `HOST` default `0.0.0.0`, `PORT` default `4000`; el puerto no vacío debe ser válido. | README documenta defaults, overrides y el destino alcanzable para HOST configurado. |
+| `PORT` vacío | T001 registra aprobación humana y actualización de la spec: vacío equivale a no especificado y usa 4000. Coincide con `src/config.ts`. | La discrepancia quedó resuelta; no se cambió código. |
+| Archivo de entorno | `apps/api/.env.example` no está presente en el checkout. | La guía no requiere copiarlo. |
+| Runtime local | El manifiesto no fija `engines`; Dockerfile usa Node 22 pero no determina requisito local. | Se indica Node/npm compatibles sin prometer una versión específica. |
+| HTTP client | El comando `curl` forma parte de la guía aprobada, pero la imagen de validación no contiene curl. T003/T004 registran solicitudes reales mediante `fetch` integrado de Node. | La prueba HTTP se ejecutó; no se afirma que se haya ejecutado curl. |
+| Alcance | T005 mantiene disclaimer para `apps/web`, Docker Compose, Terraform y harnesses Python. | Resultados limitados a `apps/api`; las otras capas no se declaran validadas. |
+| Diff | T007 registra `git diff --check` satisfactorio y ausencia de cambios en código, tests, manifests/lockfiles, runtime o infraestructura. | La feature es documental, junto con la actualización aprobada de la spec y metadatos de tareas/trace controlados. |
 
-## Decisiones, rationale y alternativas
+## Comandos y resultados observados
 
-1. **Documentar scripts locales existentes, no crear scripts nuevos.** Los cuatro scripts necesarios ya están en el manifest. Añadir wrappers aumentaría el alcance y podría divergir de comandos canónicos.
-2. **Verificar con HTTP real además de build/tests.** `app.inject()` prueba una instancia Fastify sin demostrar que `server.ts` haya enlazado un puerto. Solo la petición al proceso independiente satisface el objetivo de readiness.
-3. **Mantener Node local como requisito abierto de compatibilidad.** No hay campo `engines`; fijar Node 22 desde el contenedor sería extrapolar y está excluido por la especificación. No se realizó una investigación de compatibilidad externa.
-4. **No requerir `.env.example`.** El archivo está ausente; la configuración por defecto se puede describir desde el código inspeccionado.
-5. **No cambiar comportamiento para `PORT=""`.** La persona eligió reflejar el comportamiento existente y aclarar la spec antes de implementar. La decisión deja un bloqueo: mientras la spec aprobada exija que vacío falle, README que documente el fallback no puede satisfacerla literalmente. Una persona debe aprobar la aclaración/revisión de la spec antes de cerrar esa discrepancia.
+- `npm ci --prefix apps/api --ignore-scripts --no-audit --no-fund`: documentado como comando configurado; no hay evento T001–T007 que registre su ejecución.
+- `npm run build --prefix apps/api`: pasó; emitió `apps/api/dist/server.js` (T004).
+- `npm test --prefix apps/api`: pasó; 6 archivos de test, 511 tests (T006).
+- `npm run dev --prefix apps/api`: solicitud en vivo a `127.0.0.1:4000/health`, HTTP 200 y `{"status":"ok"}`; SIGINT y `shutting down` (T003).
+- `npm start --prefix apps/api`: tras build, solicitud en vivo a la misma ruta, HTTP 200 y `{"status":"ok"}`; SIGINT y `shutting down` (T004).
+- La imagen no incluye `curl`; las solicitudes observadas se realizaron con `fetch` de Node. Esto es evidencia de HTTP equivalente para la verificación, no evidencia de ejecución del comando curl.
+
+## Decisiones
+
+1. Usar comandos y scripts existentes del API y no añadir dependencias.
+2. Requerir request HTTP a proceso independiente además de build/tests, porque `app.inject()` no prueba el listener.
+3. Mantener el requisito local de Node como compatibilidad del paquete, sin inferir versión desde Docker.
+4. No requerir `.env.example`, que está ausente.
+5. Documentar `PORT=""` como fallback a 4000, siguiendo el cambio de spec aprobado en T001 y el código existente; no modificar comportamiento.
 
 ## Límites
 
-No se verificó la instalación, versión actual de Node/npm/curl, estado de puerto, permisos del checkout, disponibilidad de red, build, tests, salida HTTP ni manejo de shutdown en ejecución. No se afirma que `apps/web`, Docker Compose, Terraform ni harnesses Python hayan sido validados. Los resultados no autorizan publicación externa.
+La evidencia registrada cubre solo `apps/api`: build, tests y respuestas HTTP de los modos desarrollo y compilado. No se ejecutó el comando de instalación según los eventos citados, ni se comprobó el comando `curl` (no instalado). No se afirma validación de `apps/web`, Docker Compose, Terraform, despliegues o harnesses Python. La discrepancia editorial entre el estado humano registrado de la constitución y su encabezado local no se resuelve aquí ni autoriza su publicación.
