@@ -1,52 +1,63 @@
 # Convergencia — API local startup verification
 
-**Resultado: gaps.** La especificación define criterios verificables y el código existente aporta varias piezas del contrato, pero las tareas de implementación/documentación/verificación siguen sin completarse mediante eventos controlados. La guía actual de `apps/api` no incorpora el procedimiento de arranque que exige la feature, y no hay evidencia del smoke HTTP en ninguno de los dos modos.
+**Resultado: gaps.** La spec aprobada, `apps/api/README.md`, el código existente y los eventos controlados cubren los requisitos FR-001–FR-007 y las historias US1–US3. T001–T007 tienen eventos controlados `completed`. Sin embargo, varios artefactos de diseño aún describen como irresuelta la discrepancia de `PORT=""` y afirman que no se ejecutaron validaciones, en contradicción con la spec actual y el trace. Añadí T008 al final de `tasks.md` para reconciliar esos documentos; al quedar sin evento de finalización, la convergencia no puede pasar.
 
-## Alcance y fuentes comparadas
+## Fuentes contrastadas y límites de método
 
-Inspeccioné `.specify/memory/constitution.md`, `CLAUDE.md`, la especificación, `plan.md`, `research.md`, `analysis.md`, `quickstart.md`, `contracts/README.md`, `data-model.md`, `tasks.md`, ambos checklists, `task-trace.jsonl`, `issues.json`, el README y los scripts/código/tests/configuración TypeScript de `apps/api`, `openspec/config.yaml`, y los artefactos compilados de `apps/api/dist` recibidos en modo solo lectura. El contexto del run registra aprobación humana de constitución, spec, plan y tareas; no infiero de ello aprobación de publicación, cierre o release.
+Leí `.specify/memory/constitution.md`, `CLAUDE.md`, la spec, `plan.md`, `research.md`, `analysis.md`, `quickstart.md`, `data-model.md`, `contracts/README.md`, `tasks.md`, `issues.json`, ambos checklists, `task-trace.jsonl`, `openspec/config.yaml`, y la guía, manifest, código de configuración/bootstrap/handler y tests de `apps/api`. Comparé las afirmaciones con las evidencias controladas registradas por tarea.
 
-La comparación de fuentes es estática. No ejecuté npm, build, tests, servidor ni petición HTTP: las herramientas disponibles para esta fase solo permiten leer/escribir archivos. No pude ejecutar `git diff --check` ni `git diff --name-only`; por tanto, no certifico el delta total del checkout.
+La lectura del checkout confirma que `.specify/memory/constitution.md` conserva encabezado “propuesta” y “pendiente de aprobación”; el contexto de la ejecución contiene decisión humana aprobada. No actualicé el documento ni interpreté la decisión como autorización para otras escrituras externas. Los checklists mantienen sin marcar sus casillas de revisión humana; no se modificaron.
 
-## Cobertura requisito → código y evidencia
+No ejecuté comandos en esta fase. El `task-trace.jsonl` registra build, tests y los dos smokes; T003 anota que el entorno no tenía `curl` y que la petición HTTP se verificó con `fetch` de Node, mientras el README conserva el comando `curl` pedido. La herramienta de lectura rechazó las rutas `apps/api/dist/*.js`, por lo que no inspeccioné directamente los archivos compilados; T004 registra que el build pasó y emitió `apps/api/dist/server.js`. No atribuyo ejecución independiente ni inspección de bytecode a esta convergencia.
 
-| Requisito / criterio | Código y evidencia existente | Resultado de convergencia |
+## Cobertura requisito → código, documentación y evidencia
+
+| Requisito / criterio | Código y documentación observados | Evidencia controlada | Estado |
+|---|---|---|---|
+| Principios de constitución 1 y 6; FR-001; SC-002 — comandos reales, scope y prerequisitos | `apps/api/package.json` declara `dev`, `build`, `start` y `test`; `src/config.ts` da los defaults. `apps/api/README.md` contiene el `npm ci` configurado, scripts con `--prefix apps/api`, y deja abierta compatibilidad de Node/npm sin inferirla del Dockerfile. | T002 completed confirma los cambios contra manifest/configuración. T004 registra build y artefacto `apps/api/dist/server.js`. | cubierto |
+| Principio 2; FR-007; SC-005 — no cambiar funcionalidad | Los cambios operativos reflejados en la documentación no requieren cambios de aplicación. El handler está en `src/app.ts`, config en `src/config.ts`, bootstrap y cierre en `src/server.ts`; las pruebas existentes incluyen `app.inject()`. | T007 completed registra `git diff --check` satisfactorio e inspección del delta, sin cambios de código, tests, manifests, configuración runtime o infraestructura. El evento menciona README, enmienda humana de spec y actualizaciones controladas. | cubierto por evidencia controlada T007; sin repetición independiente del diff en converge |
+| FR-002; US1/US2; SC-001 — readiness HTTP real | `src/app.ts` responde `GET /health` con `{ status: "ok" }`. README exige HTTP 200 y ese JSON en dev y compiled, con servidor vivo. | T003 completed: HTTP 200 + `{"status":"ok"}` en dev, petición con Node fetch equivalente al curl documentado; SIGINT y `shutting down`. T004 completed: build separado y HTTP 200 + cuerpo exacto con `npm start`; SIGINT y shutdown. | cubierto por trace; curl no disponible en el entorno de ejecución registrado |
+| FR-003; US3; SC-003 — build/test no prueban listener | `tests/products.test.ts` usa `app.inject()`. README distingue build, tests y solicitud contra el server standalone. | T005 completed confirma la delimitación documental. T006 completed registra 6 archivos y 511 tests, separado de smokes T003/T004. | cubierto |
+| FR-004 — defaults, overrides y `.env.example` | `src/config.ts` establece `HOST=0.0.0.0`, `PORT=4000`; trata una cadena vacía como no especificada. El README documenta esos defaults, overrides, caveat de loopback y que no existe `.env.example`. `spec.md` refleja el fallback aprobado y validación de valores no vacíos. | T001 completed registra la aprobación humana y actualización de spec sin cambiar código; T002 completed registra la documentación cotejada con config/manifest. | cubierto; los artefactos de diseño obsoletos quedan abiertos en T008 |
+| FR-005 — errores de startup, bind y apagado normal | `src/config.ts` valida el puerto parseado; `src/server.ts` captura fallos de listen, sale con error y gestiona SIGINT/SIGTERM. README documenta puerto ocupado/ inválido, errores de bind y Ctrl+C sin prometer cambios funcionales. | T003/T004 completados registran arranques y apagados observados; T002 documenta defaults/configuración. No hay evento que afirme haber provocado deliberadamente un puerto inválido u ocupado. | cubierto según alcance documental; casos de fallo descritos por inspección estática |
+| FR-006; SC-004 — límites de validación | README afirma explícitamente que resultados API no validan `apps/web`, Docker Compose, Terraform ni harnesses Python. | T005 completed confirma la guía; T006 es evidencia exclusiva de tests API. | cubierto; las otras capas no se validaron ni se reclaman |
+
+## Escenarios y criterios de éxito
+
+| Escenario | Evidencia | Estado |
 |---|---|---|
-| Principio constitucional 1; FR-001; SC-002 — comandos reproducibles y requisitos previos | `apps/api/package.json` declara `dev`, `build`, `start` y `test`; `openspec/config.yaml` identifica la capa API. La instalación configurada figura en la spec y los artefactos SDD. `apps/api/README.md` aún presenta comandos sin `--prefix apps/api`, propone `npm install` y no documenta el contrato solicitado. No se ejecutó instalación ni comandos. | **Gap:** README requiere la actualización de T002. No hay evento controlado de terminación para esa tarea. |
-| FR-002; US1/US2; SC-001 — readiness real | `apps/api/src/app.ts` define `GET /health` con `{ status: "ok" }`; `apps/api/tests/products.test.ts` comprueba status/body mediante `app.inject()`. El test no valida un listener independiente. Los archivos compilados `dist/app.js` y `dist/server.js` contienen el handler y el bootstrap equivalentes. No hubo proceso vivo ni respuesta curl. | **Gap:** falta documentar y ejecutar los dos smokes; T003 y T004 los cubren. El build compilado no prueba startup. |
-| FR-003; US3; SC-003 — separar build/tests de escucha | `tests/products.test.ts` usa `app.inject()` y `package.json` separa build, test y start. El README aún no aclara que build y test no prueban el socket standalone. El quickstart SDD sí lo explica como diseño, pero no es la guía operativa target ni evidencia de ejecución. | **Gap:** README y evidencia de test/smokes pendientes en T003–T006. |
-| FR-004 — defaults, overrides y `.env.example` | `src/config.ts` define `HOST` default `0.0.0.0`, `PORT` default `4000`; el README se refiere a `.env.example`, que no está en el inventario del checkout. No fija `engines` en el manifest. La spec requiere declarar defaults/overrides sin inferir versión desde Docker. | **Gap:** la guía no cumple aún; T002 lo cubre. |
-| FR-004 / FR-005 — comportamiento de `PORT=""` | `src/config.ts` implementa `if (!value) return fallback`, por lo que cadena vacía cae en `4000`; `apps/api/dist/config.js` muestra la misma lógica. La spec todavía dice que valor vacío falla. El evento de T001 en `task-trace.jsonl` consta como `running` y después `failed` por rechazo de edición de la spec; el registro de tareas lo mantiene sin completar. | **Gap bloqueante de consistencia:** la discrepancia permanece; T001 la cubre. No cambiaré spec ni código durante converge. |
-| FR-005 — errores de bind/configuración y terminación | `src/server.ts` espera `app.listen`, registra error y sale con estado 1 ante fallo; instala manejadores SIGINT/SIGTERM, escribe `shutting down` e intenta cerrar Fastify. `src/config.ts` rechaza valores numéricos fuera de 1–65535 y no numéricos; la cadena vacía es excepción porque usa el default. Los artefactos compilados contienen el mismo flujo. No se observó en ejecución ningún error ni shutdown. | **Gap:** falta documentar límites y ejecutar las verificaciones; T003/T004 cubren startup/shutdown y T001 cubre la discrepancia vacía. |
-| FR-006; SC-004 — límite de validación | La spec, plan y quickstart acotan esta feature a `apps/api`; el README actual no declara los límites requeridos sobre `apps/web`, Docker Compose, Terraform y harness Python. No se ejecutaron validaciones de esas capas. | **Gap:** disclaimer operativo y resultado API-scoped pendientes en T005/T006. No afirmo validación de otras capas. |
-| FR-007; SC-005 — no cambiar funcionalidad | Los archivos fuente inspeccionados implementan los comportamientos existentes y el build recibido refleja esos puntos relevantes. No tengo comparación de diff del checkout ni evento completo para la revisión final. | **No demostrado para el delta completo:** T007 exige `git diff --check`, `git diff --name-only` e inspección de exclusividad del README. No puedo declarar que el conjunto de cambios del feature sea solo documental sin esa evidencia. |
+| US1 — desarrollo + health HTTP + apagado | T003: dev respondió 200 y `{"status":"ok"}`; SIGINT registró `shutting down`. | cubierto |
+| US2 — build + server compilado + health HTTP + fallos de arranque descritos | T004: build pasó y emitió `dist/server.js`; luego el proceso `npm start` respondió 200 y JSON esperado; README describe fallo como no readiness. No hay prueba adversarial de puerto ocupado/inválido. | cubierto para aceptación documentada y smoke; pruebas adversariales no reportadas |
+| US3 — interpretar resultados sin ampliar alcance | T005 README y T006: 6 archivos / 511 tests; resultados diferenciados de HTTP. | cubierto |
+| SC-001 — resultado unívoco en ambos modos | T003 y T004 registran HTTP 200 y cuerpo esperado en cada modalidad. | cubierto |
+| SC-002 — comandos existentes y API-only | Manifest + README y confirmación de T002/T005/T007. | cubierto |
+| SC-003 — build/tests separados del listener | README, test in-process y evidencias separadas T003/T004/T006. | cubierto |
+| SC-004 — no atribuir validación a otras capas | Límite explícito del README; la convergencia no afirma pruebas web, Docker, Terraform o Python. | cubierto |
+| SC-005 — preservar funcionalidad | Evidencia controlada del diff en T007; no se ejecutó una comparación nueva desde converge. | cubierto por evidencia controlada |
 
-## Trazabilidad de tareas controladas
+## Auditoría de tareas controladas
 
-| Tarea | Estado y evidencia controlada | Convergencia |
+| Tarea | Evento controlado en `task-trace.jsonl` | Resultado |
 |---|---|---|
-| T001 | `task-trace.jsonl`: registrada, luego `running`, después `failed`; causa: edición de spec protegida. No existe evento `completed`. | Abierta; puerta sobre discrepancia `PORT=""`. |
-| T002 | Backlog sin marcar; trace solo contiene registro inicial `pending`; sin evento `completed`. | Pendiente: README/prerrequisitos/defaults. |
-| T003 | Backlog sin marcar; sin evento `completed`. | Pendiente: arranque dev y smoke HTTP. |
-| T004 | Backlog sin marcar; sin evento `completed`. | Pendiente: build y arranque compilado con smoke HTTP. |
-| T005 | Backlog sin marcar; sin evento `completed`. | Pendiente: límites API-only en README. |
-| T006 | Backlog sin marcar; sin evento `completed`. | Pendiente: ejecución/resultados de test API separados de los smokes. |
-| T007 | Backlog sin marcar; sin evento `completed`. | Pendiente: inspección final del diff. |
+| T001 | `completed`, revisión aprobada de la spec para `PORT=""` fallback a 4000. | completa |
+| T002 | `completed`, README cotejado con config/package y prerequisitos. | completa |
+| T003 | `completed`, smoke de desarrollo HTTP 200 + JSON y SIGINT. | completa |
+| T004 | `completed`, build/artefacto y smoke del server compilado HTTP 200 + JSON. | completa |
+| T005 | `completed`, documentación de scope API-only y límites. | completa |
+| T006 | `completed`, `npm test --prefix apps/api`: 6 archivos, 511 tests. | completa |
+| T007 | `completed`, `git diff --check` y revisión del delta; límites de cambio registrados. | completa |
+| T008 | añadida en esta convergencia, sin evento `completed`. | abierta |
 
-El reporte del implementador anterior menciona build y 511 tests aprobados en un checkout previo, pero el artefacto suministrado no aporta salida controlada de esos comandos ni eventos `completed` por tarea. Aun aceptando ese reporte como contexto, no demostraría startup HTTP en dev/compilado, actualización del README, ni revisión del diff en la revisión actual. El build recibido contiene `apps/api/dist`; esto confirma presencia de archivos compilados y coherencia estática de los puntos inspeccionados, pero no atribuyo origen/verificación reproducible adicional a dichos archivos.
+El archivo `issues.json` aún muestra T001–T007 como `pending`, pese a los eventos `completed` y al estado completado proporcionado en el contexto de la ejecución. No edité el mapa de issues; la reconciliación operativa corresponde al controller y no es una nueva validación de requisitos.
 
-## Hallazgos y tareas existentes
+## Hallazgo y tarea añadida
 
-1. **FR-004/FR-005 — discrepancia de puerto vacío, bloqueante.** La spec espera fallo pero la implementación fuente y compilada aplica el default. **Tarea existente: T001**. La decisión humana previa descrita en el contexto no cambia el hecho de que la edición quedó fallida y la spec de checkout continúa sin aclararse. No dupliqué tarea.
-2. **FR-001 a FR-006, US1–US3 y SC-001 a SC-004 — falta la guía terminada y la evidencia de ejecución.** `apps/api/README.md` sigue siendo la guía anterior y no contiene los pasos solicitados; no hay resultados de los smokes de desarrollo/compilado. **Tareas existentes: T002–T006**. No dupliqué tareas.
-3. **FR-007 / SC-005 — no hay evidencia del delta final.** No se ejecutó la inspección de diff requerida. **Tarea existente: T007**. No dupliqué tarea.
-4. **Gate humano de la constitución.** El contexto del run registra decisión de aprobación, mientras el encabezado del archivo mantiene “propuesta” y “pendiente de aprobación”. No edité el documento ni trato esta convergencia como ratificación/publicación. Esta limitación de estado no sustituye ni elimina el gate humano.
+- **FR-004 / coherencia de los artefactos SDD — MEDIUM:** `plan.md`, `research.md`, `analysis.md`, `quickstart.md` y `contracts/README.md` conservan textos previos a la aclaración aprobada: dicen que `PORT=""` contradice la spec o que T001 sigue pendiente, y/o que build/tests/smokes no se ejecutaron. Eso contradice `spec.md`, `apps/api/README.md` y los eventos controlados actuales T001–T007. No hay tarea incompleta existente que cubra la sincronización de estos artefactos. **Añadí T008**, dependiente de T007, con archivos, acción y evidencia de aceptación concretos. No añadí otra tarea para los requisitos FR-001–FR-007 porque los siete tienen evidencia y tareas completadas.
 
-Todos los gaps de requisitos encontrados están cubiertos por tareas canónicas incompletas T001–T007. **No añadí tareas nuevas** para evitar duplicados. No edité código, especificaciones, checklists de reviewer, `tasks.md`, `task-trace.jsonl` ni `issues.json`.
+## Gates y límites
 
-## Límites y decisión
-
-- La evidencia de `apps/api` no verifica `apps/web`, Docker Compose, Terraform ni harnesses Python; quedan expresamente fuera de esta afirmación.
-- No se ejecutaron `npm run build --prefix apps/api`, `npm test --prefix apps/api`, `npm run dev --prefix apps/api`, `npm start --prefix apps/api` ni `curl --fail --show-error --include http://127.0.0.1:4000/health` en esta fase.
-- No hubo análisis de seguridad ni revisión independiente; esta convergencia no aprueba esos gates, los checklists, ni el release.
-- La convergencia queda en **gaps** hasta que se resuelva T001, se obtenga evidencia verificable para T002–T006, se cierre la inspección T007 y cada tarea canónica tenga evento controlado `completed`.
+- La aprobación registrada para la constitución no cambia su encabezado local ni autoriza a este agente a publicar, crear issues, abrir PR, fusionar o desplegar. No se realizó ninguna acción externa.
+- Los checklists de revisión humana permanecen intactos y sin marcar. Esta convergencia no emite una aprobación de reviewer ni de release.
+- Solo hay evidencia de `apps/api`; `apps/web`, Docker Compose, Terraform y harnesses Python permanecen fuera de validación.
+- No se ejecutó aquí build, test, smoke, ni `git diff`. Los resultados atribuidos a T001–T007 proceden únicamente de eventos controlados de `task-trace.jsonl`; el código fuente actual fue contrastado estáticamente.
+- **Conclusión:** requisitos del feature cubiertos por evidencia disponible, pero la convergencia global es `gaps` porque T008 queda abierta y los documentos SDD citados continúan desactualizados. No se declara entrega aprobada.
