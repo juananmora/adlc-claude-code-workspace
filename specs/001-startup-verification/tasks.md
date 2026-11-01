@@ -17,7 +17,7 @@
 
 ## Integration and polish
 - [x] T006 [US3] Run `npm test --prefix apps/api` and record its observed result separately from both live startup checks; retain the exact API-only scope in `apps/api/README.md`; depends on: T005
-- [ ] T007 [US1] Review the final change with `git diff --check` and `git diff --name-only`; confirm `apps/api/README.md` is the only feature file changed and no application code, tests, dependencies, runtime settings, or infrastructure were modified; depends on: T006
+- [x] T007 [US1] Review the final change with `git diff --check` and `git diff --name-only`; confirm `apps/api/README.md` is the only feature file changed and no application code, tests, dependencies, runtime settings, or infrastructure were modified; depends on: T006
 
 ## Execution notes
 
