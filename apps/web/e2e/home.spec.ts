@@ -16,7 +16,7 @@ test("home carga sin errores de consola", async ({ page }) => {
   expect(response, "navegación a / debe devolver respuesta").not.toBeNull();
   expect(response!.status(), "home debe responder 200").toBe(200);
 
-  // Selector clave: H1 del hero. Texto canónico IRON DECK
+  // Selector clave: H1 del hero. Texto canónico de la marca MASTER OF THE DECK
   // ("EQUIPOS QUE RINDEN. ENTREGADOS." — mayúsculas tras el rebrand).
   await expect(
     page.getByRole("heading", { level: 1, name: /Equipos que rinden/i }),

@@ -31,7 +31,7 @@ export function Hero() {
             <span className="text-[var(--iron-red)]" aria-hidden="true">
               {"//"}
             </span>
-            Catálogo · IRON DECK
+            Catálogo · MASTER OF THE DECK
           </p>
           <h1 className="text-balance text-5xl font-black uppercase leading-[1.02] tracking-[0.04em] text-[var(--iron-bone)] [font-family:var(--font-metal)] md:text-6xl lg:text-7xl">
             Equipos que rinden.
