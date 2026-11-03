@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "About — IRON DECK",
+  title: "About — MASTER OF THE DECK",
   description:
-    "Acerca de IRON DECK, demo educativa del ciclo ADLC: créditos de portadas, stack técnico y agradecimientos.",
+    "Acerca de MASTER OF THE DECK, demo educativa del ciclo ADLC: créditos de portadas, stack técnico y agradecimientos.",
 };
 
 /**
@@ -25,10 +25,10 @@ export default function AboutPage() {
       {/* Hero */}
       <header className="border-b border-stone-800 pb-8">
         <p className="text-[0.7rem] font-bold uppercase tracking-[0.4em] text-[var(--metal-blood)]">
-          About IRON DECK
+          About MASTER OF THE DECK
         </p>
         <h1 className="mt-4 text-4xl font-black uppercase leading-[0.95] tracking-tight text-stone-100 [text-shadow:0_0_30px_rgba(192,0,0,0.2)] md:text-6xl">
-          About IRON DECK
+          About MASTER OF THE DECK
         </h1>
         <p className="mt-6 max-w-3xl text-base text-stone-300/90 [font-family:Inter,system-ui,sans-serif]">
           Demo educativa del ciclo de desarrollo ADLC (Agentic Development
@@ -51,7 +51,7 @@ export default function AboutPage() {
         </h2>
         <div className="mt-6 space-y-4 max-w-3xl text-base text-stone-300/90 [font-family:Inter,system-ui,sans-serif]">
           <p>
-            IRON DECK es una <strong>plantilla viva</strong> que demuestra
+            MASTER OF THE DECK es una <strong>plantilla viva</strong> que demuestra
             cómo construir software guiado por especificaciones verificables,
             con subagentes especializados (backend, frontend, qa, security,
             reviewer) y gates obligatorios antes de cada cierre. Cada

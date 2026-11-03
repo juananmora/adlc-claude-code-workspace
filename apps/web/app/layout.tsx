@@ -22,9 +22,9 @@ const cinzel = Cinzel({
 });
 
 export const metadata: Metadata = {
-  title: "IRON DECK — Catálogo",
+  title: "MASTER OF THE DECK — Catálogo",
   description:
-    "IRON DECK: catálogo de máquinas forjadas para el combate. Portátiles, sobremesa, componentes y periféricos. No es una tienda real.",
+    "MASTER OF THE DECK: catálogo de máquinas forjadas para el combate. Portátiles, sobremesa, componentes y periféricos. No es una tienda real.",
 };
 
 /**
