@@ -1,0 +1,45 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "Inicio Master of the Puppets" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]: M
+          - generic [ref=e8]: aster of the Puppets
+        - generic [ref=e9]:
+          - button "Buscar" [ref=e10] [cursor=pointer]
+          - button "Abrir carrito" [ref=e15] [cursor=pointer]
+    - main [ref=e20]:
+      - generic [ref=e23]:
+        - paragraph [ref=e24]:
+          - generic [aria-hidden] [ref=e25]: //
+          - text: Catálogo · Master of the Puppets
+        - heading "Equipos que rinden. Entregados." [level=1] [ref=e26]: Equipos que rinden.Entregados.
+        - paragraph [ref=e28]: Portátiles, sobremesa, componentes y periféricos forjados para quien no se conforma. Sin filler. Sin clichés corporativos.
+        - generic [ref=e29]:
+          - link "Ver catálogo" [ref=e30] [cursor=pointer]:
+            - /url: "#categorias"
+          - link "Explorar categorías" [ref=e31] [cursor=pointer]:
+            - /url: "#categorias"
+      - region "Catálogo de productos" [ref=e32]:
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - heading "Catálogo" [level=2] [ref=e35]
+            - paragraph [ref=e36]: Explora la selección. Filtra por categoría o busca por nombre.
+          - generic [ref=e37]: 0 resultados
+        - generic [ref=e40]:
+          - searchbox "Buscar productos" [ref=e42]
+          - combobox "Filtrar por categoría" [ref=e45] [cursor=pointer]:
+            - generic: Todas las categorías
+        - generic [ref=e49]:
+          - paragraph [ref=e50]: No hay productos que coincidan con tu búsqueda.
+          - paragraph [ref=e51]: Prueba ajustando los filtros.
+    - contentinfo [ref=e52]:
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]: M
+          - generic [ref=e56]: aster of the Puppets
+          - generic [ref=e57]: Demo · 2026
+        - paragraph [ref=e58]: © 2026 Master of the Puppets — No es una tienda real.
+  - region "Notifications alt+T"
+  - alert [ref=e59]

@@ -22,7 +22,7 @@ test.describe("/about — créditos del proyecto", () => {
     await aboutLink.click();
     await expect(page).toHaveURL(/\/about$/);
     await expect(
-      page.getByRole("heading", { level: 1, name: /About IRON DECK/i }),
+      page.getByRole("heading", { level: 1, name: /About Master of the Puppets/i }),
     ).toBeVisible();
   });
 

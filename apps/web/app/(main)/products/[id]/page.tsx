@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     const product = await fetchProductById(id);
     if (!product) return { title: "Producto no encontrado" };
     return {
-      title: `${product.name} — IRON DECK`,
+      title: `${product.name} — Master of the Puppets`,
       description: product.description,
     };
   } catch {

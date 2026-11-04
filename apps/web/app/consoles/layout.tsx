@@ -2,7 +2,7 @@ import { IronDeckHeader } from "@/components/iron-deck-header";
 import { IronDeckFooter } from "@/components/iron-deck-footer";
 
 export const metadata = {
-  title: "Consolas | IRON DECK",
+  title: "Consolas | Master of the Puppets",
 };
 
 /**
