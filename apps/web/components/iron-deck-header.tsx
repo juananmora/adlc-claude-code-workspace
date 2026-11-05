@@ -20,13 +20,10 @@ export function IronDeckHeader() {
         <Link
           href="/"
           className="flex items-baseline gap-0 leading-none [font-family:var(--font-metal)]"
-          aria-label="Inicio IRON DECK"
+          aria-label="Inicio Master of the Puppets"
         >
-          <span className="text-xl font-black uppercase tracking-[0.18em] text-[var(--iron-red)]">
-            I
-          </span>
           <span className="text-xl font-black uppercase tracking-[0.18em] text-[var(--iron-bone)]">
-            RON&nbsp;DECK
+            Master of the Puppets
           </span>
         </Link>
 

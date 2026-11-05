@@ -1,0 +1,59 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - link "Inicio Master of the Puppets" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]: Master of the Puppets
+        - navigation "Principal" [ref=e8]:
+          - link "Catálogo" [ref=e9] [cursor=pointer]:
+            - /url: /
+          - link "Discos" [ref=e10] [cursor=pointer]:
+            - /url: /albums
+          - link "Games" [ref=e11] [cursor=pointer]:
+            - /url: /games
+          - link "Consolas" [ref=e12] [cursor=pointer]:
+            - /url: /consoles
+          - link "Tours" [ref=e13] [cursor=pointer]:
+            - /url: /tours
+          - link "About" [ref=e14] [cursor=pointer]:
+            - /url: /about
+          - link "Contacto" [ref=e15] [cursor=pointer]:
+            - /url: /#contacto
+        - generic [ref=e16]:
+          - button "Buscar" [ref=e17] [cursor=pointer]
+          - button "Abrir carrito" [ref=e22] [cursor=pointer]
+    - main [ref=e27]:
+      - generic [ref=e30]:
+        - paragraph [ref=e31]:
+          - generic [aria-hidden] [ref=e32]: //
+          - text: Catálogo · Master of the Puppets
+        - heading "Equipos que rinden. Entregados." [level=1] [ref=e33]: Equipos que rinden.Entregados.
+        - paragraph [ref=e35]: Portátiles, sobremesa, componentes y periféricos forjados para quien no se conforma. Sin filler. Sin clichés corporativos.
+        - generic [ref=e36]:
+          - link "Ver catálogo" [ref=e37] [cursor=pointer]:
+            - /url: "#categorias"
+          - link "Explorar categorías" [ref=e38] [cursor=pointer]:
+            - /url: "#categorias"
+      - region "Catálogo de productos" [ref=e45]:
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - heading "Catálogo" [level=2] [ref=e48]
+            - paragraph [ref=e49]: Explora la selección. Filtra por categoría o busca por nombre.
+          - generic [ref=e50]: 0 resultados
+        - generic [ref=e53]:
+          - searchbox "Buscar productos" [ref=e55]
+          - generic [ref=e56]:
+            - combobox "Filtrar por categoría" [ref=e58] [cursor=pointer]
+            - combobox [aria-hidden] [ref=e61]
+        - generic [ref=e63]:
+          - paragraph [ref=e64]: No hay productos que coincidan con tu búsqueda.
+          - paragraph [ref=e65]: Prueba ajustando los filtros.
+    - contentinfo [ref=e66]:
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]: Master of the Puppets
+          - generic [ref=e70]: Demo · 2026
+        - paragraph [ref=e71]: © 2026 Master of the Puppets — No es una tienda real.
+  - region "Notifications alt+T"
+  - alert [ref=e72]
