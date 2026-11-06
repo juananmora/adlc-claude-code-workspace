@@ -9,8 +9,8 @@ test("header accesible en viewport móvil (375px)", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
 
-  // El logo/enlace "Inicio IRON DECK" debe seguir visible.
-  const homeLink = page.getByLabel("Inicio IRON DECK");
+  // El logo/enlace "Inicio MASTER OF THE PUPPETS" debe seguir visible.
+  const homeLink = page.getByLabel("Inicio MASTER OF THE PUPPETS");
   await expect(homeLink).toBeVisible();
 
   // La nav desktop está oculta (md:flex) — no es bug si no aparece;
