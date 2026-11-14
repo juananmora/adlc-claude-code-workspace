@@ -339,3 +339,20 @@ history:
         la evidencia real vive en reports/iter-12/reviewer.md y
         reports/iter-12/orchestrator.md).
       commit: "207cc03"
+    - id: "DEC-008"
+      date: "2026-05-29"
+      title: "iter-13: estado del front (apps/web) — iteración NO homologada"
+      rationale: |
+        Iteración de verificación del front (intent #54, slug
+        front-estado-verificacion). Las tareas T-01 a T-05 (#55 a #59)
+        no se ejecutaron: los criterios AC-01 a AC-08 quedan en rojo.
+
+        Hallazgos sin verificar en ejecución:
+        - apps/web no tiene runner de tests unitarios (solo Playwright E2E).
+        - CLAUDE.md referencia claude-catalog-viewer/ y node --test scripts/,
+          que no existen.
+        - El área catalog-viewer no existe en specs/areas/.
+
+        Pendientes humanos: ejecutar T-01 a T-05, decidir runner unitario
+        para apps/web, confirmar área de dominio y corregir CLAUDE.md.
+      commit: "pendiente"
