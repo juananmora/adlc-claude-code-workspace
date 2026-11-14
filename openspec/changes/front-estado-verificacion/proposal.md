@@ -1,7 +1,9 @@
 # Propuesta: verificación del estado del front (`apps/web`)
 
 Slug: front-estado-verificacion
-Iteración: iter-13
+Iteración: iter-14
+
+Trazabilidad: issue #61 de juananmora/adlc-claude-code-workspace (intent «Test 14-11»).
 
 Fuentes: [[adlc-prd]] (`specs/front-estado-verificacion-prd.md`), [[adlc-criterios]], [[adlc-solicitud]].
 
@@ -12,8 +14,9 @@ Comprobar con evidencia reproducible si `apps/web` (Next.js 15 + React 19) arran
 ## Hallazgos previos
 
 - `apps/web` no tiene runner de tests unitarios. Sus scripts de test son `test:e2e` y `test:e2e:headed` (Playwright, 10 ficheros en `apps/web/e2e/`).
-- "Tests unitarios" se interpreta como lint (`next lint`) y build (`next build`) según la decisión confirmada en [[adlc-solicitud]].
-- `CLAUDE.md` cita `claude-catalog-viewer/`, que no existe. Es un gap documentado, no se corrige aquí.
+- «Tests unitarios» se interpreta como lint (`next lint`) y build (`next build`) según la decisión confirmada en [[adlc-solicitud]].
+- `CLAUDE.md` cita `claude-catalog-viewer/` y `node --test scripts/`, que no existen. Es un gap documentado, no se corrige aquí.
+- La iteración anterior (iter-13) no se homologó: no hay reportes de agentes en `reports/iter-13/`, salvo el cierre. Esta iteración la reemplaza y deja sus tareas en estado pendiente.
 
 ## Agentes
 
@@ -23,11 +26,11 @@ Comprobar con evidencia reproducible si `apps/web` (Next.js 15 + React 19) arran
 | `qa-engineer` | Sí (obligatorio) | Inventario de tests, E2E y consola del navegador. |
 | `security-engineer` | Sí (obligatorio, Fase 7) | Gate de seguridad sobre `apps/web` y el reporte. |
 | `reviewer` | Sí (obligatorio, Fase 10) | Auditoría independiente antes de la aprobación humana. |
-| `cloud-architect` | No | Sin decisiones cloud. |
-| `terraform-engineer` | No | Sin cambios en `infra/`. |
-| `backend-engineer` | No | Sin cambios en `apps/api`. |
-| `cicd-engineer` | No | Sin cambios en `.github/workflows/`. |
-| `observability-engineer` | No | Sin métricas ni alertas en alcance. |
+| `cloud-architect` | No | Sin decisiones cloud. Stage saltada. |
+| `terraform-engineer` | No | Sin cambios en `infra/`. Stage saltada. |
+| `backend-engineer` | No | Sin cambios en `apps/api`. Stage saltada. |
+| `cicd-engineer` | No | Sin cambios en `.github/workflows/`. Stage saltada. |
+| `observability-engineer` | No | Sin métricas ni alertas en alcance. Stage saltada. |
 
 Nota de catálogo: el agente `frontend-engineer` declara la skill `create-catalog-ui`, que describe construcción de UI y no diagnóstico. Se usa tal cual; si el catálogo debe ampliarse, es decisión humana.
 
@@ -46,6 +49,7 @@ Nota de catálogo: el agente `frontend-engineer` declara la skill `create-catalo
 
 ## Decisiones pendientes para una persona
 
+- Aprobar este plan (iter-14) antes de tocar código (DEC-002).
 - Si se añade un runner unitario (Vitest/Jest) a `apps/web`.
 - Si se corrige la referencia a `claude-catalog-viewer/` en `CLAUDE.md`.
 - Confirmar el área de dominio (`catalog-products` u otra), porque `catalog-viewer` no existe en `specs/areas/`.

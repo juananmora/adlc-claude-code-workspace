@@ -1,19 +1,19 @@
 # Tareas: front-estado-verificacion
 
 Slug: front-estado-verificacion
-Iteración: iter-13
+Iteración: iter-14
 
-Trazabilidad: issue #54 de juananmora/adlc-claude-code-workspace. Cada tarea es una sub-issue.
+Trazabilidad: issue #61 de juananmora/adlc-claude-code-workspace. Cada tarea es una sub-issue.
 
 ## Tabla de tareas
 
 | ID | Tarea | Agente | Skill | Depende de | Entregable | Validación |
 |---|---|---|---|---|---|---|
-| T-01 | Arranque dev/prod, build y lint de `apps/web` | frontend-engineer | `Skill(skill: "create-catalog-ui")` | — | `reports/iter-13/frontend-engineer.md` | `npm run dev` + curl 200; `npm run build` exit 0; `npm start` + curl 200; `npm run lint` exit y resumen |
-| T-02 | Inventario de tests y ejecución E2E | qa-engineer | `Skill(skill: "generate-tests")` | T-01 | `reports/iter-13/qa-engineer.md` | `npm run test:e2e` con resumen de pasados/fallados/omitidos; `grep -n '"test' apps/web/package.json` |
-| T-03 | Consola y red de `/` en Chromium | qa-engineer | `Skill(skill: "generate-tests")` | T-01 | `reports/iter-13/qa-test-plan.md` | `playwright-browser_console_messages` (level error) y `playwright-browser_network_requests` |
-| T-04 | Security gate (Fase 7) | security-engineer | `Skill(skill: "security-review")` | T-01, T-02, T-03 | `reports/iter-13/security-engineer.md` | `npm audit --audit-level=high` en `apps/web`; veredicto sin CRITICAL/HIGH abiertos |
-| T-05 | Reviewer independiente (Fase 10) | reviewer | `Skill(skill: "review-pr")` | T-04 | `reports/iter-13/reviewer.md` | Veredicto APROBAR contra criterios AC-01..AC-08 |
+| T-01 | Arranque dev/prod, build y lint de `apps/web` | frontend-engineer | `Skill(skill: "create-catalog-ui")` | — | `reports/iter-14/frontend-engineer.md` | `npm run dev` + curl 200; `npm run build` exit 0; `npm start` + curl 200; `npm run lint` exit y resumen |
+| T-02 | Inventario de tests y ejecución E2E | qa-engineer | `Skill(skill: "generate-tests")` | T-01 | `reports/iter-14/qa-engineer.md` | `npm run test:e2e` con resumen de pasados/fallados/omitidos; `grep -n '"test' apps/web/package.json` |
+| T-03 | Consola y red de `/` en Chromium | qa-engineer | `Skill(skill: "generate-tests")` | T-01 | `reports/iter-14/qa-test-plan.md` | `playwright-browser_console_messages` (level error) y `playwright-browser_network_requests` |
+| T-04 | Security gate (Fase 7) | security-engineer | `Skill(skill: "security-review")` | T-01, T-02, T-03 | `reports/iter-14/security-engineer.md` | `npm audit --audit-level=high` en `apps/web`; veredicto sin CRITICAL/HIGH abiertos |
+| T-05 | Reviewer independiente (Fase 10) | reviewer | `Skill(skill: "review-pr")` | T-04 | `reports/iter-14/reviewer.md` | Veredicto APROBAR contra criterios AC-01..AC-08 |
 
 Serialización: T-01 y T-02/T-03 comparten `apps/web/node_modules` y el servidor en `:3000`, así que se ejecutan en serie, no en paralelo.
 
