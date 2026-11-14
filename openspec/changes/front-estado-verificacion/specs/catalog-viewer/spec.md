@@ -15,6 +15,7 @@ Formato: `Given <contexto>, when <acción>, then <resultado>`. Nivel RFC 2119 en
 - AC-05 verifica RF-05 (suite E2E).
 - AC-06 verifica RNF-04 (consola sin errores).
 - AC-07 verifica RNF-01 y RNF-02 (entorno y comandos reproducibles).
+- AC-08 verifica RF-06 (lint previo al build).
 
 ## Criterios
 
@@ -45,6 +46,10 @@ Formato: `Given <contexto>, when <acción>, then <resultado>`. Nivel RFC 2119 en
 - [ ] AC-07 — Given el entorno de la máquina, when se ejecuta la verificación, then el reporte MUST registrar la versión de Node y los comandos exactos usados, de modo que cualquiera pueda repetirlos.
   - MUST
   - Validación: `node --version` aparece en el reporte junto a la lista de comandos ejecutados.
+
+- [ ] AC-08 — Given `apps/web` con dependencias instaladas, when se ejecuta `npm run lint` en `apps/web/`, then el reporte MUST registrar el exit code y el resumen de `next lint`.
+  - MUST
+  - Validación: `cd apps/web && npm run lint; echo $?` (script `lint`, `apps/web/package.json`); el reporte incluye la salida.
 
 ## Nota de gap
 

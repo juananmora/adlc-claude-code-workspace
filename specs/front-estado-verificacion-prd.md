@@ -16,6 +16,7 @@ Fuentes: `[[adlc-solicitud]]` (hallazgos de inspección del repo: `apps/web/pack
 ## 2. Alcance
 
 - Arranque del front en modo desarrollo (`npm run dev`) y en modo producción (`npm run build` + `npm start`).
+- Lint con `npm run lint` (`next lint`) como verificación previa al build, según la decisión confirmada en `[[adlc-solicitud]]`.
 - Comprobación de que el puerto 3000 responde y de que `/` carga sin errores de consola.
 - Inventario de tests: qué runner existe, qué tests hay, cuáles son unitarios y cuáles E2E.
 - Ejecución de la suite disponible (`npm run test:e2e`) y registro de resultados (pasados/fallados).
@@ -40,6 +41,7 @@ Fuentes: `[[adlc-solicitud]]` (hallazgos de inspección del repo: `apps/web/pack
 - **RF-03**: El front SHALL poder arrancarse en producción con `npm start` tras el build y responder HTTP 200 en `/`.
 - **RF-04**: El inventario de tests de `apps/web` MUST quedar documentado indicando si existe runner unitario y, si no existe, que así consta.
 - **RF-05**: La suite E2E (`npm run test:e2e`) MUST ejecutarse y su resultado (pasados/fallados/omitidos) MUST quedar registrado.
+- **RF-06**: `npm run lint` (`next lint`) en `apps/web/` MUST ejecutarse y su resultado (exit code y número de avisos/errores) MUST quedar registrado, como verificación previa al build.
 
 ## 6. Requisitos no funcionales
 
@@ -68,6 +70,8 @@ apps/web/
   - Validación: comando `npm run build` en `apps/web/`, exit code.
 - [ ] Given el build correcto, when se ejecuta `npm start`, then `/` MUST devolver HTTP `200`.
   - Validación: comando `npm start` + `curl` sobre `:3000`.
+- [ ] Given `apps/web` con dependencias instaladas, when se ejecuta `npm run lint`, then el resultado (exit code y avisos/errores) MUST quedar registrado en el reporte.
+  - Validación: `cd apps/web && npm run lint; echo $?` y el resumen de `next lint`.
 - [ ] Given `apps/web/package.json`, when se busca un script de tests unitarios (`test`, `test:unit`), then el resultado MUST quedar documentado (existe o no existe) con la línea del fichero como evidencia.
   - Validación: inspección de `apps/web/package.json` (líneas de `scripts`).
 - [ ] Given la suite E2E de `apps/web/e2e/`, when se ejecuta `npm run test:e2e`, then el número de tests pasados, fallados y omitidos MUST quedar registrado.
@@ -142,6 +146,13 @@ requirements:
     description: npm run test:e2e se ejecuta y se registra pasados/fallados/omitidos.
     acceptance_criteria:
       - Resumen de Playwright registrado en el reporte
+  - id: RF-06
+    title: Lint previo al build
+    category: functional
+    priority: must-have
+    description: npm run lint se ejecuta en apps/web y su resultado queda registrado.
+    acceptance_criteria:
+      - Exit code y resumen de next lint registrados
   - id: RNF-01
     title: Versión de Node documentada
     category: non-functional
