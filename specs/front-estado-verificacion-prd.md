@@ -1,25 +1,26 @@
 # PRD: Verificación del estado del front (`apps/web`)
 
 > **Tipo**: propuesta de cambio (diagnóstico, sin cambios de código)
-> **Iteración**: iter-13
-> **Fecha**: 2026-11-07
+> **Iteración**: iter-14
+> **Intent**: «Test 14-11»
+> **Fecha**: 2026-11-14
 > **Estado**: borrador
 
 Slug: front-estado-verificacion
 
 ## 1. Objetivo
 
-Comprobar y documentar, con evidencia reproducible, si el front `apps/web` (Next.js 15 + React 19) se puede levantar y si su suite de tests puede ejecutarse. El resultado es un diagnóstico, no una corrección.
+Comprobar y documentar, con evidencia reproducible, si el front `apps/web` (Next.js 15 + React 19) se puede levantar y si sus tests unitarios pueden ejecutarse. Hoy `apps/web` no tiene runner unitario, así que el resultado esperado es el diagnóstico de esa ausencia más la ejecución de la suite disponible (E2E). El resultado es un diagnóstico, no una corrección.
 
-Fuentes: `[[adlc-solicitud]]` (hallazgos de inspección del repo: `apps/web/package.json` sin script de tests unitarios, solo `test:e2e` con Playwright).
+Fuentes: `[[adlc-solicitud]]` (hallazgos de inspección del repo: `apps/web/package.json` sin script de tests unitarios, solo `test:e2e` con Playwright). Esta versión actualiza el PRD de iter-13 para el intent «Test 14-11»; el alcance no cambia.
 
 ## 2. Alcance
 
 - Arranque del front en modo desarrollo (`npm run dev`) y en modo producción (`npm run build` + `npm start`).
-- Lint con `npm run lint` (`next lint`) como verificación previa al build, según la decisión confirmada en `[[adlc-solicitud]]`.
+- Lint con `npm run lint` (`next lint`) como verificación previa al build. Es una verificación estática, no un test unitario.
 - Comprobación de que el puerto 3000 responde y de que `/` carga sin errores de consola.
-- Inventario de tests: qué runner existe, qué tests hay, cuáles son unitarios y cuáles E2E.
-- Ejecución de la suite disponible (`npm run test:e2e`) y registro de resultados (pasados/fallados).
+- Inventario de tests: qué runner existe, qué tests hay, cuáles son unitarios y cuáles E2E. Resultado esperado: no hay tests unitarios.
+- Ejecución de la suite disponible (`npm run test:e2e`) y registro de resultados (pasados/fallados/omitidos).
 - Documentar el resultado en un reporte de diagnóstico.
 
 ## 3. Fuera de alcance
@@ -27,7 +28,7 @@ Fuentes: `[[adlc-solicitud]]` (hallazgos de inspección del repo: `apps/web/pack
 - Añadir un runner de tests unitarios (Vitest/Jest) o escribir tests nuevos. Decisión de alcance para una iteración posterior.
 - Corregir bugs del front encontrados durante la verificación.
 - Modificar `apps/api`, Docker, infraestructura o despliegues.
-- Corregir la referencia a `claude-catalog-viewer/` de `CLAUDE.md` (queda como gap, ver §9).
+- Corregir la referencia a `claude-catalog-viewer/` de `CLAUDE.md` (queda como gap, ver §12).
 
 ## 4. Usuarios o actores
 
@@ -56,7 +57,7 @@ No hay cambios de arquitectura. Puntos implicados:
 
 ```
 apps/web/
-├─ package.json        # scripts dev/build/start/test:e2e
+├─ package.json        # scripts dev/build/start/lint/test:e2e
 ├─ playwright.config.ts
 ├─ e2e/*.spec.ts       # suite E2E existente (10 ficheros)
 └─ app/, components/, lib/
@@ -79,7 +80,7 @@ apps/web/
 - [ ] Given `/` cargado en un navegador, when se leen los mensajes de consola, then SHOULD no haber errores; cada error MUST quedar listado como hallazgo.
   - Validación: Chrome DevTools MCP o `playwright-browser_console_messages`.
 - [ ] Given el reporte de diagnóstico, when se revisa, then MUST contener la versión de Node usada y los comandos exactos ejecutados.
-  - Validación: inspección de `reports/iter-13/frontend-engineer.md`.
+  - Validación: inspección de `reports/iter-14/frontend-engineer.md`.
 
 ## 9. Riesgos y supuestos
 
@@ -90,7 +91,9 @@ apps/web/
 | `CLAUDE.md` referencia `claude-catalog-viewer/`, que no existe | Confusión sobre el front real | Documentar como gap; no modificar en esta iteración |
 | No existe runner unitario | "Test unitario" no es ejecutable | Reportar ausencia con evidencia; la creación es decisión aparte |
 
-**Supuestos**: "front" = `apps/web/`; "tests unitarios" = la suite disponible, con el hallazgo de que no hay unitarios.
+**Supuestos**:
+- "front" = `apps/web/`.
+- "tests unitarios" = no existen en `apps/web`. La ejecución de la suite disponible es `test:e2e`, y lint y build son verificaciones estáticas y de compilación, no tests unitarios. Esta interpretación se reporta explícitamente en el diagnóstico.
 
 ## 10. Puntos de aprobación humana
 
@@ -100,8 +103,9 @@ apps/web/
 
 ## 11. Trazabilidad
 
-- Solicitud: `[[adlc-solicitud]]`.
+- Solicitud: `[[adlc-solicitud]]` (intent «Test 14-11»).
 - Specs relacionadas: `specs/areas/catalog-products/spec.md` (cobertura de frontend iter-1/iter-2), `specs/001-startup-verification/spec.md` (patrón de verificación de arranque para `apps/api`).
+- Iteración anterior de esta misma verificación: iter-13 (`reports/iter-13/`).
 
 ## 12. Gaps conocidos
 
